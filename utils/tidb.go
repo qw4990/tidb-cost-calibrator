@@ -138,6 +138,12 @@ func ConnectToInstances(opts []Option) (xs []Instance, err error) {
 	return
 }
 
+func MustConnectTo(opt Option) Instance {
+	ins, err := ConnectTo(opt)
+	Must(err)
+	return ins
+}
+
 func ConnectTo(opt Option) (Instance, error) {
 	dns := fmt.Sprintf("%s:%s@tcp(%s:%v)/%v", opt.User, opt.Password, opt.Addr, opt.Port, "mysql")
 	if opt.Password == "" {
