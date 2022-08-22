@@ -20,7 +20,7 @@ func (r Records) XY(k int) (x, y float64) {
 	return r[k].Cost, r[k].TimeMS
 }
 
-func drawCostRecordsTo(r Records, f string) {
+func DrawCostRecordsTo(r Records, f string) {
 	p := plot.New()
 	p.Title.Text = "cost model accuracy scatter plot"
 	p.X.Label.Text = "cost estimation"
