@@ -3,6 +3,7 @@ package costeval
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -59,6 +60,14 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 		info("generate %v records successfully", len(rs))
 	} else {
 		info("read %v records successfully", len(rs))
+	}
+
+	sort.Slice(rs, func(i, j int) bool {
+		return rs[i].TimeMS < rs[j].TimeMS
+	})
+
+	for _, r := range rs {
+		info("record %vms \t %.2f \t %v \t %v\n", r.TimeMS, r.Cost, r.Label, r.SQL)
 	}
 }
 
