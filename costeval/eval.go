@@ -75,6 +75,7 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Records {
 	for _, sql := range opt.genInitSQLs() {
 		ins.MustExec(sql)
+		fmt.Printf("%v;\n", sql)
 	}
 
 	var rs utils.Records
