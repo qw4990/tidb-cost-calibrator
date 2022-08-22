@@ -46,7 +46,17 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 		utils.SaveTo(queryFile, qs)
 		info("generate %v queries successfully", len(qs))
 	} else {
-		info("read queries from %v successfully", queryFile)
+		info("read %v queries successfully", len(qs))
+	}
+
+	var rs utils.Records
+	recordFile := filepath.Join(dataDir, fmt.Sprintf("%v-%v-records.json", opt.db, opt.costModelVer))
+	if err := utils.ReadFrom(recordFile, &rs); err != nil {
+		rs = runCostEvalQueries(ins, opt.db, qs, opt.InitSQLs(), opt.processRepeat, opt.processTimeLimitMS)
+		utils.SaveTo(recordFile, rs)
+		info("generate %v records successfully", len(rs))
+	} else {
+		info("read %v records successfully", len(rs))
 	}
 }
 

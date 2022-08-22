@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/qw4990/tidb-cost-calibrator/costeval"
 	"github.com/spf13/cobra"
 )
@@ -24,15 +25,13 @@ func newCostEvalCmd() *cobra.Command {
 	return cmd
 }
 
-func Execute() error {
-	return rootCmd.Execute()
-}
-
 func init() {
 	cobra.OnInitialize()
 	rootCmd.AddCommand(newCostEvalCmd())
 }
 
 func main() {
-
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+	}
 }

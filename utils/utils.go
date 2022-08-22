@@ -6,6 +6,22 @@ import (
 	"io/ioutil"
 )
 
+type Query struct {
+	SQL   string
+	Label string
+}
+
+type Queries []Query
+
+type Record struct {
+	Cost   float64
+	TimeMS float64
+	Label  string
+	SQL    string
+}
+
+type Records []Record
+
 func Must(err error) {
 	if err != nil {
 		panic(err)
