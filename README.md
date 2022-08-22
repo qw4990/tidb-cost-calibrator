@@ -1,1 +1,1 @@
-# tidb-cost-calibrater
+# tidb-cost-calibrator
