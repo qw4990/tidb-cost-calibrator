@@ -18,7 +18,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"synthetic", 2, 2, 5})
+	costEval(ins, &evalOpt{"synthetic", 2, 1, 5})
 }
 
 type evalOpt struct {
@@ -67,9 +67,9 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 	})
 
 	for _, r := range rs {
-		info("record %vms \t %.2f \t %v \t %v\n", r.TimeMS, r.Cost, r.Label, r.SQL)
+		info("record %vms \t %.2f \t %v \t %v", r.TimeMS, r.Cost, r.Label, r.SQL)
 	}
-	utils.DrawCostRecordsTo(rs, fmt.Sprintf("%v-%v-scatter.png", opt.db, opt.costModelVer))
+	utils.DrawCostRecordsTo(rs, fmt.Sprintf("./data/%v-%v-scatter.png", opt.db, opt.costModelVer))
 }
 
 func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Records {
