@@ -1,13 +1,28 @@
 package main
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/qw4990/tidb-cost-calibrator/costeval"
+	"github.com/spf13/cobra"
+)
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "optimizer-tester",
-		Short: "TiDB Optimizer Tester",
+		Use:   "tidb cost calibrator",
+		Short: "tidb cost calibrator",
 	}
 )
+
+func newCostEvalCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "cost-eval",
+		Short: "Cost Model Evaluation",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			costeval.CostEval()
+			return nil
+		},
+	}
+	return cmd
+}
 
 func Execute() error {
 	return rootCmd.Execute()
@@ -15,6 +30,7 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize()
+	rootCmd.AddCommand(newCostEvalCmd())
 }
 
 func main() {

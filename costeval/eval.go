@@ -1,0 +1,5 @@
+package costeval
+
+func CostEval() {
+	
+}
