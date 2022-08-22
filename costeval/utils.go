@@ -2,15 +2,15 @@ package costeval
 
 import (
 	"fmt"
-	
+
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
 type pattern struct {
-	sql        string
-	rangeCol   string
-	rangeScale float64
-	label      string
+	sql      string
+	rangeCol string
+	rangeMax int
+	label    string
 }
 
 func gen4Patterns(ins utils.Instance, ps []pattern, n int) utils.Queries {
@@ -37,7 +37,9 @@ func gen4Pattern(ins utils.Instance, p pattern, n int) utils.Queries {
 
 func getColRange4Pattern(ins utils.Instance, p pattern) (l, r int) {
 	utils.MustReadOneLine(ins, fmt.Sprintf(`select min(%v), max(%v) from %v`, p.rangeCol, p.rangeCol, "t"), &l, &r)
-	r = int(float64(r) * p.rangeScale)
+	if r-l > p.rangeMax {
+		r = l + p.rangeMax
+	}
 	return
 }
 
