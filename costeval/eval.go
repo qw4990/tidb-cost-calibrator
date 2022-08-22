@@ -18,7 +18,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"synthetic", 2, 1, 5})
+	costEval(ins, &evalOpt{"synthetic", 2, 1, 3})
 }
 
 type evalOpt struct {
