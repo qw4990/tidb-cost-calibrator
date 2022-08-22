@@ -52,6 +52,10 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 		info("read %v queries successfully", len(qs))
 	}
 
+	for i := range qs {
+		qs[i].SQL = `explain analyze format='true_card_cost' ` + qs[i].SQL
+	}
+
 	var rs utils.Records
 	recordFile := filepath.Join(dataDir, fmt.Sprintf("%v-%v-records.json", opt.db, opt.costModelVer))
 	if err := utils.ReadFrom(recordFile, &rs); err != nil {
@@ -82,15 +86,14 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 	beginAt := time.Now()
 	for i, q := range qs {
 		info("run %v/%v tot=%v, q=%v", i, len(qs), q.SQL, time.Since(beginAt))
-		explain := `explain analyze format='true_card_cost' ` + q.SQL
 		var cost, totTimeMS float64
 		for k := 0; k < opt.repeatTimes; k++ {
-			rs := ins.MustQuery(explain)
+			rs := ins.MustQuery(q.SQL)
 			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
 			if k == 0 {
 				cost = r.PlanCost
 			} else if cost != r.PlanCost { // the plan changes
-				panic(fmt.Sprintf("q=%v, cost=%v, new-cost=%v", explain, cost, r.PlanCost))
+				panic(fmt.Sprintf("q=%v, cost=%v, new-cost=%v", q.SQL, cost, r.PlanCost))
 			}
 			totTimeMS += r.TimeMS
 		}
