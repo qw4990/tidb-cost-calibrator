@@ -22,17 +22,17 @@ func genSYNScans(ins utils.Instance, n int) utils.Queries {
 func genSYNAgg(ins utils.Instance, n int) utils.Queries {
 	ps := []pattern{
 		{`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(1) from t where %v`,
-			"b", 0.2, "TiDBAgg1"}, // agg without group-by
+			"b", 10000000, "TiDBAgg1"}, // agg without group-by
 		{`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(b), b from t where %v group by b`,
-			"b", 0.2, "TiDBAgg2"}, // agg with group-by
+			"b", 3000000, "TiDBAgg2"}, // agg with group-by
 		{`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a) from t where %v`,
-			"b", 0.2, "MPPTiDBAgg1"}, // mpp tidb agg without group-by
+			"b", 3000000, "MPPTiDBAgg1"}, // mpp tidb agg without group-by
 		{`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a), b from t where %v group by b`,
-			"b", 0.2, "MPPTiDBAgg2"}, // mpp tidb agg with group-by
+			"b", 3000000, "MPPTiDBAgg2"}, // mpp tidb agg with group-by
 		{`select /*+ read_from_storage(tiflash[t]), mpp_1phase_agg() */ count(a), b from t where %v group by b`,
-			"b", 0.2, "MPP1PhaseAgg"},
+			"b", 3000000, "MPP1PhaseAgg"},
 		{`select /*+ read_from_storage(tiflash[t]), mpp_2phase_agg() */ count(a), b from t where %v group by b`,
-			"b", 0.2, "MPP2PhaseAgg"},
+			"b", 3000000, "MPP2PhaseAgg"},
 	}
 	return gen4Patterns(ins, ps, n)
 }
