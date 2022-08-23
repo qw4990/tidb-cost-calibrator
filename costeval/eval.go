@@ -20,7 +20,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"synthetic", 2, 1, 3})
+	costEval(ins, &evalOpt{"synthetic", 2, 1, 1})
 }
 
 type evalOpt struct {
@@ -89,7 +89,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 	for i, q := range qs {
 		info("run %v/%v tot=%v, q=%v", i, len(qs), q.SQL, time.Since(beginAt))
 		var cost, totTimeMS float64
-		var weights map[string]float64
+		weights := make(map[string]float64)
 		for k := 0; k < opt.repeatTimes; k++ {
 			rs := ins.MustQuery(q.SQL)
 			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
