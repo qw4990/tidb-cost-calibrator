@@ -25,9 +25,22 @@ func newCostEvalCmd() *cobra.Command {
 	return cmd
 }
 
+func newCostCaliCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "cost-cali",
+		Short: "Cost Model Calibration",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			costeval.CostCalibrate()
+			return nil
+		},
+	}
+	return cmd
+}
+
 func init() {
 	cobra.OnInitialize()
 	rootCmd.AddCommand(newCostEvalCmd())
+	rootCmd.AddCommand(newCostCaliCmd())
 }
 
 func main() {
