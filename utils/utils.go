@@ -14,10 +14,11 @@ type Query struct {
 type Queries []Query
 
 type Record struct {
-	Cost   float64
-	TimeMS float64
-	Label  string
-	SQL    string
+	Cost    float64
+	TimeMS  float64
+	Label   string
+	SQL     string
+	Weights map[string]float64
 }
 
 type Records []Record

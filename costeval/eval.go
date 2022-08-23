@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -87,6 +89,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 	for i, q := range qs {
 		info("run %v/%v tot=%v, q=%v", i, len(qs), q.SQL, time.Since(beginAt))
 		var cost, totTimeMS float64
+		var weights map[string]float64
 		for k := 0; k < opt.repeatTimes; k++ {
 			rs := ins.MustQuery(q.SQL)
 			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
@@ -96,13 +99,43 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 				panic(fmt.Sprintf("q=%v, cost=%v, new-cost=%v", q.SQL, cost, r.PlanCost))
 			}
 			totTimeMS += r.TimeMS
+
+			if k == 0 { // parse factor weights
+				rs := ins.MustQuery("show warnings")
+				// | Warning | 1105 | valid cost trace result: tidb_opt_cpu_factor_v2=1.0000, tidb_opt_copcpu_factor_v2=0.0000, ... |
+				var warn, weightStr string
+				var errno int
+				if !rs.Next() {
+					panic("cannot get weights")
+				}
+				utils.Must(rs.Scan(&warn, &errno, &weightStr))
+				if strings.Contains(weightStr, "invalid") {
+					panic("invalid weights")
+				}
+				idx := strings.Index(weightStr, "result: ")
+				if idx == -1 {
+					panic("unexpected: " + weightStr)
+				}
+				tmp := strings.Split(weightStr[idx+len("result: "):], ",")
+				for _, kv := range tmp {
+					kvList := strings.Split(kv, "=")
+					k := strings.TrimSpace(kvList[0])
+					v, err := strconv.ParseFloat(strings.TrimSpace(kvList[1]), 64)
+					if err != nil {
+						panic("unexpected: " + weightStr)
+					}
+					weights[k] = v
+				}
+				utils.Must(rs.Close())
+			}
 		}
 		avgTimeMS := totTimeMS / float64(opt.repeatTimes)
 		rs = append(rs, utils.Record{
-			Cost:   cost,
-			TimeMS: avgTimeMS,
-			Label:  q.Label,
-			SQL:    q.SQL,
+			Cost:    cost,
+			TimeMS:  avgTimeMS,
+			Label:   q.Label,
+			SQL:     q.SQL,
+			Weights: weights,
 		})
 	}
 	return rs
