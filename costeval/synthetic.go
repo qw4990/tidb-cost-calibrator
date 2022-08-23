@@ -50,15 +50,15 @@ func genSYNAgg(ins utils.Instance, n int) utils.Queries {
 
 		// TiKV HashAgg
 		{`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(1) from t where %v`,
-			"b", 15000000, "HashAgg1"}, // agg without group-by
+			"b", 10000000, "HashAgg1"}, // agg without group-by
 		{`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(b), b from t where %v group by b`,
-			"b", 4000000, "HashAgg2"}, // agg with group-by
+			"b", 2000000, "HashAgg2"}, // agg with group-by
 
 		// MPP HashAgg
 		{`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a) from t where %v`,
 			"b", 12000000, "MPPTiDBAgg1"}, // mpp tidb agg without group-by
 		{`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a), b from t where %v group by b`,
-			"b", 4000000, "MPPTiDBAgg2"}, // mpp tidb agg with group-by
+			"b", 2000000, "MPPTiDBAgg2"}, // mpp tidb agg with group-by
 		{`select /*+ read_from_storage(tiflash[t]), mpp_1phase_agg() */ count(a), b from t where %v group by b`,
 			"b", 15000000, "MPP1PhaseAgg"},
 		{`select /*+ read_from_storage(tiflash[t]), mpp_2phase_agg() */ count(a), b from t where %v group by b`,
