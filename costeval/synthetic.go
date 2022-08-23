@@ -21,10 +21,19 @@ func genSYNScans(ins utils.Instance, n int) utils.Queries {
 
 func genSYNAgg(ins utils.Instance, n int) utils.Queries {
 	ps := []pattern{
+		// TiKV SA
+		{`select /*+ read_from_storage(tikv[t]), stream_agg(), use_index(t, b) */ sum(a) from t where %v`,
+			"b", 2000000, "StreamAgg1"},
+		{`select /*+ read_from_storage(tikv[t]), stream_agg(), use_index(t, b) */ sum(a) from t where %v`,
+			"b", 2000000, "StreamAgg2"},
+
+		// TiKV HA
 		{`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(1) from t where %v`,
-			"b", 10000000, "TiDBAgg1"}, // agg without group-by
+			"b", 10000000, "HashAgg1"}, // agg without group-by
 		{`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(b), b from t where %v group by b`,
-			"b", 3000000, "TiDBAgg2"}, // agg with group-by
+			"b", 3000000, "HashAgg2"}, // agg with group-by
+
+		// MPP HA
 		{`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a) from t where %v`,
 			"b", 3000000, "MPPTiDBAgg1"}, // mpp tidb agg without group-by
 		{`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a), b from t where %v group by b`,
