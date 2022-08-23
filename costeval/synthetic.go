@@ -19,7 +19,7 @@ func genSYNScans(ins utils.Instance, n int) utils.Queries {
 	ps := []pattern{
 		// TiKV Table Scan
 		{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where %v`,
-			"a", 1000, "TableScan"},
+			"a", 4000000, "TableScan"},
 		//{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a, c from t where %v`,
 		//	"a", 1000, "WideTableScan"},
 		//{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where %v order by a desc`,
