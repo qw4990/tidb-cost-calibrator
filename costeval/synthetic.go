@@ -75,11 +75,9 @@ func genSYNAgg(ins utils.Instance, n int) utils.Queries {
 func genSYNJoin(ins utils.Instance, n int) utils.Queries {
 	ps := []pattern{
 		// TiKV Join
-		{`select /*+ use_index(t1, b), use_index(t2, b), tidb_hj(t1, t2), read_from_storage(tikv[t1, t2]) */ ` +
-			`t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
+		{`select /*+ use_index(t1, b), use_index(t2, b), tidb_hj(t1, t2), read_from_storage(tikv[t1, t2]) */ t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
 			"b", 1000, "HashJoin"},
-		{`select /*+ use_index(t1, b), use_index(t2, b), tidb_smj(t1, t2), read_from_storage(tikv[t1, t2]) */ ` +
-			`t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
+		{`select /*+ use_index(t1, b), use_index(t2, b), tidb_smj(t1, t2), read_from_storage(tikv[t1, t2]) */ t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
 			"b", 1000, "MergeJoin"},
 		{`elect /*+ TIDB_INLJ(t1, t2) */ t2.b from t t1, t t2 where t1.b = t2.b and %v`,
 			"b", 1000, "IndexJoin"},
