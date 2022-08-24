@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	
 	"github.com/qw4990/tidb-cost-calibrator/costeval"
+	"github.com/qw4990/tidb-cost-calibrator/regression"
 	"github.com/spf13/cobra"
 )
 
@@ -37,10 +39,23 @@ func newCostCaliCmd() *cobra.Command {
 	return cmd
 }
 
+func newRegressionDetectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "reg-detect",
+		Short: "Regression Detect",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			regression.RegDetect()
+			return nil
+		},
+	}
+	return cmd
+}
+
 func init() {
 	cobra.OnInitialize()
 	rootCmd.AddCommand(newCostEvalCmd())
 	rootCmd.AddCommand(newCostCaliCmd())
+	rootCmd.AddCommand(newRegressionDetectCmd())
 }
 
 func main() {
