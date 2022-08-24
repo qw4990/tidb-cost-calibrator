@@ -2,6 +2,7 @@ package costeval
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
@@ -26,7 +27,16 @@ func gen4Pattern(ins utils.Instance, p pattern, n int) utils.Queries {
 	minV, maxV := getColRange4Pattern(ins, p)
 	for i := 0; i < n; i++ {
 		l, r := randRange(minV, maxV, i, n)
+
+		// handle joins specially
 		cond := fmt.Sprintf("%v>=%v and %v<=%v", p.rangeCol, l, p.rangeCol, r)
+		if strings.Contains(p.label, "Join") ||
+			strings.Contains(p.label, "HJ") ||
+			strings.Contains(p.label, "BCJ") {
+			cond = fmt.Sprintf("t1.%v>=%v and t1.%v<=%v and t2.%v>=%v and t2.%v<=%v",
+				p.rangeCol, l, p.rangeCol, r, p.rangeCol, l, p.rangeCol, r)
+		}
+
 		qs = append(qs, utils.Query{
 			SQL:   fmt.Sprintf(p.sql, cond),
 			Label: p.label,

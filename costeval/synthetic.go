@@ -12,6 +12,7 @@ func genSYNQueries(ins utils.Instance, db string, n int) utils.Queries {
 	var qs utils.Queries
 	qs = append(qs, genSYNScans(ins, n)...)
 	qs = append(qs, genSYNAgg(ins, n)...)
+	qs = append(qs, genSYNJoin(ins, n)...)
 	return qs
 }
 
@@ -72,6 +73,23 @@ func genSYNAgg(ins utils.Instance, n int) utils.Queries {
 }
 
 func genSYNJoin(ins utils.Instance, n int) utils.Queries {
-	// TODO:
-	return nil
+	ps := []pattern{
+		// TiKV Join
+		{`select /*+ use_index(t1, b), use_index(t2, b), tidb_hj(t1, t2), read_from_storage(tikv[t1, t2]) */ ` +
+			`t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
+			"b", 1000, "HashJoin"},
+		{`select /*+ use_index(t1, b), use_index(t2, b), tidb_smj(t1, t2), read_from_storage(tikv[t1, t2]) */ ` +
+			`t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
+			"b", 1000, "MergeJoin"},
+		{`elect /*+ TIDB_INLJ(t1, t2) */ t2.b from t t1, t t2 where t1.b = t2.b and %v`,
+			"b", 1000, "IndexJoin"},
+
+		// MPP Join
+		{`SELECT /*+ read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
+			"b", 1000, "MPPHJ"},
+		{`SELECT /*+ broadcast_join(t1, t2), read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
+			"b", 1000, "MPPBCJ"},
+	}
+
+	return gen4Patterns(ins, ps, n)
 }
