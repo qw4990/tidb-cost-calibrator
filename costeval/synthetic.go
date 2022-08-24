@@ -83,8 +83,8 @@ func genSYNJoin(ins utils.Instance, n int) utils.Queries {
 			"b", 500000, "IndexJoin"},
 
 		// MPP Join
-		//{`SELECT /*+ read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
-		//	"b", 1000, "MPPHJ"},
+		{`SELECT /*+ read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
+			"b", 5000000, "MPPHJ"},
 		//{`SELECT /*+ broadcast_join(t1, t2), read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
 		//	"b", 1000, "MPPBCJ"},
 	}
