@@ -90,10 +90,11 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 		info("run %v/%v tot=%v, q=%v", i, len(qs), q.SQL, time.Since(beginAt))
 		var cost, totTimeMS float64
 		weights := make(map[string]float64)
+		var execTime []time.Duration
 		for k := 0; k < opt.repeatTimes; k++ {
 			t0 := time.Now()
 			rs := ins.MustQuery(q.SQL)
-			info(">> k=%v, time=%v", k, time.Since(t0))
+			execTime = append(execTime, time.Since(t0))
 			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
 			if k == 0 {
 				cost = r.PlanCost
@@ -106,6 +107,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 				weights = parseCostWeights(ins)
 			}
 		}
+		info(">> exec time ", execTime)
 		avgTimeMS := totTimeMS / float64(opt.repeatTimes)
 		rs = append(rs, utils.Record{
 			Cost:    cost,
