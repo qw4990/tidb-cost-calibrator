@@ -20,7 +20,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"synthetic", 2, 1, 5})
+	costEval(ins, &evalOpt{"synthetic", 1, 1, 5})
 }
 
 type evalOpt struct {
@@ -100,7 +100,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			}
 			totTimeMS += r.TimeMS
 
-			if k == 0 { // parse factor weights
+			if k == 0 && opt.costModelVer == 2 { // parse factor weights
 				rs := ins.MustQuery("show warnings")
 				// | Warning | 1105 | valid cost trace result: tidb_opt_cpu_factor_v2=1.0000, tidb_opt_copcpu_factor_v2=0.0000, ... |
 				var warn, weightStr string
