@@ -13,7 +13,18 @@ func genSYNQueries(ins utils.Instance, db string, n int) utils.Queries {
 	qs = append(qs, genSYNScans(ins, n)...)
 	qs = append(qs, genSYNAgg(ins, n)...)
 	qs = append(qs, genSYNJoin(ins, n)...)
+	qs = append(qs, genSYNSort(ins, n)...)
 	return qs
+}
+
+func genSYNSort(ins utils.Instance, n int) utils.Queries {
+	ps := []pattern{
+		{`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b from t where %v order by c`,
+			"b", 2500000, "Sort"},
+		{`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b from t where %v order by c limit 1000`,
+			"b", 5000000, "TopN"},
+	}
+	return gen4Patterns(ins, ps, n)
 }
 
 func genSYNScans(ins utils.Instance, n int) utils.Queries {
