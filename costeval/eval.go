@@ -20,7 +20,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"synthetic", 2, 1, 5})
+	costEval(ins, &evalOpt{"synthetic", 2, 1, 5, true})
 }
 
 type evalOpt struct {
@@ -28,6 +28,11 @@ type evalOpt struct {
 	costModelVer int
 	repeatTimes  int
 	numPerQuery  int
+	concurrent1  bool
+}
+
+func (opt *evalOpt) name() string {
+	return fmt.Sprintf("%v-%v-%v", opt.db, opt.costModelVer, opt.concurrent1)
 }
 
 func (opt *evalOpt) genInitSQLs() []string {
@@ -59,7 +64,7 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 	}
 
 	var rs utils.Records
-	recordFile := filepath.Join(dataDir, fmt.Sprintf("%v-%v-records.json", opt.db, opt.costModelVer))
+	recordFile := filepath.Join(dataDir, fmt.Sprintf("%v-records.json", opt.name()))
 	if err := utils.ReadFrom(recordFile, &rs); err != nil {
 		rs = runEvalQueries(ins, opt, qs)
 		utils.SaveTo(recordFile, rs)
@@ -75,7 +80,7 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 	for _, r := range rs {
 		info("record %vms \t %.2f \t %v \t %v", r.TimeMS, r.Cost, r.Label, r.SQL)
 	}
-	utils.DrawCostRecordsTo(rs, fmt.Sprintf("./data/%v-%v-scatter.png", opt.db, opt.costModelVer))
+	utils.DrawCostRecordsTo(rs, fmt.Sprintf("./data/%v-scatter.png", opt.name()))
 }
 
 func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Records {
