@@ -88,6 +88,5 @@ func genSYNJoin(ins utils.Instance, n int) utils.Queries {
 		{`SELECT /*+ broadcast_join(t1, t2), read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
 			"b", 1000, "MPPBCJ"},
 	}
-
 	return gen4Patterns(ins, ps, n)
 }
