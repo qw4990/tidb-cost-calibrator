@@ -121,6 +121,9 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 func parseCostWeights(ins utils.Instance) map[string]float64 {
 	weights := make(map[string]float64)
 	rs := ins.MustQuery("show warnings")
+	defer func() {
+		utils.Must(rs.Close())
+	}()
 	// | Warning | 1105 | valid cost trace result: tidb_opt_cpu_factor_v2=1.0000, tidb_opt_copcpu_factor_v2=0.0000, ... |
 	var warn, weightStr string
 	var errno int
@@ -129,7 +132,7 @@ func parseCostWeights(ins utils.Instance) map[string]float64 {
 	}
 	utils.Must(rs.Scan(&warn, &errno, &weightStr))
 	if strings.Contains(weightStr, "invalid") {
-		panic("invalid weights")
+		return nil
 	}
 	idx := strings.Index(weightStr, "result: ")
 	if idx == -1 {
@@ -145,7 +148,6 @@ func parseCostWeights(ins utils.Instance) map[string]float64 {
 		}
 		weights[k] = v
 	}
-	utils.Must(rs.Close())
 	return weights
 }
 

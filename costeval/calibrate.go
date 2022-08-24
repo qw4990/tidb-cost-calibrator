@@ -1,6 +1,7 @@
 package costeval
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -29,6 +30,10 @@ func CostCalibrate() {
 	}
 
 	for i := range rs {
+		if rs[i].Weights == nil {
+			fmt.Println(">>> skip >> ", rs[i].Label, rs[i].SQL)
+		}
+
 		var cost float64
 		for k, w := range rs[i].Weights {
 			cost += w * factors[k]

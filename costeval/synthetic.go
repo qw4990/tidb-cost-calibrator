@@ -79,9 +79,8 @@ func genSYNJoin(ins utils.Instance, n int) utils.Queries {
 			"b", 2500000, "HashJoin"},
 		{`select /*+ use_index(t1, b), use_index(t2, b), tidb_smj(t1, t2), read_from_storage(tikv[t1, t2]) */ t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
 			"b", 8000000, "MergeJoin"},
-		// TODO
-		//{`elect /*+ TIDB_INLJ(t1, t2) */ t2.b from t t1, t t2 where t1.b = t2.b and %v`,
-		//	"b", 1000, "IndexJoin"},
+		{`select /*+ TIDB_INLJ(t1, t2) */ t2.b from t t1, t t2 where t1.b = t2.b and %v`,
+			"b", 500000, "IndexJoin"},
 
 		// MPP Join
 		//{`SELECT /*+ read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
