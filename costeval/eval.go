@@ -111,7 +111,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			}
 		}
 		sort.Float64s(execTimes)
-		info(">> exec time ", execTimes)
+		info(">> exec time %v", execTimes)
 		t := execTimes[len(execTimes)/2]
 		rs = append(rs, utils.Record{
 			Cost:    cost,
