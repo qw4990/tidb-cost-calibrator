@@ -33,6 +33,10 @@ func genSYNScans(ins utils.Instance, n int) utils.Queries {
 		{`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where %v order by b desc`,
 			"b", 6000000, "DescIndexScan"},
 
+		// TiKV Index Lookup
+		{`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b, d from t where %v`,
+			"b", 250000, "IndexLookup"},
+
 		// MPP Scan
 		{`select /*+ read_from_storage(tiflash[t]) */ a from t where %v`,
 			"a", 20000000, "MPPScan"},
