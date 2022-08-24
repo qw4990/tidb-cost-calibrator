@@ -20,22 +20,22 @@ func genSYNScans(ins utils.Instance, n int) utils.Queries {
 		// TiKV Table Scan
 		{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where %v`,
 			"a", 10000000, "TableScan"},
-		//{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a, c from t where %v`,
-		//	"a", 1000, "WideTableScan"},
-		//{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where %v order by a desc`,
-		//	"a", 1000, "DescTableScan"},
-		//
-		//// TiKV Index Scan
-		//{`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where %v`,
-		//	"b", 1000, "IndexScan"},
-		//{`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b, c from t where %v`,
-		//	"b", 1000, "DescIndexScan"},
-		//{`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where %v order by b desc`,
-		//	"b", 1000, "DescIndexScan"},
-		//
-		//// MPP Scan
-		//{`SELECT /*+ read_from_storage(tiflash[t]) */ a FROM t WHERE %v`,
-		//	"a", 1000, "MPPScan"},
+		{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a, c from t where %v`,
+			"a", 3000000, "WideTableScan"},
+		{`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where %v order by a desc`,
+			"a", 7000000, "DescTableScan"},
+
+		// TiKV Index Scan
+		{`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where %v`,
+			"b", 10000000, "IndexScan"},
+		{`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b, c from t where %v`,
+			"b", 3000000, "DescIndexScan"},
+		{`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where %v order by b desc`,
+			"b", 7000000, "DescIndexScan"},
+
+		// MPP Scan
+		{`select /*+ read_from_storage(tiflash[t]) */ a from t where %v`,
+			"a", 20000000, "MPPScan"},
 	}
 	return gen4Patterns(ins, ps, n)
 }
