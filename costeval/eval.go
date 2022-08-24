@@ -20,7 +20,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"synthetic", 2, 1, 5, true})
+	costEval(ins, &evalOpt{"synthetic", 2, 3, 5, true})
 }
 
 type evalOpt struct {
@@ -93,30 +93,29 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 	beginAt := time.Now()
 	for i, q := range qs {
 		info("run %v/%v tot=%v, q=%v", i, len(qs), q.SQL, time.Since(beginAt))
-		var cost, totTimeMS float64
+		var cost float64
 		weights := make(map[string]float64)
-		var execTime []time.Duration
+		var execTimes []float64
 		for k := 0; k < opt.repeatTimes; k++ {
-			t0 := time.Now()
 			rs := ins.MustQuery(q.SQL)
-			execTime = append(execTime, time.Since(t0))
 			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
 			if k == 0 {
 				cost = r.PlanCost
 			} else if cost != r.PlanCost { // the plan changes
 				panic(fmt.Sprintf("q=%v, cost=%v, new-cost=%v", q.SQL, cost, r.PlanCost))
 			}
-			totTimeMS += r.TimeMS
+			execTimes = append(execTimes, r.TimeMS)
 
 			if k == 0 && opt.costModelVer == 2 { // parse factor weights
 				weights = parseCostWeights(ins)
 			}
 		}
-		info(">> exec time ", execTime)
-		avgTimeMS := totTimeMS / float64(opt.repeatTimes)
+		sort.Float64s(execTimes)
+		info(">> exec time ", execTimes)
+		t := execTimes[len(execTimes)/2]
 		rs = append(rs, utils.Record{
 			Cost:    cost,
-			TimeMS:  avgTimeMS,
+			TimeMS:  t,
 			Label:   q.Label,
 			SQL:     q.SQL,
 			Weights: weights,
