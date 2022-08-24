@@ -91,7 +91,9 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 		var cost, totTimeMS float64
 		weights := make(map[string]float64)
 		for k := 0; k < opt.repeatTimes; k++ {
+			t0 := time.Now()
 			rs := ins.MustQuery(q.SQL)
+			info(">> k=%v, time=%v", k, time.Since(t0))
 			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
 			if k == 0 {
 				cost = r.PlanCost
