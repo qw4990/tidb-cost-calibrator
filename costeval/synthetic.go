@@ -135,16 +135,16 @@ func genSYNJoin(n int) utils.Queries {
 		{
 			`select /*+ use_index(t1, b), use_index(t2, b), tidb_hj(t1, t2), read_from_storage(tikv[t1, t2]) */ t1.b, t2.b from t t1, t t2 where t1.b=t2.b and # and #`,
 			[]tempitem{
-				{"t1", "b", 0, 2500000},
-				{"t2", "b", 0, 2500000},
+				{"t1", "a", 0, 2500000},
+				{"t2", "a", 0, 2500000},
 			},
 			"HashJoin",
 		},
 		{
 			`select /*+ use_index(t1, b), use_index(t2, b), tidb_smj(t1, t2), read_from_storage(tikv[t1, t2]) */ t1.b, t2.b from t t1, t t2 where t1.b=t2.b and # and #`,
 			[]tempitem{
-				{"t1", "b", 0, 8000000},
-				{"t2", "b", 0, 8000000},
+				{"t1", "a", 0, 8000000},
+				{"t2", "a", 0, 8000000},
 			},
 			"MergeJoin",
 		},
@@ -161,16 +161,16 @@ func genSYNJoin(n int) utils.Queries {
 		{
 			`SELECT /*+ read_from_storage(tiflash[t1, t2]), shuffle_join(t1, t2) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and # and #`,
 			[]tempitem{
-				{"t1", "b", 0, 5000000},
-				{"t2", "b", 0, 5000000},
+				{"t1", "a", 0, 5000000},
+				{"t2", "a", 0, 5000000},
 			},
 			"ShuffleJoin",
 		},
 		{
 			`SELECT /*+ read_from_storage(tiflash[t1, t2]), broadcast_join(t1) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and # and #`,
 			[]tempitem{
-				{"t1", "b", 0, 1000000},
-				{"t2", "b", 5000000, 10000000},
+				{"t1", "a", 0, 1000000},
+				{"t2", "a", 5000000, 10000000},
 			},
 			"BroadcastJoin",
 		},
