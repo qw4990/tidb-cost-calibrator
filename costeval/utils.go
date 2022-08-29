@@ -45,6 +45,45 @@ func gen4Pattern(ins utils.Instance, p pattern, n int) utils.Queries {
 	return qs
 }
 
+type tempitem struct {
+	table  string
+	column string
+	minVal int
+	maxVal int
+}
+
+type template struct {
+	sql   string     // `select * from t where # and #`
+	items []tempitem // [{t, a, 0, 100}, {t, b, 0, 10000}]
+	label string     // `TableScan`
+}
+
+func gen4Templates(ts []template, n int) utils.Queries {
+	var qs utils.Queries
+	for _, t := range ts {
+		qs = append(qs, gen4Template(t, n)...)
+	}
+	return qs
+}
+
+func gen4Template(t template, n int) utils.Queries {
+	var qs utils.Queries
+	for i := 0; i < n; i++ {
+		sql := t.sql
+		for _, item := range t.items {
+			l, r := randRange(item.minVal, item.maxVal, i, n)
+			cond := fmt.Sprintf("%v.%v>=%v and %v.%v<=%v",
+				item.table, item.column, l, item.table, item.column, r)
+			sql = strings.Replace(sql, "#", cond, 1)
+		}
+		qs = append(qs, utils.Query{
+			SQL:   sql,
+			Label: t.label,
+		})
+	}
+	return qs
+}
+
 func getColRange4Pattern(ins utils.Instance, p pattern) (l, r int) {
 	utils.MustReadOneLine(ins, fmt.Sprintf(`select min(%v), max(%v) from %v`, p.rangeCol, p.rangeCol, "t"), &l, &r)
 	if r-l > p.rangeMax {
