@@ -52,7 +52,7 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 	dataDir := "./data"
 	queryFile := filepath.Join(dataDir, fmt.Sprintf("%v-queries.json", opt.db))
 	if err := utils.ReadFrom(queryFile, &qs); err != nil {
-		qs = genSYNQueries(ins, "synthetic", opt.numPerQuery)
+		qs = genSYNQueries(opt.numPerQuery)
 		utils.SaveTo(queryFile, qs)
 		info("generate %v queries successfully", len(qs))
 	} else {
