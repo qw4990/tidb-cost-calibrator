@@ -33,41 +33,49 @@ func genSYNScans(n int) utils.Queries {
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where %v`,
 			[]tempitem{{"t", "a", 0, 10000000}},
-			"TableScan"},
+			"TableScan",
+		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a, c from t where %v`,
 			[]tempitem{{"t", "a", 0, 3000000}},
-			"WideTableScan"},
+			"WideTableScan",
+		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where %v order by a desc`,
 			[]tempitem{{"t", "a", 0, 6000000}},
-			"DescTableScan"},
+			"DescTableScan",
+		},
 
 		// TiKV Index Scan
 		{
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where %v`,
 			[]tempitem{{"t", "b", 0, 10000000}},
-			"IndexScan"},
+			"IndexScan",
+		},
 		{
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b, c from t where %v`,
 			[]tempitem{{"t", "b", 0, 3000000}},
-			"DescIndexScan"},
+			"DescIndexScan",
+		},
 		{
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where %v order by b desc`,
 			[]tempitem{{"t", "b", 0, 6000000}},
-			"DescIndexScan"},
+			"DescIndexScan",
+		},
 
 		// TiKV Index Lookup
 		{
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b, d from t where %v`,
 			[]tempitem{{"t", "b", 0, 250000}},
-			"IndexLookup"},
+			"IndexLookup",
+		},
 
 		// MPP Scan
 		{
 			`select /*+ read_from_storage(tiflash[t]) */ a from t where %v`,
 			[]tempitem{{"t", "a", 0, 20000000}},
-			"MPPScan"},
+			"MPPScan",
+		},
 	}, n)
 }
 
@@ -77,39 +85,47 @@ func genSYNAgg(n int) utils.Queries {
 		{
 			`select /*+ read_from_storage(tikv[t]), stream_agg(), use_index(t, b) */ sum(a) from t where %v`,
 			[]tempitem{{"t", "b", 0, 8000000}},
-			"StreamAgg1"},
+			"StreamAgg1",
+		},
 		{
 			`select /*+ read_from_storage(tikv[t]), stream_agg(), use_index(t, b) */ sum(a) from t where %v group by b`,
 			[]tempitem{{"t", "b", 0, 5000000}},
-			"StreamAgg2"},
+			"StreamAgg2",
+		},
 
 		// TiKV HashAgg
 		{
 			`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(1) from t where %v`,
 			[]tempitem{{"t", "b", 0, 10000000}},
-			"HashAgg1"}, // agg without group-by
+			"HashAgg1",
+		}, // agg without group-by
 		{
 			`select /*+ read_from_storage(tikv[t]), use_index(t, b), hash_agg() */ count(b), b from t where %v group by b`,
 			[]tempitem{{"t", "b", 0, 2200000}},
-			"HashAgg2"}, // agg with group-by
+			"HashAgg2",
+		}, // agg with group-by
 
 		// MPP HashAgg
 		{
 			`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a) from t where %v`,
 			[]tempitem{{"t", "b", 0, 20000000}},
-			"MPPTiDBAgg1"}, // mpp tidb agg without group-by
+			"MPPTiDBAgg1",
+		}, // mpp tidb agg without group-by
 		{
 			`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a), b from t where %v group by b`,
 			[]tempitem{{"t", "b", 0, 2000000}},
-			"MPPTiDBAgg2"}, // mpp tidb agg with group-by
+			"MPPTiDBAgg2",
+		}, // mpp tidb agg with group-by
 		{
 			`select /*+ read_from_storage(tiflash[t]), mpp_1phase_agg() */ count(a), b from t where %v group by b`,
 			[]tempitem{{"t", "b", 0, 8000000}},
-			"MPP1PhaseAgg"},
+			"MPP1PhaseAgg",
+		},
 		{
 			`select /*+ read_from_storage(tiflash[t]), mpp_2phase_agg() */ count(a), b from t where %v group by b`,
 			[]tempitem{{"t", "b", 0, 8000000}},
-			"MPP2PhaseAgg"},
+			"MPP2PhaseAgg",
+		},
 	}, n)
 }
 
@@ -122,21 +138,24 @@ func genSYNJoin(n int) utils.Queries {
 				{"t1", "b", 0, 2500000},
 				{"t2", "b", 0, 2500000},
 			},
-			"HashJoin"},
+			"HashJoin",
+		},
 		{
 			`select /*+ use_index(t1, b), use_index(t2, b), tidb_smj(t1, t2), read_from_storage(tikv[t1, t2]) */ t1.b, t2.b from t t1, t t2 where t1.b=t2.b and %v`,
 			[]tempitem{
 				{"t1", "b", 0, 8000000},
 				{"t2", "b", 0, 8000000},
 			},
-			"MergeJoin"},
+			"MergeJoin",
+		},
 		{
 			`select /*+ TIDB_INLJ(t1, t2) */ t2.b from t t1, t t2 where t1.b = t2.b and %v`,
 			[]tempitem{
 				{"t1", "b", 0, 500000},
 				{"t2", "b", 0, 500000},
 			},
-			"IndexJoin"},
+			"IndexJoin",
+		},
 
 		// MPP Join
 		{
@@ -145,7 +164,8 @@ func genSYNJoin(n int) utils.Queries {
 				{"t1", "b", 0, 5000000},
 				{"t2", "b", 0, 5000000},
 			},
-			"ShuffleJoin"},
+			"ShuffleJoin",
+		},
 		//{`SELECT /*+ broadcast_join(t1, t2), read_from_storage(tiflash[t1, t2]) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and %v`,
 		//	"b", 1000, "MPPBCJ"},
 	}, n)
