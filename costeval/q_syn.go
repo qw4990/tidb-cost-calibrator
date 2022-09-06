@@ -6,7 +6,7 @@ import (
 
 func genSYNQueries(n int) utils.Queries {
 	var qs utils.Queries
-	qs = append(qs, genSYNScans(n)...)
+	qs = append(qs, genSYNScan(n)...)
 	qs = append(qs, genSYNAgg(n)...)
 	qs = append(qs, genSYNJoin(n)...)
 	qs = append(qs, genSYNSort(n)...)
@@ -27,7 +27,7 @@ func genSYNSort(n int) utils.Queries {
 	}, n)
 }
 
-func genSYNScans(n int) utils.Queries {
+func genSYNScan(n int) utils.Queries {
 	return gen4Templates([]template{
 		// TiKV Table Scan
 		{
