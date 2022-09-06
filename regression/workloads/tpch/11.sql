@@ -1,5 +1,3 @@
--- using 1365545250 as a seed to the RNG
-
 select
 	ps_partkey,
 	sum(ps_supplycost * ps_availqty) as value

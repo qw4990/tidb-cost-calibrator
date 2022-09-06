@@ -1,6 +1,3 @@
--- using 1365545250 as a seed to the RNG
-
-
 select
 	sum(l_extendedprice * l_discount) as revenue
 from

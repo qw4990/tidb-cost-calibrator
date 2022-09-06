@@ -1,6 +1,3 @@
--- using 1365545250 as a seed to the RNG
-
-
 select
 	o_orderpriority,
 	count(*) as order_count

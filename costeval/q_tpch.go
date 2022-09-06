@@ -12,6 +12,7 @@ func genTPCHQueries(n int) utils.Queries {
 }
 
 func genTPCHScan(n int) utils.Queries {
+	// lineitem, orders
 	return nil
 }
 

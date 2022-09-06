@@ -1,6 +1,3 @@
--- using 1365545250 as a seed to the RNG
-
-
 select
 	s_name,
 	count(*) as numwait
