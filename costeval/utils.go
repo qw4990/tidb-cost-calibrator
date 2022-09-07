@@ -34,8 +34,13 @@ func gen4Template(t template, n int) utils.Queries {
 		sql := t.sql
 		for _, item := range t.items {
 			l, r := randRange(item.minVal, item.maxVal, i, n)
-			cond := fmt.Sprintf("%v.%v>=%v and %v.%v<=%v",
-				item.table, item.column, l, item.table, item.column, r)
+			var cond string
+			if item.table != "" {
+				cond = fmt.Sprintf("%v.%v>=%v and %v.%v<=%v",
+					item.table, item.column, l, item.table, item.column, r)
+			} else {
+				cond = fmt.Sprintf("%v>=%v and %v<=%v", item.column, l, item.column, r)
+			}
 			sql = strings.Replace(sql, "#", cond, 1)
 		}
 		qs = append(qs, utils.Query{
