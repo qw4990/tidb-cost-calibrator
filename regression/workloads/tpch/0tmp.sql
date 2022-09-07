@@ -152,6 +152,7 @@ order by
 
 -- q10
 select
+    /*+ read_from_storage(tiflash[customer, orders, lineitem, nation]) */
     c_custkey,
     c_name,
     sum(l_extendedprice * (1 - l_discount)) as revenue,
@@ -172,9 +173,9 @@ where
     and o_orderdate < date_add('1993-08-01', interval '3' month)
     and l_returnflag = 'R'
     and c_nationkey = n_nationkey
-    and c_custkey >= ? and c_custkey <= ?
-    and o_orderkey >= ? and o_orderkey <= ?
-    and l_orderkey >= ? and l_orderkey <= ?
+    and c_custkey >= 1 and c_custkey <= 15000
+    and o_orderkey >= 1 and o_orderkey <= 150000
+    and l_orderkey >= 1 and l_orderkey <= 600000
 group by
     c_custkey,
     c_name,
@@ -199,7 +200,7 @@ where
     and l_shipdate < date_add('1994-01-01', interval '1' year)
     and l_discount between 0.06 - 0.01 and 0.06 + 0.01
     and l_quantity < 24
-    and l_orderkey >= ? and l_orderkey <= ?;
+    and l_orderkey >= 1 and l_orderkey <= 100000000;
 
 
 
@@ -224,10 +225,10 @@ where
     and r_name = 'MIDDLE EAST'
     and o_orderdate >= '1994-01-01'
     and o_orderdate < date_add('1994-01-01', interval '1' year)
-    and c_custkey >= ? and c_custkey <= ?
-    and o_orderkey >= ? and o_orderkey <= ?
-    and l_orderkey >= ? and l_orderkey <= ?
-    and s_suppkey >= ? and s_suppkey <= ?
+    and c_custkey >= 1 and c_custkey <= 1500000
+    and o_orderkey >= 1 and o_orderkey <= 15000000
+    and l_orderkey >= 1 and l_orderkey <= 60000000
+    and s_suppkey >= 1 and s_suppkey <= 100000
 group by
     n_name
 order by
