@@ -114,7 +114,8 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			}
 			execTimes = append(execTimes, r.TimeMS)
 
-			if k == 0 && opt.costModelVer == 2 { // parse factor weights
+			// TODO: support TPCH workload as well
+			if k == 0 && opt.costModelVer == 2 && opt.db == "synthetic" { // parse factor weights
 				weights = parseCostWeights(ins)
 			}
 		}
