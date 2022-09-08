@@ -56,9 +56,9 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 	if err := utils.ReadFrom(queryFile, &qs); err != nil {
 		switch opt.db {
 		case "synthetic":
-			qs = genSYNQueries(opt.numPerQuery)
+			qs = genSYNQueries(opt.numPerQuery, opt.scaleFactor)
 		case "tpch_clustered":
-			qs = genTPCHQueries2(opt.numPerQuery)
+			qs = genTPCHQueries2(opt.numPerQuery, opt.scaleFactor)
 		default:
 			panic(fmt.Sprintf("unknown DB/Workload %v", opt.db))
 		}
