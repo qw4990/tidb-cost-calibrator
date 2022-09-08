@@ -174,10 +174,24 @@ func genTPCHJoin(n int) utils.Queries {
 			},
 			`HashJoin2`,
 		},
-		// TODO: MergeJoin
-
-		// TODO: IndexJoin
-
+		// MergeJoin
+		{
+			`select /*+ read_from_storage(tikv[lineitem, part]), merge_join(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
+			[]tempitem{
+				{"", "l_orderkey", 1, 1},
+				{"", "p_partkey", 1, 1},
+			},
+			`MergeJoin`,
+		},
+		// IndexJoin
+		{
+			`select /*+ read_from_storage(tikv[lineitem, part]), tidb_inlj(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
+			[]tempitem{
+				{"", "l_orderkey", 1, 1},
+				{"", "p_partkey", 1, 1},
+			},
+			`MergeJoin`,
+		},
 		// ShuffleJoin
 		{
 			`select /*+ read_from_storage(tiflash[lineitem, part]), shuffle_join(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
@@ -195,7 +209,6 @@ func genTPCHJoin(n int) utils.Queries {
 			},
 			`ShuffleJoin2`,
 		},
-		
 		// BCastJoin
 	}, n)
 }
