@@ -87,6 +87,71 @@ func genTPCHAgg(n int) utils.Queries {
 		},
 		// TODO: TiDB StreamAgg
 		// MPP Agg
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_1phase_agg() */ count(*) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPP1PhaseAgg1`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_1phase_agg() */ count(*), sum(l_quantity), ` +
+				`sum(l_extendedprice), sum(l_discount) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPP1PhaseAgg2`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_1phase_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
+				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPP1PhaseAgg3`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_2phase_agg() */ count(*) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPP2PhaseAgg1`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_2phase_agg() */ count(*), sum(l_quantity), ` +
+				`sum(l_extendedprice), sum(l_discount) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPP2PhaseAgg2`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_2phase_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
+				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPP2PhaseAgg3`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*) from lineitem where # `
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPTiDBAgg1`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPTiDBAgg2`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*), sum(l_quantity), ` +
+				`sum(l_extendedprice), sum(l_discount) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPTiDBAgg3`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
+				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # ` +
+				`group by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPTiDBAgg4`,
+		},
 	}, n)
 }
 
