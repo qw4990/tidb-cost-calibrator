@@ -4,16 +4,11 @@ import (
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
-func genSYNQueries(n int) utils.Queries {
-	var qs utils.Queries
-	qs = append(qs, genSYNScan(n)...)
-	qs = append(qs, genSYNAgg(n)...)
-	qs = append(qs, genSYNJoin(n)...)
-	qs = append(qs, genSYNSort(n)...)
-	return qs
+func genSYNQueries(n int, scale float64) utils.Queries {
+	return genQueries(n, scale, genSYNScan, genSYNAgg, genSYNJoin, genSYNSort)
 }
 
-func genSYNSort(n int) utils.Queries {
+func genSYNSort(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		{
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b from t where # order by c`,
@@ -24,10 +19,10 @@ func genSYNSort(n int) utils.Queries {
 			[]tempitem{{"t", "b", 0, 5000000}},
 			"TopN",
 		},
-	}, n)
+	}, n, scale)
 }
 
-func genSYNScan(n int) utils.Queries {
+func genSYNScan(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// TiKV Table Scan
 		{
@@ -76,10 +71,10 @@ func genSYNScan(n int) utils.Queries {
 			[]tempitem{{"t", "a", 0, 20000000}},
 			"MPPScan",
 		},
-	}, n)
+	}, n, scale)
 }
 
-func genSYNAgg(n int) utils.Queries {
+func genSYNAgg(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// TiKV StreamAgg
 		{
@@ -126,10 +121,10 @@ func genSYNAgg(n int) utils.Queries {
 			[]tempitem{{"t", "b", 0, 8000000}},
 			"MPP2PhaseAgg",
 		},
-	}, n)
+	}, n, scale)
 }
 
-func genSYNJoin(n int) utils.Queries {
+func genSYNJoin(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// TiKV Join
 		{
@@ -174,5 +169,5 @@ func genSYNJoin(n int) utils.Queries {
 			},
 			"BroadcastJoin",
 		},
-	}, n)
+	}, n, scale)
 }

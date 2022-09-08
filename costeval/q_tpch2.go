@@ -2,16 +2,12 @@ package costeval
 
 import "github.com/qw4990/tidb-cost-calibrator/utils"
 
-func genTPCHQueries2(n int) utils.Queries {
-	var qs utils.Queries
-	qs = append(qs, genTPCHScan(n)...)
-	qs = append(qs, genTPCHAgg(n)...)
+func genTPCHQueries2(n int, scale float64) utils.Queries {
+	return genQueries(n, scale, genTPCHScan, genTPCHAgg, genTPCHSort)
 	//qs = append(qs, genTPCHJoin(n)...)
-	qs = append(qs, genTPCHSort(n)...)
-	return qs
 }
 
-func genTPCHScan(n int) utils.Queries {
+func genTPCHScan(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// TiKV Table Scan
 		{
@@ -47,10 +43,10 @@ func genTPCHScan(n int) utils.Queries {
 			[]tempitem{{"", "l_orderkey", 1, 12500000}},
 			`MPPScan3`,
 		},
-	}, n)
+	}, n, scale)
 }
 
-func genTPCHAgg(n int) utils.Queries {
+func genTPCHAgg(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// TiDB Agg
 		{
@@ -191,10 +187,10 @@ func genTPCHAgg(n int) utils.Queries {
 			[]tempitem{{"", "l_orderkey", 1, 40000000}},
 			`MPPTiDBAgg4`,
 		},
-	}, n)
+	}, n, scale)
 }
 
-func genTPCHJoin(n int) utils.Queries {
+func genTPCHJoin(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// HashJoin
 		{
@@ -259,10 +255,10 @@ func genTPCHJoin(n int) utils.Queries {
 			[]tempitem{{"", "s_suppkey", 1, 10}},
 			`BCastJoin2`,
 		},
-	}, n)
+	}, n, scale)
 }
 
-func genTPCHSort(n int) utils.Queries {
+func genTPCHSort(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate`,
@@ -305,5 +301,5 @@ func genTPCHSort(n int) utils.Queries {
 		//	[]tempitem{{"", "l_orderkey", 1, 10}},
 		//	`MPPTopN2`,
 		//},
-	}, n)
+	}, n, scale)
 }

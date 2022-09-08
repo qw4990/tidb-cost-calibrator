@@ -20,20 +20,28 @@ type template struct {
 	label string     // `TableScan`
 }
 
-func gen4Templates(ts []template, n int) utils.Queries {
+func genQueries(n int, scale float64, geners ...func(n int, scale float64) utils.Queries) (qs utils.Queries) {
+	for _, g := range geners {
+		qs = append(qs, g(n, scale)...)
+	}
+	return
+}
+
+func gen4Templates(ts []template, n int, scale float64) utils.Queries {
 	var qs utils.Queries
 	for _, t := range ts {
-		qs = append(qs, gen4Template(t, n)...)
+		qs = append(qs, gen4Template(t, n, scale)...)
 	}
 	return qs
 }
 
-func gen4Template(t template, n int) utils.Queries {
+func gen4Template(t template, n int, scale float64) utils.Queries {
 	var qs utils.Queries
 	for i := 0; i < n; i++ {
 		sql := t.sql
 		for _, item := range t.items {
-			l, r := randRange(item.minVal, item.maxVal, i, n)
+			maxVal := int(scale * float64(item.maxVal))
+			l, r := randRange(item.minVal, maxVal, i, n)
 			var cond string
 			if item.table != "" {
 				cond = fmt.Sprintf("%v.%v>=%v and %v.%v<=%v",
