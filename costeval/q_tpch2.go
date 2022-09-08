@@ -156,7 +156,48 @@ func genTPCHAgg(n int) utils.Queries {
 }
 
 func genTPCHJoin(n int) utils.Queries {
+	return gen4Templates([]template{
+		// HashJoin
+		{
+			`select /*+ read_from_storage(tikv[lineitem, part]), hash_join(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
+			[]tempitem{
+				{"", "l_orderkey", 1, 1},
+				{"", "p_partkey", 1, 1},
+			},
+			`HashJoin1`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[customer, orders]), hash_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey where # and #`,
+			[]tempitem{
+				{"", "c_custkey", 1, 1},
+				{"", "o_orderkey", 1, 1},
+			},
+			`HashJoin2`,
+		},
+		// TODO: MergeJoin
 
+		// TODO: IndexJoin
+
+		// ShuffleJoin
+		{
+			`select /*+ read_from_storage(tiflash[lineitem, part]), shuffle_join(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
+			[]tempitem{
+				{"", "l_orderkey", 1, 1},
+				{"", "p_partkey", 1, 1},
+			},
+			`ShuffleJoin1`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[customer, orders]), shuffle_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey where # and #`,
+			[]tempitem{
+				{"", "c_custkey", 1, 1},
+				{"", "o_orderkey", 1, 1},
+			},
+			`ShuffleJoin2`,
+		},
+		
+		// BCastJoin
+	}, n)
 }
 
 func genTPCHSort(n int) utils.Queries {
