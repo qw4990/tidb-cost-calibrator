@@ -12,35 +12,35 @@ func genTPCHScan(n int, scale float64) utils.Queries {
 		// TiKV Table Scan
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey from lineitem where # `,
-			[]tempitem{{"", "l_orderkey", 1, 10000000}},
+			[]tempitem{{"", "l_orderkey", 1, 15000000}},
 			`TableScan1`,
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_partkey, l_suppkey, l_linenumber, ` +
 				`l_quantity, l_extendedprice, l_discount, l_tax, l_shipdate from lineitem where # `,
-			[]tempitem{{"", "l_orderkey", 1, 5000000}},
+			[]tempitem{{"", "l_orderkey", 1, 4000000}},
 			`TableScan2`,
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ * from lineitem where # `,
-			[]tempitem{{"", "l_orderkey", 1, 2500000}},
+			[]tempitem{{"", "l_orderkey", 1, 3000000}},
 			`TableScan3`,
 		},
 		// MPP Scan
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey from lineitem where # `,
-			[]tempitem{{"", "l_orderkey", 1, 50000000}},
+			[]tempitem{{"", "l_orderkey", 1, 80000000}},
 			`MPPScan1`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_partkey, l_suppkey, l_linenumber, ` +
 				`l_quantity, l_extendedprice, l_discount, l_tax, l_shipdate from lineitem where # `,
-			[]tempitem{{"", "l_orderkey", 1, 25000000}},
+			[]tempitem{{"", "l_orderkey", 1, 10000000}},
 			`MPPScan2`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]) */ * from lineitem where # `,
-			[]tempitem{{"", "l_orderkey", 1, 12500000}},
+			[]tempitem{{"", "l_orderkey", 1, 10000000}},
 			`MPPScan3`,
 		},
 	}, n, scale)
@@ -63,7 +63,7 @@ func genTPCHAgg(n int, scale float64) utils.Queries {
 		{
 			`select /*+ read_from_storage(tikv[lineitem]), hash_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
 				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where #`,
-			[]tempitem{{"", "l_orderkey", 1, 6000000}},
+			[]tempitem{{"", "l_orderkey", 1, 7000000}},
 			`HashAgg3`,
 		},
 		{
@@ -83,7 +83,7 @@ func genTPCHAgg(n int, scale float64) utils.Queries {
 			`select /*+ read_from_storage(tikv[lineitem]), hash_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
 				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 4000000}},
+			[]tempitem{{"", "l_orderkey", 1, 5000000}},
 			`HashAgg6`,
 		},
 		// TiDB StreamAgg
@@ -95,7 +95,7 @@ func genTPCHAgg(n int, scale float64) utils.Queries {
 		{
 			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*), sum(l_quantity), ` +
 				`sum(l_extendedprice), sum(l_discount) from lineitem where #`,
-			[]tempitem{{"", "l_orderkey", 1, 10000000}},
+			[]tempitem{{"", "l_orderkey", 1, 9000000}},
 			`StreamAgg2`,
 		},
 		{
@@ -112,59 +112,59 @@ func genTPCHAgg(n int, scale float64) utils.Queries {
 		{
 			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*), sum(l_quantity), ` +
 				`sum(l_extendedprice), sum(l_discount) from lineitem where # group by l_orderkey`,
-			[]tempitem{{"", "l_orderkey", 1, 10000000}},
+			[]tempitem{{"", "l_orderkey", 1, 8000000}},
 			`StreamAgg5`,
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
 				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # group by l_orderkey`,
-			[]tempitem{{"", "l_orderkey", 1, 8000000}},
+			[]tempitem{{"", "l_orderkey", 1, 6000000}},
 			`StreamAgg6`,
 		},
 		// MPP Agg
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_1phase_agg() */ count(*) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 40000000}},
+			[]tempitem{{"", "l_orderkey", 1, 45000000}},
 			`MPP1PhaseAgg1`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_1phase_agg() */ count(*), sum(l_quantity), ` +
 				`sum(l_extendedprice), sum(l_discount) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 30000000}},
+			[]tempitem{{"", "l_orderkey", 1, 35000000}},
 			`MPP1PhaseAgg2`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_1phase_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
 				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 20000000}},
+			[]tempitem{{"", "l_orderkey", 1, 30000000}},
 			`MPP1PhaseAgg3`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_2phase_agg() */ count(*) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 50000000}},
+			[]tempitem{{"", "l_orderkey", 1, 55000000}},
 			`MPP2PhaseAgg1`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_2phase_agg() */ count(*), sum(l_quantity), ` +
 				`sum(l_extendedprice), sum(l_discount) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 40000000}},
+			[]tempitem{{"", "l_orderkey", 1, 50000000}},
 			`MPP2PhaseAgg2`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_2phase_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
 				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 30000000}},
+			[]tempitem{{"", "l_orderkey", 1, 40000000}},
 			`MPP2PhaseAgg3`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*) from lineitem where #`,
-			[]tempitem{{"", "l_orderkey", 1, 80000000}},
+			[]tempitem{{"", "l_orderkey", 1, 90000000}},
 			`MPPTiDBAgg1`,
 		},
 		{
@@ -184,7 +184,7 @@ func genTPCHAgg(n int, scale float64) utils.Queries {
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
 				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # ` +
 				`group by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 40000000}},
+			[]tempitem{{"", "l_orderkey", 1, 50000000}},
 			`MPPTiDBAgg4`,
 		},
 	}, n, scale)
@@ -267,12 +267,12 @@ func genTPCHSort(n int, scale float64) utils.Queries {
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 3000000}},
+			[]tempitem{{"", "l_orderkey", 1, 4000000}},
 			`TiDBSort2`,
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate limit 100`,
-			[]tempitem{{"", "l_orderkey", 1, 8000000}},
+			[]tempitem{{"", "l_orderkey", 1, 9000000}},
 			`TiDBTopN1`,
 		},
 		{
