@@ -90,7 +90,41 @@ func genTPCHAgg(n int) utils.Queries {
 			[]tempitem{{"", "l_orderkey", 1, 10}},
 			`HashAgg6`,
 		},
-		// TODO: TiDB StreamAgg
+		// TiDB StreamAgg
+		{
+			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*) from lineitem where #`,
+			[]tempitem{{"", "l_orderkey", 1, 10}},
+			`StreamAgg1`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*), sum(l_quantity), ` +
+				`sum(l_extendedprice), sum(l_discount) from lineitem where #`,
+			[]tempitem{{"", "l_orderkey", 1, 10}},
+			`StreamAgg2`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
+				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where #`,
+			[]tempitem{{"", "l_orderkey", 1, 10}},
+			`StreamAgg3`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*) from lineitem where # group by l_orderkey`,
+			[]tempitem{{"", "l_orderkey", 1, 10}},
+			`StreamAgg4`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*), sum(l_quantity), ` +
+				`sum(l_extendedprice), sum(l_discount) from lineitem where # group by l_orderkey`,
+			[]tempitem{{"", "l_orderkey", 1, 10}},
+			`StreamAgg5`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]), stream_agg() */ count(*), sum(l_quantity), sum(l_extendedprice), ` +
+				`sum(l_discount), avg(l_quantity), avg(l_extendedprice), avg(l_discount) from lineitem where # group by l_orderkey`,
+			[]tempitem{{"", "l_orderkey", 1, 10}},
+			`StreamAgg6`,
+		},
 		// MPP Agg
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]), mpp_1phase_agg() */ count(*) from lineitem where # ` +
