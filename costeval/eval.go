@@ -21,7 +21,7 @@ func CostEval() {
 	}
 	ins := utils.MustConnectTo(opt)
 	//costEval(ins, &evalOpt{"synthetic", 2, 3, 5, true})
-	costEval(ins, &evalOpt{"tpch", 2, 3, 5, true})
+	costEval(ins, &evalOpt{"tpch_clustered", 2, 3, 5, true})
 }
 
 type evalOpt struct {
@@ -56,8 +56,8 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 		switch opt.db {
 		case "synthetic":
 			qs = genSYNQueries(opt.numPerQuery)
-		case "tpch":
-			qs = genTPCHQueries(opt.numPerQuery)
+		case "tpch_clustered":
+			qs = genTPCHQueries2(opt.numPerQuery)
 		default:
 			panic(fmt.Sprintf("unknown DB/Workload %v", opt.db))
 		}
