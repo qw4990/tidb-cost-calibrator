@@ -210,6 +210,16 @@ func genTPCHJoin(n int) utils.Queries {
 			`ShuffleJoin2`,
 		},
 		// BCastJoin
+		{
+			`select /*+ read_from_storage(tiflash[customer, nation]), broadcast_join(nation) */ c_custkey, n_nationkey from customer, nation where c_nationkey = n_nationkey and #`,
+			[]tempitem{{"", "c_custkey", 1, 1}},
+			`BCastJoin1`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[supplier, nation]), broadcast_join(nation) */ * from supplier, nation where s_nationkey = n_nationkey and #`,
+			[]tempitem{{"", "s_suppkey", 1, 1}},
+			`BCastJoin2`,
+		},
 	}, n)
 }
 
