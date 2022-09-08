@@ -3,7 +3,12 @@ package costeval
 import "github.com/qw4990/tidb-cost-calibrator/utils"
 
 func genTPCHQueries2(n int) utils.Queries {
-	return
+	var qs utils.Queries
+	qs = append(qs, genTPCHScan(n)...)
+	qs = append(qs, genTPCHAgg(n)...)
+	qs = append(qs, genTPCHJoin(n)...)
+	qs = append(qs, genTPCHSort(n)...)
+	return qs
 }
 
 func genTPCHScan(n int) utils.Queries {
@@ -128,7 +133,7 @@ func genTPCHAgg(n int) utils.Queries {
 			`MPP2PhaseAgg3`,
 		},
 		{
-			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*) from lineitem where # `
+			`select /*+ read_from_storage(tiflash[lineitem]), mpp_tidb_agg() */ count(*) from lineitem where #`,
 			[]tempitem{{"", "l_orderkey", 1, 1}},
 			`MPPTiDBAgg1`,
 		},
@@ -224,5 +229,46 @@ func genTPCHJoin(n int) utils.Queries {
 }
 
 func genTPCHSort(n int) utils.Queries {
-
+	return gen4Templates([]template{
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`TiDBSort1`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`TiDBSort2`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate limit 100`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`TiDBTopN1`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus limit 100`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`TiDBTopN2`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPSort1`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPSort2`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate limit 100`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPTopN1`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus limit 100`,
+			[]tempitem{{"", "l_orderkey", 1, 1}},
+			`MPPTopN2`,
+		},
+	}, n)
 }
