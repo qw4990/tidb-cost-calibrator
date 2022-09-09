@@ -10,7 +10,7 @@ import (
 func CostCalibrate() {
 	var rs utils.Records
 	dataDir := "./data"
-	recordFile := filepath.Join(dataDir, "synthetic-2-records.json")
+	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 
 	factors := map[string]float64{

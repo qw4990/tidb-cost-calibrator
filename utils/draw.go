@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 	"math"
-	"math/rand"
+	"sort"
 	"strings"
 
 	"gonum.org/v1/plot"
@@ -82,17 +82,22 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 		panic(fmt.Sprintf("unknonw scale %v", scale))
 	}
 
-	labledRecords := make(map[string]Records)
+	labeledRecords := make(map[string]Records)
 	for _, record := range r {
-		labledRecords[record.Label] = append(labledRecords[record.Label], record)
+		labeledRecords[record.Label] = append(labeledRecords[record.Label], record)
 	}
+	var labels []string
+	for l := range labeledRecords {
+		labels = append(labels, l)
+	}
+	labelStyle := genGlyphStyleForLabel(labels)
 
-	for label, r := range labledRecords {
+	for label, r := range labeledRecords {
 		s, err := plotter.NewScatter(r)
 		if err != nil {
 			panic(err)
 		}
-		s.GlyphStyle = getGlyPhStyleByLabel(label)
+		s.GlyphStyle = labelStyle[label]
 		p.Add(s)
 		p.Legend.Add(label, s)
 		p.Legend.TextStyle.Font.Size = fontSize
@@ -104,26 +109,35 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 	}
 }
 
-func getGlyPhStyleByLabel(label string) (style draw.GlyphStyle) {
-	style.Radius = 4
-	switch strings.ToLower(label) {
-	case "tablescan":
-		style.Shape, style.Color = plotutil.DefaultGlyphShapes[5], plotutil.DarkColors[0]
-	case "indexscan":
-		style.Shape, style.Color = plotutil.DefaultGlyphShapes[5], plotutil.DarkColors[1]
-	case "desctablescan":
-		style.Shape, style.Color = plotutil.DefaultGlyphShapes[6], plotutil.DarkColors[2]
-	case "descindexscan":
-		style.Shape, style.Color = plotutil.DefaultGlyphShapes[6], plotutil.DarkColors[3]
-	case "indexlookup", "lookup":
-		style.Shape, style.Color = plotutil.DefaultGlyphShapes[3], plotutil.DarkColors[4]
-	case "sort":
-		style.Shape, style.Color = plotutil.DefaultGlyphShapes[1], plotutil.DarkColors[5]
-	case "agg", "aggregation":
-		style.Shape, style.Color = plotutil.DefaultGlyphShapes[2], plotutil.DarkColors[6]
-	default:
-		style.Color = plotutil.DarkColors[rand.Intn(len(plotutil.DarkColors))]
-		style.Shape = plotutil.DefaultGlyphShapes[rand.Intn(len(plotutil.DefaultGlyphShapes))]
+func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
+	sort.Strings(labels)
+	styles := make(map[string]draw.GlyphStyle)
+	shapes := map[string]draw.GlyphDrawer{
+		"scan": draw.RingGlyph{},
+		"agg":  draw.TriangleGlyph{},
+		"join": draw.SquareGlyph{},
 	}
-	return
+	colorCnt := make(map[string]int)
+	for _, l := range labels {
+		l = strings.ToLower(l)
+		ok := false
+		for op, shape := range shapes {
+			if strings.Contains(l, op) {
+				cnt := colorCnt[op]
+				currentColor := plotutil.DarkColors[(cnt % len(plotutil.DarkColors))]
+				colorCnt[op] = cnt + 1
+				styles[l] = draw.GlyphStyle{
+					Radius: 4,
+					Shape:  shape,
+					Color:  currentColor,
+				}
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			panic(fmt.Sprintf("cannot get style for %v", l))
+		}
+	}
+	return styles
 }
