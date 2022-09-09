@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func TestRangeLog10(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		l, r := randRangeLog10(1, 1e11, i, 5)
+		fmt.Printf("%e %e\n", float64(l), float64(r))
+	}
+}
+
 func TestGen4Template(t *testing.T) {
 	for _, q := range gen4Templates([]template{
 		{
@@ -28,7 +35,7 @@ func TestGen4Template(t *testing.T) {
 			},
 			"TableScan2",
 		},
-	}, 5) {
+	}, 5, 1) {
 		fmt.Println(q.Label, q.SQL)
 	}
 }

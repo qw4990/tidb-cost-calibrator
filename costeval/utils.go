@@ -2,6 +2,7 @@ package costeval
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -41,7 +42,7 @@ func gen4Template(t template, n int, scale float64) utils.Queries {
 		sql := t.sql
 		for _, item := range t.items {
 			maxVal := int(scale * float64(item.maxVal))
-			l, r := randRange(item.minVal, maxVal, i, n)
+			l, r := randRangeLog10(item.minVal, maxVal, i, n)
 			var cond string
 			if item.table != "" {
 				cond = fmt.Sprintf("%v.%v>=%v and %v.%v<=%v",
@@ -59,7 +60,18 @@ func gen4Template(t template, n int, scale float64) utils.Queries {
 	return qs
 }
 
-func randRange(minVal, maxVal, iter, totalRepeat int) (int, int) {
+func randRangeLog10(minVal, maxVal, iter, totalRepeat int) (int, int) {
+	gap := float64(maxVal - minVal)
+	rangeWidth := math.Pow(10, (math.Log10(gap)/float64(totalRepeat))*float64(iter+1))
+	l := minVal
+	r := l + int(rangeWidth)
+	if r > maxVal {
+		r = maxVal
+	}
+	return l, r
+}
+
+func randRangeLinear(minVal, maxVal, iter, totalRepeat int) (int, int) {
 	step := (maxVal - minVal + 1) / totalRepeat
 	l := 1
 	r := step * (iter + 1)
