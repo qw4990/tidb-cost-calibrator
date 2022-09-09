@@ -12,12 +12,22 @@ import (
 	"gonum.org/v1/plot/vg/draw"
 )
 
+type log10Nor struct{}
+
+func (*log10Nor) Normalize(min, max, x float64) float64 {
+	if min <= 0 || max <= 0 || x <= 0 {
+		panic("Values must be greater than 0 for a log scale.")
+	}
+	logMin := math.Log10(min)
+	return (math.Log10(x) - logMin) / (math.Log10(max) - logMin)
+}
+
 func (r Records) Len() int {
 	return len(r)
 }
 
 func (r Records) XY(k int) (x, y float64) {
-	return math.Log10(r[k].Cost), math.Log10(r[k].TimeMS)
+	return r[k].Cost, r[k].TimeMS
 }
 
 func DrawCostRecordsTo(r Records, f string) {
@@ -38,10 +48,12 @@ func DrawCostRecordsTo(r Records, f string) {
 		maxX = math.Max(maxX, x)
 		maxY = math.Max(maxY, y)
 	}
-	p.X.Min = 0
-	p.Y.Min = 0
+	p.X.Min = 0.1
+	p.Y.Min = 0.1
 	p.X.Max = maxX * 1.5
 	p.Y.Max = maxY * 1.2
+	p.X.Scale = new(log10Nor)
+	p.Y.Scale = new(log10Nor)
 
 	labledRecords := make(map[string]Records)
 	for _, record := range r {
