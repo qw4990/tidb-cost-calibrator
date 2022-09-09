@@ -2,13 +2,13 @@ package utils
 
 import (
 	"fmt"
+	"image/color"
 	"math"
 	"sort"
 	"strings"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
-	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
 	"gonum.org/v1/plot/vg/draw"
 )
@@ -109,21 +109,34 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 	}
 }
 
+var (
+	shapes = map[string]draw.GlyphDrawer{
+		"scan": draw.BoxGlyph{},
+		"agg":  draw.PyramidGlyph{},
+	}
+	// https://www.rapidtables.com/web/color/RGB_Color.html
+	colors = map[string][]color.Color{
+		"scan": {rgb(102, 0, 0), rgb(153, 0, 0), rgb(204, 0, 0), rgb(255, 0, 0),
+			rgb(255, 102, 102), rgb(255, 153, 153), rgb(255, 204, 204)},
+		"agg": {rgb(51, 102, 0), rgb(76, 153, 0), rgb(102, 204, 0), rgb(128, 255, 0),
+			rgb(153, 255, 51), rgb(178, 255, 102), rgb(229, 255, 204)},
+	}
+)
+
+func rgb(r, g, b uint8) color.Color {
+	return color.RGBA{r, g, b, 255}
+}
+
 func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 	sort.Strings(labels)
 	styles := make(map[string]draw.GlyphStyle)
-	shapes := map[string]draw.GlyphDrawer{
-		"scan": draw.BoxGlyph{},
-		"agg":  draw.PyramidGlyph{},
-		"join": draw.SquareGlyph{},
-	}
 	colorCnt := make(map[string]int)
 	for _, l := range labels {
 		ok := false
 		for op, shape := range shapes {
 			if strings.Contains(strings.ToLower(l), op) {
 				cnt := colorCnt[op]
-				currentColor := plotutil.DarkColors[(cnt % len(plotutil.DarkColors))]
+				currentColor := colors[op][(cnt % len(colors[op]))]
 				colorCnt[op] = cnt + 1
 				styles[l] = draw.GlyphStyle{
 					Radius: 4,
