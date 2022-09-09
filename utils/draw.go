@@ -113,8 +113,8 @@ func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 	sort.Strings(labels)
 	styles := make(map[string]draw.GlyphStyle)
 	shapes := map[string]draw.GlyphDrawer{
-		"scan": draw.RingGlyph{},
-		"agg":  draw.TriangleGlyph{},
+		"scan": draw.BoxGlyph{},
+		"agg":  draw.PyramidGlyph{},
 		"join": draw.SquareGlyph{},
 	}
 	colorCnt := make(map[string]int)
