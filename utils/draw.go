@@ -119,10 +119,9 @@ func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 	}
 	colorCnt := make(map[string]int)
 	for _, l := range labels {
-		l = strings.ToLower(l)
 		ok := false
 		for op, shape := range shapes {
-			if strings.Contains(l, op) {
+			if strings.Contains(strings.ToLower(l), op) {
 				cnt := colorCnt[op]
 				currentColor := plotutil.DarkColors[(cnt % len(plotutil.DarkColors))]
 				colorCnt[op] = cnt + 1
