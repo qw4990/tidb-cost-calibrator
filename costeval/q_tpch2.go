@@ -3,8 +3,9 @@ package costeval
 import "github.com/qw4990/tidb-cost-calibrator/utils"
 
 func genTPCHQueries2(n int, scale float64) utils.Queries {
-	return genQueries(n, scale, genTPCHScan, genTPCHAgg, genTPCHSort)
-	//qs = append(qs, genTPCHJoin(n)...)
+	return genQueries(n, scale, genTPCHScan, genTPCHAgg)
+	//return genQueries(n, scale, genTPCHScan, genTPCHAgg, genTPCHSort)
+	//return genQueries(n, scale, genTPCHScan, genTPCHAgg, genTPCHSort, genTPCHJoin)
 }
 
 func genTPCHScan(n int, scale float64) utils.Queries {
