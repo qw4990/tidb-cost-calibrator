@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"strings"
@@ -15,11 +16,26 @@ import (
 type log10Nor struct{}
 
 func (*log10Nor) Normalize(min, max, x float64) float64 {
-	if min <= 0 || max <= 0 || x <= 0 {
-		panic("Values must be greater than 0 for a log scale.")
-	}
 	logMin := math.Log10(min)
 	return (math.Log10(x) - logMin) / (math.Log10(max) - logMin)
+}
+
+type log10Tick struct{}
+
+func (*log10Tick) Ticks(min, max float64) (ts []plot.Tick) {
+	base := math.Pow10(int(math.Ceil(math.Max(1, math.Log10(max)-math.Log10(min)) / 6)))
+	for min < max {
+		label := fmt.Sprintf("%.0f", min)
+		if min > 1e4 {
+			label = fmt.Sprintf("%.0e", min)
+		}
+		ts = append(ts, plot.Tick{
+			Value: min,
+			Label: label,
+		})
+		min *= base
+	}
+	return
 }
 
 func (r Records) Len() int {
@@ -33,8 +49,8 @@ func (r Records) XY(k int) (x, y float64) {
 func DrawCostRecordsTo(r Records, f string) {
 	p := plot.New()
 	p.Title.Text = "cost model accuracy scatter plot"
-	p.X.Label.Text = "cost estimation"
-	p.Y.Label.Text = "actual exec-time(ms)"
+	p.X.Label.Text = "cost estimation [log scale]"
+	p.Y.Label.Text = "actual exec-time(ms) [log scale]"
 	fontSize := vg.Length(25)
 	p.Title.TextStyle.Font.Size = fontSize
 	p.X.Tick.Label.Font.Size = fontSize
@@ -48,14 +64,14 @@ func DrawCostRecordsTo(r Records, f string) {
 		maxX = math.Max(maxX, x)
 		maxY = math.Max(maxY, y)
 	}
-	p.X.Min = 0.1
-	p.Y.Min = 0.1
+	p.X.Min = 1
+	p.Y.Min = 1
 	p.X.Max = maxX * 1.5
 	p.Y.Max = maxY * 1.2
 	p.X.Scale = new(log10Nor)
 	p.Y.Scale = new(log10Nor)
-	p.X.Tick.Marker = plot.LogTicks{Prec: -1}
-	p.Y.Tick.Marker = plot.LogTicks{Prec: -1}
+	p.X.Tick.Marker = new(log10Tick)
+	p.Y.Tick.Marker = new(log10Tick)
 
 	labledRecords := make(map[string]Records)
 	for _, record := range r {
