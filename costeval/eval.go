@@ -21,7 +21,7 @@ func CostEval() {
 	}
 	ins := utils.MustConnectTo(opt)
 	//costEval(ins, &evalOpt{"synthetic", 2, 3, 5, true})
-	costEval(ins, &evalOpt{"tpch_clustered", 2, 3, 5, true, 1})
+	costEval(ins, &evalOpt{"tpch_clustered", 2, 1, 1, true, 0.1})
 }
 
 type evalOpt struct {
@@ -116,7 +116,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			execTimes = append(execTimes, r.TimeMS)
 
 			// TODO: support TPCH workload as well
-			if k == 0 && opt.costModelVer == 2 && opt.db == "synthetic" { // parse factor weights
+			if k == 0 && opt.costModelVer == 2 { // parse factor weights
 				weights = parseCostWeights(ins)
 			}
 		}

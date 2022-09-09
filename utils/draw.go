@@ -38,6 +38,8 @@ func DrawCostRecordsTo(r Records, f string) {
 		maxX = math.Max(maxX, x)
 		maxY = math.Max(maxY, y)
 	}
+	p.X.Min = 0
+	p.Y.Min = 0
 	p.X.Max = maxX * 1.5
 	p.Y.Max = maxY * 1.2
 
