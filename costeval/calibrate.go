@@ -3,6 +3,7 @@ package costeval
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
@@ -29,7 +30,23 @@ func CostCalibrate() {
 		"tidb_opt_disk_factor_v2":               1.5,
 	}
 
+	whiteList := []string{
+		"TableScan",
+		"MPPScan",
+	}
+
+	var rs2 utils.Records
 	for i := range rs {
+		pass := false
+		for _, w := range whiteList {
+			if strings.Contains(rs[i].Label, w) {
+				pass = true
+			}
+		}
+		if !pass {
+			continue
+		}
+
 		if rs[i].Weights == nil {
 			fmt.Println(">>> skip >> ", rs[i].Label, rs[i].SQL)
 		}
@@ -39,7 +56,8 @@ func CostCalibrate() {
 			cost += w * factors[k]
 		}
 		rs[i].Cost = cost
+		rs2 = append(rs2, rs[i])
 	}
 
-	utils.DrawCostRecordsTo(rs, "./data/calibrate.png", "linear")
+	utils.DrawCostRecordsTo(rs2, "./data/calibrate.png", "linear")
 }
