@@ -42,7 +42,7 @@ func gen4Template(t template, n int, scale float64) utils.Queries {
 		sql := t.sql
 		for _, item := range t.items {
 			maxVal := int(scale * float64(item.maxVal))
-			l, r := randRangeLog10(item.minVal, maxVal, i, n)
+			l, r := randRangeLinear(item.minVal, maxVal, i, n)
 			var cond string
 			if item.table != "" {
 				cond = fmt.Sprintf("%v.%v>=%v and %v.%v<=%v",

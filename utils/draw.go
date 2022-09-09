@@ -46,11 +46,11 @@ func (r Records) XY(k int) (x, y float64) {
 	return r[k].Cost, r[k].TimeMS
 }
 
-func DrawCostRecordsTo(r Records, f string) {
+func DrawCostRecordsTo(r Records, f, scale string) {
 	p := plot.New()
 	p.Title.Text = "cost model accuracy scatter plot"
-	p.X.Label.Text = "cost estimation [log scale]"
-	p.Y.Label.Text = "actual exec-time(ms) [log scale]"
+	p.X.Label.Text = fmt.Sprintf("cost estimation [%v scale]", scale)
+	p.Y.Label.Text = fmt.Sprintf("actual exec-time(ms) [%v scale]", scale)
 	fontSize := vg.Length(25)
 	p.Title.TextStyle.Font.Size = fontSize
 	p.X.Tick.Label.Font.Size = fontSize
@@ -64,14 +64,23 @@ func DrawCostRecordsTo(r Records, f string) {
 		maxX = math.Max(maxX, x)
 		maxY = math.Max(maxY, y)
 	}
-	p.X.Min = 1
-	p.Y.Min = 1
-	p.X.Max = maxX * 1.5
-	p.Y.Max = maxY * 1.2
-	p.X.Scale = new(log10Nor)
-	p.Y.Scale = new(log10Nor)
-	p.X.Tick.Marker = new(log10Tick)
-	p.Y.Tick.Marker = new(log10Tick)
+
+	switch scale {
+	case "linear":
+		p.X.Max = maxX * 1.5
+		p.Y.Max = maxY * 1.2
+	case "log10":
+		p.X.Min = 1
+		p.Y.Min = 1
+		p.X.Max = maxX * 1.5
+		p.Y.Max = maxY * 1.2
+		p.X.Scale = new(log10Nor)
+		p.Y.Scale = new(log10Nor)
+		p.X.Tick.Marker = new(log10Tick)
+		p.Y.Tick.Marker = new(log10Tick)
+	default:
+		panic(fmt.Sprintf("unknonw scale %v", scale))
+	}
 
 	labledRecords := make(map[string]Records)
 	for _, record := range r {

@@ -89,7 +89,7 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 	for _, r := range rs {
 		info("record %vms \t %.2f \t %v \t %v", r.TimeMS, r.Cost, r.Label, r.SQL)
 	}
-	utils.DrawCostRecordsTo(rs, fmt.Sprintf("./data/%v-scatter.png", opt.name()))
+	utils.DrawCostRecordsTo(rs, fmt.Sprintf("./data/%v-scatter.png", opt.name()), "linear")
 }
 
 func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Records {

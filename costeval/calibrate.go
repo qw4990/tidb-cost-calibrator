@@ -41,5 +41,5 @@ func CostCalibrate() {
 		rs[i].Cost = cost
 	}
 
-	utils.DrawCostRecordsTo(rs, "./data/calibrate.png")
+	utils.DrawCostRecordsTo(rs, "./data/calibrate.png", "linear")
 }
