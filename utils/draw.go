@@ -67,13 +67,13 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 
 	switch scale {
 	case "linear":
-		p.X.Max = maxX * 1.5
-		p.Y.Max = maxY * 1.2
+		p.X.Max = maxX * 1.2
+		p.Y.Max = maxY * 1.05
 	case "log10":
 		p.X.Min = 1
 		p.Y.Min = 1
-		p.X.Max = maxX * 1.5
-		p.Y.Max = maxY * 1.2
+		p.X.Max = maxX * 1.2
+		p.Y.Max = maxY * 1.05
 		p.X.Scale = new(log10Nor)
 		p.Y.Scale = new(log10Nor)
 		p.X.Tick.Marker = new(log10Tick)
