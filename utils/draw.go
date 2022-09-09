@@ -54,6 +54,8 @@ func DrawCostRecordsTo(r Records, f string) {
 	p.Y.Max = maxY * 1.2
 	p.X.Scale = new(log10Nor)
 	p.Y.Scale = new(log10Nor)
+	p.X.Tick.Marker = plot.LogTicks{Prec: -1}
+	p.Y.Tick.Marker = plot.LogTicks{Prec: -1}
 
 	labledRecords := make(map[string]Records)
 	for _, record := range r {
@@ -71,7 +73,7 @@ func DrawCostRecordsTo(r Records, f string) {
 		p.Legend.TextStyle.Font.Size = fontSize
 	}
 
-	err := p.Save(800, 800, f)
+	err := p.Save(1200, 1200, f)
 	if err != nil {
 		panic(err)
 	}
