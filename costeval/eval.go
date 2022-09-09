@@ -21,7 +21,7 @@ func CostEval() {
 	}
 	ins := utils.MustConnectTo(opt)
 	//costEval(ins, &evalOpt{"synthetic", 2, 3, 5, true})
-	costEval(ins, &evalOpt{"tpch_clustered", 2, 1, 1, true, 0.1})
+	costEval(ins, &evalOpt{"tpch_clustered", 2, 1, 5, true, 1})
 }
 
 type evalOpt struct {
@@ -115,13 +115,12 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			}
 			execTimes = append(execTimes, r.TimeMS)
 
-			// TODO: support TPCH workload as well
 			if k == 0 && opt.costModelVer == 2 { // parse factor weights
 				weights = parseCostWeights(ins)
 			}
 		}
 		sort.Float64s(execTimes)
-		info(">> exec time %v", execTimes)
+		info(">> exec time %v", ms2Dur(execTimes))
 		t := execTimes[(len(execTimes)-1)/2]
 		rs = append(rs, utils.Record{
 			Cost:    cost,
@@ -169,4 +168,12 @@ func parseCostWeights(ins utils.Instance) map[string]float64 {
 
 func info(format string, args ...interface{}) {
 	fmt.Printf("[cost-eval] %v\n", fmt.Sprintf(format, args...))
+}
+
+func ms2Dur(times []float64) []time.Duration {
+	var durs []time.Duration
+	for _, t := range times {
+		durs = append(durs, time.Millisecond*time.Duration(t))
+	}
+	return durs
 }
