@@ -92,7 +92,24 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 	}
 	labelStyle := genGlyphStyleForLabel(labels)
 
-	for label, r := range labeledRecords {
+	sort.Slice(labels, func(i, j int) bool {
+		var ki, kj int
+		for k, op := range opTypes {
+			if strings.Contains(strings.ToLower(labels[i]), op) {
+				ki = k
+			}
+			if strings.Contains(strings.ToLower(labels[j]), op) {
+				kj = k
+			}
+		}
+		if ki != kj {
+			return ki < kj
+		}
+		return labels[i] < labels[j]
+	})
+
+	for _, label := range labels {
+		r := labeledRecords[label]
 		s, err := plotter.NewScatter(r)
 		if err != nil {
 			panic(err)
@@ -110,7 +127,8 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 }
 
 var (
-	shapes = map[string]draw.GlyphDrawer{
+	opTypes = []string{"scan", "agg"}
+	shapes  = map[string]draw.GlyphDrawer{
 		"scan": draw.BoxGlyph{},
 		"agg":  draw.PyramidGlyph{},
 	}
