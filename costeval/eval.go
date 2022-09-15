@@ -82,14 +82,14 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 		info("read %v records successfully", len(rs))
 	}
 
-	//var tmp utils.Records
-	//for _, r := range rs {
-	//	if strings.Contains(r.Label, "Scan") {
-	//		continue
-	//	}
-	//	tmp = append(tmp, r)
-	//}
-	//rs = tmp
+	var tmp utils.Records
+	for _, r := range rs {
+		if strings.Contains(r.Label, "Scan") {
+			continue
+		}
+		tmp = append(tmp, r)
+	}
+	rs = tmp
 
 	sort.Slice(rs, func(i, j int) bool {
 		return rs[i].TimeMS < rs[j].TimeMS
