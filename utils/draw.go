@@ -62,7 +62,7 @@ func minMaxNormCost(r Records) {
 }
 
 func DrawCostRecordsTo(r Records, f, scale string) {
-	minMaxNormCost(r)
+	//minMaxNormCost(r)
 
 	p := plot.New()
 	p.Title.Text = "cost model accuracy scatter plot"
