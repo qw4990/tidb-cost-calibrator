@@ -195,16 +195,16 @@ func genTPCHJoin(n int, scale float64) utils.Queries {
 		{
 			`select /*+ read_from_storage(tikv[lineitem, part]), hash_join(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
 			[]tempitem{
-				{"", "l_orderkey", 1, 10},
-				{"", "p_partkey", 1, 10},
+				{"", "l_orderkey", 1, 3000000},
+				{"", "p_partkey", 1, 3000000},
 			},
 			`HashJoin1`,
 		},
 		{
 			`select /*+ read_from_storage(tikv[customer, orders]), hash_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey and # and #`,
 			[]tempitem{
-				{"", "c_custkey", 1, 10},
-				{"", "o_orderkey", 1, 10},
+				{"", "c_custkey", 1, 3000000},
+				{"", "o_orderkey", 1, 3000000},
 			},
 			`HashJoin2`,
 		},
@@ -212,46 +212,37 @@ func genTPCHJoin(n int, scale float64) utils.Queries {
 		{
 			`select /*+ read_from_storage(tikv[lineitem, part]), merge_join(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
 			[]tempitem{
-				{"", "l_orderkey", 1, 10},
-				{"", "p_partkey", 1, 10},
+				{"", "l_orderkey", 1, 3000000},
+				{"", "p_partkey", 1, 3000000},
 			},
-			`MergeJoin`,
-		},
-		// IndexJoin
-		{
-			`select /*+ read_from_storage(tikv[lineitem, part]), tidb_inlj(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
-			[]tempitem{
-				{"", "l_orderkey", 1, 10},
-				{"", "p_partkey", 1, 10},
-			},
-			`MergeJoin`,
+			`MergeJoin1`,
 		},
 		// ShuffleJoin
 		{
 			`select /*+ read_from_storage(tiflash[lineitem, part]), shuffle_join(lineitem, part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
 			[]tempitem{
-				{"", "l_orderkey", 1, 10},
-				{"", "p_partkey", 1, 10},
+				{"", "l_orderkey", 1, 25000000},
+				{"", "p_partkey", 1, 25000000},
 			},
 			`ShuffleJoin1`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[customer, orders]), shuffle_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey and # and #`,
 			[]tempitem{
-				{"", "c_custkey", 1, 10},
-				{"", "o_orderkey", 1, 10},
+				{"", "c_custkey", 1, 3000000},
+				{"", "o_orderkey", 1, 90000000},
 			},
 			`ShuffleJoin2`,
 		},
 		// BCastJoin
 		{
 			`select /*+ read_from_storage(tiflash[customer, nation]), broadcast_join(nation) */ c_custkey, n_nationkey from customer, nation where c_nationkey = n_nationkey and #`,
-			[]tempitem{{"", "c_custkey", 1, 10}},
+			[]tempitem{{"", "c_custkey", 1, 3000000}},
 			`BCastJoin1`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[supplier, nation]), broadcast_join(nation) */ * from supplier, nation where s_nationkey = n_nationkey and #`,
-			[]tempitem{{"", "s_suppkey", 1, 10}},
+			[]tempitem{{"", "s_suppkey", 1, 200000}},
 			`BCastJoin2`,
 		},
 	}, n, scale)
