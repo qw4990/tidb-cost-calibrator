@@ -3,7 +3,7 @@ package costeval
 import "github.com/qw4990/tidb-cost-calibrator/utils"
 
 func genTPCHQueries2(n int, scale float64) utils.Queries {
-	return genQueries(n, scale, genTPCHSort)
+	return genQueries(n, scale, genTPCHJoin)
 	//return genQueries(n, scale, genTPCHScan, genTPCHAgg, genTPCHSort)
 	//return genQueries(n, scale, genTPCHScan, genTPCHAgg, genTPCHSort, genTPCHJoin)
 }
@@ -203,7 +203,7 @@ func genTPCHJoin(n int, scale float64) utils.Queries {
 			`HashJoin1`,
 		},
 		{
-			`select /*+ read_from_storage(tikv[customer, orders]), hash_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey where # and #`,
+			`select /*+ read_from_storage(tikv[customer, orders]), hash_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey and # and #`,
 			[]tempitem{
 				{"", "c_custkey", 1, 10},
 				{"", "o_orderkey", 1, 10},
@@ -238,7 +238,7 @@ func genTPCHJoin(n int, scale float64) utils.Queries {
 			`ShuffleJoin1`,
 		},
 		{
-			`select /*+ read_from_storage(tiflash[customer, orders]), shuffle_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey where # and #`,
+			`select /*+ read_from_storage(tiflash[customer, orders]), shuffle_join(customer, orders) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey and # and #`,
 			[]tempitem{
 				{"", "c_custkey", 1, 10},
 				{"", "o_orderkey", 1, 10},
