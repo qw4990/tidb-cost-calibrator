@@ -148,6 +148,7 @@ var (
 	shapes  = map[string]draw.GlyphDrawer{
 		"scan": draw.BoxGlyph{},
 		"agg":  draw.PyramidGlyph{},
+		"sort": draw.PlusGlyph{},
 	}
 	// https://www.rapidtables.com/web/color/RGB_Color.html
 	colors = map[string][]color.Color{
@@ -155,6 +156,7 @@ var (
 			rgb(255, 102, 102), rgb(255, 153, 153), rgb(255, 204, 204)},
 		"agg": {rgb(51, 102, 0), rgb(76, 153, 0), rgb(102, 204, 0), rgb(128, 255, 0),
 			rgb(153, 255, 51), rgb(178, 255, 102), rgb(229, 255, 204)},
+		"sort": {rgb(51, 0, 102), rgb(76, 0, 153), rgb(102, 0, 204), rgb(127, 0, 255)},
 	}
 )
 
