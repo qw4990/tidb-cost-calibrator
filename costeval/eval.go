@@ -84,10 +84,10 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 
 	var tmp utils.Records
 	for _, r := range rs {
-		if !strings.Contains(r.Label, "MPPScan1") &&
-			!strings.Contains(r.Label, "MPPScan2") {
-			continue
-		}
+		//if !strings.Contains(r.Label, "MPPScan1") &&
+		//	!strings.Contains(r.Label, "MPPScan2") {
+		//	continue
+		//}
 		tmp = append(tmp, r)
 	}
 	rs = tmp
