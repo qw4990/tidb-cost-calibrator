@@ -31,15 +31,18 @@ func CostCalibrate() {
 	}
 
 	whiteList := []string{
-		"TableScan",
-		//"MPPScan",
-		"HashAgg",
-		"MPP1PhaseAgg",
-		"MPP2PhaseAgg",
+		"Scan",
+		//"MPP",
 	}
 
 	var rs2 utils.Records
 	for i := range rs {
+		if strings.Contains(rs[i].Label, "TableScan") {
+			factors["tidb_opt_network_factor_v2"] = 8
+		} else {
+			factors["tidb_opt_network_factor_v2"] = 0.8
+		}
+
 		pass := false
 		for _, w := range whiteList {
 			if strings.Contains(rs[i].Label, w) {

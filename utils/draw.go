@@ -87,8 +87,8 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 		p.X.Max = maxX * 1.2
 		p.Y.Max = maxY * 1.05
 	case "log10":
-		p.X.Min = 1
-		p.Y.Min = 1
+		p.X.Min = 1e8
+		p.Y.Min = 10
 		p.X.Max = maxX * 1.2
 		p.Y.Max = maxY * 1.05
 		p.X.Scale = new(log10Nor)
