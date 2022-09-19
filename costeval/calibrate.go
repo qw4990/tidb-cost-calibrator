@@ -20,8 +20,8 @@ func CostCalibrate() {
 		"tidb_opt_cpu_factor_v2":                30,
 		"tidb_opt_tiflash_cpu_factor_v2":        5,
 		"tidb_opt_hash_table_factor_v2":         1000,
-		"tidb_opt_tiflash_hash_table_factor_v2": 100,
-		"tidb_opt_scan_factor_v2":               100,
+		"tidb_opt_tiflash_hash_table_factor_v2": 5,
+		"tidb_opt_scan_factor_v2":               20,
 		"tidb_opt_desc_factor_v2":               150,
 		"tidb_opt_network_factor_v2":            8,
 		"tidb_opt_seek_factor_v2":               9500000,
@@ -32,13 +32,15 @@ func CostCalibrate() {
 
 	whiteList := []string{
 		"Scan",
-		//"MPP",
+		"PhaseAgg",
 	}
 
 	var rs2 utils.Records
 	for i := range rs {
 		if strings.Contains(rs[i].Label, "TableScan") {
-			factors["tidb_opt_network_factor_v2"] = 8
+			factors["tidb_opt_network_factor_v2"] = 1.8
+		} else if strings.Contains(rs[i].Label, "MPPScan") {
+			factors["tidb_opt_network_factor_v2"] = 0.8
 		} else {
 			factors["tidb_opt_network_factor_v2"] = 0.8
 		}
