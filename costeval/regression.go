@@ -2,65 +2,48 @@ package costeval
 
 import (
 	"fmt"
-	"math"
-
-	"github.com/apache/arrow/go/arrow/tensor"
-	"github.com/qw4990/tidb-cost-calibrator/utils"
+	
 	"gorgonia.org/gorgonia"
 	"gorgonia.org/tensor"
 )
 
+// x * |w| == y
 func regression(x [][]float64, y []float64) (w []float64) {
-	
-}
+	tx := tensor.New(tensor.WithShape(len(x), len(x[0])), tensor.WithBacking(x))
+	ty := tensor.New(tensor.WithShape(len(y)), tensor.WithBacking(y))
 
-func regressionCostFactors(rs utils.Records) CostFactors {
-	var scale [NumFactors]float64
-	rs, scale = normalize(rs)
-	x, y := convert2XY(rs)
+	// construct the NN graph
 	g := gorgonia.NewGraph()
-	xNode := gorgonia.NodeFromAny(g, x, gorgonia.WithName("x"))
-	yNode := gorgonia.NodeFromAny(g, y, gorgonia.WithName("y"))
+	xNode := gorgonia.NodeFromAny(g, tx, gorgonia.WithName("x"))
+	yNode := gorgonia.NodeFromAny(g, ty, gorgonia.WithName("y"))
 
-	costFactor := gorgonia.NewVector(g, gorgonia.Float64,
-		gorgonia.WithName("cost-factor"),
+	weights := gorgonia.NewVector(g, gorgonia.Float64,
+		gorgonia.WithName("w"),
 		gorgonia.WithShape(xNode.Shape()[1]),
-		gorgonia.WithInit(func(dt tensor.Dtype, s ...int) interface{} {
-			switch dt {
-			case tensor.Float64: // (CPU, CopCPU, Net, Scan, DescScan, Mem, Seek)
-				return []float64{0, 0, 0, 0, 0, 0, 0}
-			default:
-				panic("invalid type")
-			}
-			return nil
-		}))
-	//gorgonia.WithInit(gorgonia.Zeroes()))
-	//gorgonia.WithInit(gorgonia.Uniform(0, 300)))
-	//strictFactor, err := gorgonia.LeakyRelu(costFactor, 0)
-	//if err != nil {
-	//	panic(err)
-	//}
+		gorgonia.WithInit(gorgonia.Uniform(0, 300)))
 
-	pred := must(gorgonia.Mul(xNode, costFactor))
+	absWeights := mustG(gorgonia.Abs(weights))
+
+	predNode := mustG(gorgonia.Mul(xNode, absWeights))
 	var predicated gorgonia.Value
-	gorgonia.Read(pred, &predicated)
+	gorgonia.Read(predNode, &predicated)
 
-	diff := must(gorgonia.Abs(must(gorgonia.Sub(pred, yNode))))
-	relativeDiff := must(gorgonia.Div(diff, yNode))
-	loss := must(gorgonia.Mean(relativeDiff))
-	_, err := gorgonia.Grad(loss, costFactor)
+	diff := mustG(gorgonia.Sub(predNode, yNode))
+	absDiff := mustG(gorgonia.Abs(diff))
+	relativeDiff := mustG(gorgonia.Div(absDiff, yNode))
+	loss := mustG(gorgonia.Mean(relativeDiff))
+	_, err := gorgonia.Grad(loss, weights)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to backpropagate: %v", err))
 	}
 
+	// training
 	solver := gorgonia.NewAdamSolver(gorgonia.WithLearnRate(0.00001))
-	model := []gorgonia.ValueGrad{costFactor}
-
-	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(costFactor))
+	model := []gorgonia.ValueGrad{weights}
+	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
 
-	fmt.Println("init theta: ", costFactor.Value())
-
+	fmt.Println("init weights: ", weights.Value())
 	iter := 200000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
@@ -74,65 +57,17 @@ func regressionCostFactors(rs utils.Records) CostFactors {
 		machine.Reset()
 		lossV := loss.Value().Data().(float64)
 		if i%1000 == 0 {
-			fmt.Printf("theta: %v, Iter: %v Loss: %.6f\n",
-				costFactor.Value(),
-				i,
-				lossV)
+			fmt.Printf("weights: %v, Iter: %v Loss: %.6f\n",
+				weights.Value(), i, lossV)
 		}
 	}
 
-	var fv CostFactors
-	for i := range fv {
-		fv[i] = costFactor.Value().Data().([]float64)[i]
-	}
-
-	// scale factors
-	minFV := 1e9
-	for i := range fv {
-		fv[i] /= scale[i]
-		if fv[i] == 0 {
-			continue
-		}
-		if math.Abs(fv[i]) < minFV {
-			minFV = math.Abs(fv[i])
-		}
-	}
-	for i := range fv {
-		fv[i] /= minFV
-	}
-
-	return fv
+	return weights.Value().Data().([]float64)
 }
 
-func convert2XY(rs Records) (*tensor.Dense, *tensor.Dense) {
-	by := make([]float64, 0, len(rs))
-	for _, r := range rs {
-		by = append(by, r.TimeMS)
-	}
-	y := tensor.New(tensor.WithShape(len(rs)), tensor.WithBacking(by))
-
-	bx := make([]float64, 0, len(rs)*len(rs[0].CostWeights))
-	for _, r := range rs {
-		for _, w := range r.CostWeights {
-			bx = append(bx, w)
-		}
-	}
-	x := tensor.New(tensor.WithShape(len(rs), len(rs[0].CostWeights)), tensor.WithBacking(bx))
-
-	return x, y
-}
-
-func must(n *gorgonia.Node, err error) *gorgonia.Node {
+func mustG(n *gorgonia.Node, err error) *gorgonia.Node {
 	if err != nil {
 		panic(err)
 	}
 	return n
-}
-
-func one(size int) []float64 {
-	one := make([]float64, size)
-	for i := 0; i < size; i++ {
-		one[i] = 1.0
-	}
-	return one
 }
