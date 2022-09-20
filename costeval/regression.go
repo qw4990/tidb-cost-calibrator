@@ -42,6 +42,12 @@ func CostRegression() {
 		y = append(y, rs[i].TimeMS)
 	}
 
+	fmt.Println("========================== training ======================")
+	for i := range x {
+		fmt.Println(x[i])
+	}
+	fmt.Println(y)
+	fmt.Println("========================================")
 	w := regression(x, y)
 	factor := make(map[string]float64)
 	for i := range w {
