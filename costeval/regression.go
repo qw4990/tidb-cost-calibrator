@@ -65,7 +65,6 @@ func CostRegression() {
 	for _, name := range idxName {
 		fmt.Printf("%v: %v\n", name, factor[name])
 	}
-	fmt.Println(factor)
 	fmt.Println("=============== norm factor =====================")
 	updateCost(rs, factor)
 
