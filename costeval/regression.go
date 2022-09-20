@@ -16,7 +16,7 @@ func CostRegression() {
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 
-	rs = filterByLabel(rs, []string{"Agg"})
+	rs = filterByLabel(rs, []string{""})
 
 	nameIdx := make(map[string]int)
 	var idxName []string
@@ -57,8 +57,18 @@ func CostRegression() {
 	fmt.Println("================================")
 	fmt.Println(factor)
 	fmt.Println("================================")
-
 	updateCost(rs, factor)
+
+	minFactor := 1e20
+	for _, v := range factor {
+		minFactor = math.Min(v, minFactor)
+	}
+	for i := range factor {
+		factor[i] /= minFactor
+	}
+	fmt.Println("=============== norm factor =====================")
+	fmt.Println(factor)
+	fmt.Println("=============== norm factor =====================")
 	utils.DrawCostRecordsTo(rs, "./data/regression.png", "linear")
 }
 
