@@ -3,7 +3,7 @@ package costeval
 import (
 	"fmt"
 	"path/filepath"
-	
+
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
@@ -12,6 +12,10 @@ func CostCalibrate() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
+	whiteList := []string{
+		"",
+	}
+	rs = filterByLabel(rs, whiteList)
 
 	factors := map[string]float64{
 		"tidb_opt_cpu_factor_v2":                30,
@@ -25,18 +29,16 @@ func CostCalibrate() {
 		"tidb_opt_network_factor_v2":            8,
 		"tidb_opt_mpp_network_factor_v2":        4,
 	}
+	updateCost(rs, factors)
 
-	whiteList := []string{
-		"",
-	}
-	rs = filterByLabel(rs, whiteList)
+	utils.DrawCostRecordsTo(rs, "./data/calibrate.png", "linear")
+}
 
-	var rs2 utils.Records
+func updateCost(rs utils.Records, factors map[string]float64) {
 	for i := range rs {
 		if rs[i].Weights == nil {
 			fmt.Println(">>> skip >> ", rs[i].Label, rs[i].SQL)
 		}
-
 		var cost float64
 		for k, w := range rs[i].Weights {
 			if _, ok := factors[k]; !ok {
@@ -45,8 +47,5 @@ func CostCalibrate() {
 			cost += w * factors[k]
 		}
 		rs[i].Cost = cost
-		rs2 = append(rs2, rs[i])
 	}
-
-	utils.DrawCostRecordsTo(rs2, "./data/calibrate.png", "linear")
 }
