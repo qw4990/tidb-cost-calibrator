@@ -16,7 +16,7 @@ func CostRegression() {
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 
-	rs = filterByLabel(rs, []string{"MPPScan"})
+	rs = filterByLabel(rs, []string{"Agg"})
 
 	nameIdx := make(map[string]int)
 	var idxName []string
@@ -118,13 +118,13 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	}
 
 	// training
-	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.01))
+	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.5))
 	model := []gorgonia.ValueGrad{weights}
 	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
 
 	fmt.Println("init weights: ", weights.Value())
-	iter := 20000
+	iter := 200000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))
