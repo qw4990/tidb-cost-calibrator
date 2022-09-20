@@ -2,14 +2,20 @@ package costeval
 
 import (
 	"fmt"
-	
+
 	"gorgonia.org/gorgonia"
 	"gorgonia.org/tensor"
 )
 
 // x * |w| == y
 func regression(x [][]float64, y []float64) (w []float64) {
-	tx := tensor.New(tensor.WithShape(len(x), len(x[0])), tensor.WithBacking(x))
+	tmpX := make([]float64, 0, len(x)*len(x[0]))
+	for i := range x {
+		for j := range x[i] {
+			tmpX = append(tmpX, x[i][j])
+		}
+	}
+	tx := tensor.New(tensor.WithShape(len(x), len(x[0])), tensor.WithBacking(tmpX))
 	ty := tensor.New(tensor.WithShape(len(y)), tensor.WithBacking(y))
 
 	// construct the NN graph
@@ -20,7 +26,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	weights := gorgonia.NewVector(g, gorgonia.Float64,
 		gorgonia.WithName("w"),
 		gorgonia.WithShape(xNode.Shape()[1]),
-		gorgonia.WithInit(gorgonia.Uniform(0, 300)))
+		gorgonia.WithInit(gorgonia.Uniform(0, 10)))
 
 	absWeights := mustG(gorgonia.Abs(weights))
 
@@ -38,13 +44,13 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	}
 
 	// training
-	solver := gorgonia.NewAdamSolver(gorgonia.WithLearnRate(0.00001))
+	solver := gorgonia.NewAdamSolver(gorgonia.WithLearnRate(0.01))
 	model := []gorgonia.ValueGrad{weights}
 	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
 
 	fmt.Println("init weights: ", weights.Value())
-	iter := 200000
+	iter := 2000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))
@@ -56,7 +62,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 
 		machine.Reset()
 		lossV := loss.Value().Data().(float64)
-		if i%1000 == 0 {
+		if i%200 == 0 {
 			fmt.Printf("weights: %v, Iter: %v Loss: %.6f\n",
 				weights.Value(), i, lossV)
 		}
