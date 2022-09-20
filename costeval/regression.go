@@ -36,10 +36,10 @@ func CostRegression() {
 		v := make([]float64, wIdxCnt)
 		for name, val := range rs[i].Weights {
 			idx := nameIdx[name]
-			v[idx] = val
+			v[idx] = val / 1e7
 		}
 		x = append(x, v)
-		y = append(y, rs[i].TimeMS)
+		y = append(y, rs[i].TimeMS/1e3)
 	}
 
 	fmt.Println("========================== training ======================")
@@ -51,7 +51,7 @@ func CostRegression() {
 	w := regression(x, y)
 	factor := make(map[string]float64)
 	for i := range w {
-		factor[idxName[i]] = math.Abs(w[i])
+		factor[idxName[i]] = math.Abs(w[i]) * 1e4
 	}
 
 	fmt.Println("================================")
@@ -89,22 +89,22 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	var predicated gorgonia.Value
 	gorgonia.Read(predNode, &predicated)
 
-	diff := mustG(gorgonia.Sub(predNode, yNode))
-	squared := mustG(gorgonia.Square(diff))
-	loss := mustG(gorgonia.Mean(squared))
+	diff := mustG(gorgonia.Abs(mustG(gorgonia.Sub(predNode, yNode))))
+	relativeDiff := mustG(gorgonia.Div(diff, yNode))
+	loss := mustG(gorgonia.Mean(relativeDiff))
 	_, err := gorgonia.Grad(loss, weights)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to backpropagate: %v", err))
 	}
 
 	// training
-	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.01))
+	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.1))
 	model := []gorgonia.ValueGrad{weights}
 	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
 
 	fmt.Println("init weights: ", weights.Value())
-	iter := 50
+	iter := 1000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))
@@ -116,7 +116,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 
 		machine.Reset()
 		lossV := loss.Value().Data().(float64)
-		if i%1 == 0 {
+		if i%50 == 0 {
 			fmt.Printf("weights: %v, Iter: %v Loss: %.6f\n",
 				weights.Value(), i, lossV)
 		}
