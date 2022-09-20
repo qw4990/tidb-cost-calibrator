@@ -125,7 +125,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			execTimes = append(execTimes, r.TimeMS)
 
 			if k == 0 && opt.costModelVer == 2 { // parse factor weights
-				weights = parseCostWeights(ins)
+				weights = cleanCostWeights(parseCostWeights(ins))
 			}
 		}
 		sort.Float64s(execTimes)
@@ -173,6 +173,16 @@ func parseCostWeights(ins utils.Instance) map[string]float64 {
 		weights[k] = v
 	}
 	return weights
+}
+
+func cleanCostWeights(w map[string]float64) map[string]float64 {
+	ret := make(map[string]float64)
+	for k, v := range w {
+		if v > 0 {
+			ret[k] = v
+		}
+	}
+	return ret
 }
 
 func info(format string, args ...interface{}) {
