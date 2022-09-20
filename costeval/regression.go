@@ -90,16 +90,15 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	gorgonia.Read(predNode, &predicated)
 
 	diff := mustG(gorgonia.Sub(predNode, yNode))
-	absDiff := mustG(gorgonia.Abs(diff))
-	relativeDiff := mustG(gorgonia.Div(absDiff, yNode))
-	loss := mustG(gorgonia.Mean(relativeDiff))
+	squared := mustG(gorgonia.Square(diff))
+	loss := mustG(gorgonia.Mean(squared))
 	_, err := gorgonia.Grad(loss, weights)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to backpropagate: %v", err))
 	}
 
 	// training
-	solver := gorgonia.NewAdamSolver(gorgonia.WithLearnRate(0.01))
+	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.01))
 	model := []gorgonia.ValueGrad{weights}
 	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
