@@ -2,6 +2,7 @@ package costeval
 
 import (
 	"fmt"
+	"math"
 	"path/filepath"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -15,8 +16,41 @@ func CostRegression() {
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 
-	rs = filterByLabel(rs, []string{""})
+	rs = filterByLabel(rs, []string{"TableScan"})
 
+	nameIdx := make(map[string]int)
+	var idxName []string
+	wIdxCnt := 0
+	for i := range rs {
+		for name := range rs[i].Weights {
+			if _, ok := nameIdx[name]; !ok {
+				nameIdx[name] = wIdxCnt
+				idxName = append(idxName, name)
+				wIdxCnt++
+			}
+		}
+	}
+	var x [][]float64
+	var y []float64
+	for i := range rs {
+		v := make([]float64, wIdxCnt)
+		for name, val := range rs[i].Weights {
+			idx := nameIdx[name]
+			v[idx] = val
+		}
+		x = append(x, v)
+		y = append(y, rs[i].TimeMS)
+	}
+
+	w := regression(x, y)
+	factor := make(map[string]float64)
+	for i := range w {
+		factor[idxName[i]] = math.Abs(w[i])
+	}
+
+	fmt.Println("================================")
+	fmt.Println(factor)
+	fmt.Println("================================")
 }
 
 // x * |w| == y
