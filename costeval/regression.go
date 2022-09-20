@@ -118,13 +118,13 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	}
 
 	// training
-	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.1))
+	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.01))
 	model := []gorgonia.ValueGrad{weights}
 	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
 
 	fmt.Println("init weights: ", weights.Value())
-	iter := 1000
+	iter := 20000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))
@@ -136,7 +136,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 
 		machine.Reset()
 		lossV := loss.Value().Data().(float64)
-		if i%50 == 0 {
+		if i%100 == 0 {
 			fmt.Printf("weights: %v, Iter: %v Loss: %.6f\n",
 				weights.Value(), i, lossV)
 		}
