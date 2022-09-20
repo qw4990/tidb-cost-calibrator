@@ -30,7 +30,7 @@ func CostCalibrate() {
 	}
 
 	whiteList := []string{
-		"Scan",
+		"PhaseAgg1",
 	}
 
 	var rs2 utils.Records
