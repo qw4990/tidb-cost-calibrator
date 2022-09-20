@@ -3,6 +3,7 @@ package costeval
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -18,19 +19,17 @@ func CostCalibrate() {
 		"tidb_opt_cpu_factor_v2":                30,
 		"tidb_opt_copcpu_factor_v2":             30,
 		"tidb_opt_tiflash_cpu_factor_v2":        5,
-		"tidb_opt_hash_table_factor_v2":         1000,
-		"tidb_opt_cop_hash_table_factor_v2":     1000,
+		"tidb_opt_hash_table_factor_v2":         10,
+		"tidb_opt_cop_hash_table_factor_v2":     10,
 		"tidb_opt_tiflash_hash_table_factor_v2": 5,
 		"tidb_opt_scan_factor_v2":               20,
-		"tidb_opt_desc_factor_v2":               150,
 		"tidb_opt_tiflash_scan_factor_v2":       8,
 		"tidb_opt_network_factor_v2":            8,
 		"tidb_opt_mpp_network_factor_v2":        4,
-		"tidb_opt_seek_factor_v2":               9500000,
 	}
 
 	whiteList := []string{
-		"PhaseAgg1",
+		"",
 	}
 
 	var rs2 utils.Records
@@ -58,6 +57,13 @@ func CostCalibrate() {
 		}
 		rs[i].Cost = cost
 		rs2 = append(rs2, rs[i])
+	}
+
+	sort.Slice(rs2, func(i, j int) bool {
+		return (rs2[i].Cost / rs2[i].TimeMS) < (rs2[j].Cost / rs2[j].TimeMS)
+	})
+	for _, r := range rs2 {
+		fmt.Println(r.Label, r.Cost, r.TimeMS)
 	}
 
 	utils.DrawCostRecordsTo(rs2, "./data/calibrate.png", "linear")
