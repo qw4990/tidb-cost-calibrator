@@ -2,10 +2,22 @@ package costeval
 
 import (
 	"fmt"
+	"path/filepath"
 
+	"github.com/qw4990/tidb-cost-calibrator/utils"
 	"gorgonia.org/gorgonia"
 	"gorgonia.org/tensor"
 )
+
+func CostRegression() {
+	var rs utils.Records
+	dataDir := "./data"
+	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
+	utils.Must(utils.ReadFrom(recordFile, &rs))
+
+	rs = filterByLabel(rs, []string{""})
+
+}
 
 // x * |w| == y
 func regression(x [][]float64, y []float64) (w []float64) {

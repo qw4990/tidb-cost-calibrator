@@ -80,3 +80,20 @@ func randRangeLinear(minVal, maxVal, iter, totalRepeat int) (int, int) {
 	}
 	return l, r
 }
+
+func filterByLabel(rs utils.Records, whiteList []string) utils.Records {
+	var ret utils.Records
+	for _, r := range rs {
+		pass := false
+		for _, label := range whiteList {
+			if strings.Contains(r.Label, label) {
+				pass = true
+				break
+			}
+		}
+		if pass {
+			ret = append(ret, r)
+		}
+	}
+	return ret
+}
