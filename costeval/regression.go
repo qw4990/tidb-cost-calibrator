@@ -2,12 +2,12 @@ package costeval
 
 import (
 	"fmt"
-	"math"
-	"path/filepath"
-
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 	"gorgonia.org/gorgonia"
 	"gorgonia.org/tensor"
+	"math"
+	"path/filepath"
+	"sort"
 )
 
 func CostRegression() {
@@ -51,14 +51,8 @@ func CostRegression() {
 	w := regression(x, y)
 	factor := make(map[string]float64)
 	for i := range w {
-		factor[idxName[i]] = math.Abs(w[i]) * 1e4
+		factor[idxName[i]] = w[i]
 	}
-
-	fmt.Println("================================")
-	fmt.Println(factor)
-	fmt.Println("================================")
-	updateCost(rs, factor)
-
 	minFactor := 1e20
 	for _, v := range factor {
 		minFactor = math.Min(v, minFactor)
@@ -67,8 +61,14 @@ func CostRegression() {
 		factor[i] /= minFactor
 	}
 	fmt.Println("=============== norm factor =====================")
+	sort.Strings(idxName)
+	for _, name := range idxName {
+		fmt.Printf("%v: %v\n", name, factor[name])
+	}
 	fmt.Println(factor)
 	fmt.Println("=============== norm factor =====================")
+	updateCost(rs, factor)
+
 	utils.DrawCostRecordsTo(rs, "./data/regression.png", "linear")
 }
 
