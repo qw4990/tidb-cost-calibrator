@@ -36,10 +36,10 @@ func CostRegression() {
 		v := make([]float64, wIdxCnt)
 		for name, val := range rs[i].Weights {
 			idx := nameIdx[name]
-			v[idx] = val / 1e7
+			v[idx] = val
 		}
 		x = append(x, v)
-		y = append(y, rs[i].TimeMS/1e3)
+		y = append(y, rs[i].TimeMS)
 	}
 
 	fmt.Println("========================== training ======================")
@@ -64,6 +64,26 @@ func CostRegression() {
 
 // x * |w| == y
 func regression(x [][]float64, y []float64) (w []float64) {
+	// max norm
+	var maxX, maxY float64
+	for i := range x {
+		for j := range x[i] {
+			maxX = math.Max(maxX, x[i][j])
+		}
+	}
+	for i := range y {
+		maxY = math.Max(maxY, y[i])
+	}
+	for i := range x {
+		for j := range x[i] {
+			x[i][j] /= maxX
+		}
+	}
+	for i := range y {
+		y[i] /= maxY
+	}
+
+	// construct tensors
 	tmpX := make([]float64, 0, len(x)*len(x[0]))
 	for i := range x {
 		for j := range x[i] {
@@ -81,7 +101,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	weights := gorgonia.NewVector(g, gorgonia.Float64,
 		gorgonia.WithName("w"),
 		gorgonia.WithShape(xNode.Shape()[1]),
-		gorgonia.WithInit(gorgonia.Uniform(1, 100)))
+		gorgonia.WithInit(gorgonia.Uniform(0, 1)))
 
 	absWeights := mustG(gorgonia.Abs(weights))
 
@@ -122,7 +142,11 @@ func regression(x [][]float64, y []float64) (w []float64) {
 		}
 	}
 
-	return absWeights.Value().Data().([]float64)
+	w = absWeights.Value().Data().([]float64)
+	for i := range w {
+		w[i] = w[i] * maxX / maxY
+	}
+	return w
 }
 
 func mustG(n *gorgonia.Node, err error) *gorgonia.Node {
