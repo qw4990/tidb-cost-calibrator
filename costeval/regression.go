@@ -51,6 +51,9 @@ func CostRegression() {
 	fmt.Println("================================")
 	fmt.Println(factor)
 	fmt.Println("================================")
+
+	updateCost(rs, factor)
+	utils.DrawCostRecordsTo(rs, "./data/regression.png", "linear")
 }
 
 // x * |w| == y
