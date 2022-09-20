@@ -117,7 +117,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 		}
 	}
 
-	return weights.Value().Data().([]float64)
+	return absWeights.Value().Data().([]float64)
 }
 
 func mustG(n *gorgonia.Node, err error) *gorgonia.Node {
