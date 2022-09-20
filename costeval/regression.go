@@ -3,70 +3,18 @@ package costeval
 import (
 	"fmt"
 	"math"
-	
+
 	"github.com/apache/arrow/go/arrow/tensor"
+	"github.com/qw4990/tidb-cost-calibrator/utils"
 	"gorgonia.org/gorgonia"
 	"gorgonia.org/tensor"
 )
 
-func mxNormalize(vals []float64) (normalized []float64, scale float64) {
-	maxV := vals[0]
-	for _, v := range vals {
-		if v > maxV {
-			maxV = v
-		}
-	}
-
-	if maxV == 0 {
-		return vals, 1
-	}
-
-	for _, v := range vals {
-		normalized = append(normalized, v/maxV)
-	}
-	scale = maxV
-	return
+func regression(x [][]float64, y []float64) (w []float64) {
+	
 }
 
-func normalize(rs Records) (ret Records, scale [NumFactors]float64) {
-	vals := make([]float64, len(rs))
-
-	// normalize time
-	for i := range rs {
-		vals[i] = rs[i].TimeMS
-	}
-	vals, _ = mxNormalize(vals)
-	for i := range rs {
-		rs[i].TimeMS = vals[i]
-	}
-
-	// normalize cost
-	for i := range rs {
-		vals[i] = rs[i].Cost
-	}
-	vals, _ = mxNormalize(vals)
-	for i := range rs {
-		rs[i].Cost = vals[i]
-	}
-
-	// normalize weights
-	for k := 0; k < NumFactors; k++ {
-		for i := range rs {
-			vals[i] = rs[i].CostWeights[k]
-		}
-		vals, scale[k] = mxNormalize(vals)
-		for i := range rs {
-			rs[i].CostWeights[k] = vals[i]
-		}
-	}
-
-	for _, r := range rs {
-		fmt.Println("Record>> ", r.Label, r.SQL, r.CostWeights, r.Cost, r.TimeMS)
-	}
-	return rs, scale
-}
-
-func regressionCostFactors(rs Records) CostFactors {
+func regressionCostFactors(rs utils.Records) CostFactors {
 	var scale [NumFactors]float64
 	rs, scale = normalize(rs)
 	x, y := convert2XY(rs)
