@@ -16,7 +16,7 @@ func CostRegression() {
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 
-	rs = filterByLabel(rs, []string{"TableScan"})
+	rs = filterByLabel(rs, []string{"MPPScan"})
 
 	nameIdx := make(map[string]int)
 	var idxName []string
