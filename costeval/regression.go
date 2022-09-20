@@ -75,7 +75,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	weights := gorgonia.NewVector(g, gorgonia.Float64,
 		gorgonia.WithName("w"),
 		gorgonia.WithShape(xNode.Shape()[1]),
-		gorgonia.WithInit(gorgonia.Uniform(0, 10)))
+		gorgonia.WithInit(gorgonia.Uniform(1, 100)))
 
 	absWeights := mustG(gorgonia.Abs(weights))
 
