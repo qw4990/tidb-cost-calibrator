@@ -150,7 +150,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 
 		machine.Reset()
 		lossV := loss.Value().Data().(float64)
-		if i%5000 == 0 {
+		if i%10000 == 0 {
 			fmt.Printf("Iter: %v Loss: %.6f\n", i, lossV)
 		}
 	}
