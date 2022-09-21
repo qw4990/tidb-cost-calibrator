@@ -2,12 +2,13 @@ package costeval
 
 import (
 	"fmt"
-	"github.com/qw4990/tidb-cost-calibrator/utils"
-	"gorgonia.org/gorgonia"
-	"gorgonia.org/tensor"
 	"math"
 	"path/filepath"
 	"sort"
+
+	"github.com/qw4990/tidb-cost-calibrator/utils"
+	"gorgonia.org/gorgonia"
+	"gorgonia.org/tensor"
 )
 
 func CostRegression() {
@@ -16,7 +17,7 @@ func CostRegression() {
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 
-	rs = filterByLabel(rs, []string{""})
+	rs = filterByLabel(rs, []string{"Agg"})
 
 	nameIdx := make(map[string]int)
 	var idxName []string
