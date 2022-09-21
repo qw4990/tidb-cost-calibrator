@@ -12,12 +12,13 @@ import (
 )
 
 func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []string) {
-	nameIdx := make(map[string]int)
+	name2Idx := make(map[string]int)
 	wIdxCnt := 0
+	factorWeights := make(map[string]float64)
 	for i := range rs {
 		for name := range rs[i].Weights {
-			if _, ok := nameIdx[name]; !ok {
-				nameIdx[name] = wIdxCnt
+			if _, ok := name2Idx[name]; !ok {
+				name2Idx[name] = wIdxCnt
 				idx2Name = append(idx2Name, name)
 				wIdxCnt++
 			}
@@ -26,12 +27,18 @@ func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []strin
 	for i := range rs {
 		v := make([]float64, wIdxCnt)
 		for name, val := range rs[i].Weights {
-			idx := nameIdx[name]
+			idx := name2Idx[name]
 			v[idx] = val
+			factorWeights[name] += val
 		}
 		x = append(x, v)
 		y = append(y, rs[i].TimeMS)
 	}
+
+	for name, weight := range factorWeights {
+		fmt.Println(name, weight)
+	}
+
 	return
 }
 
