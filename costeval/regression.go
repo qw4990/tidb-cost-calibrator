@@ -11,6 +11,40 @@ import (
 	"gorgonia.org/tensor"
 )
 
+func CostRegression() {
+	fmt.Println("============== prepare data ===============")
+	var rs utils.Records
+	dataDir := "./data"
+	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
+	utils.Must(utils.ReadFrom(recordFile, &rs))
+	rs = filterByLabel(rs, []string{"Agg1"})
+	x, y, idx2Name := prepareData(rs)
+
+	fmt.Println("============== training ===============")
+	w := regression(x, y)
+	factor := make(map[string]float64)
+	for i := range w {
+		factor[idx2Name[i]] = w[i]
+	}
+
+	fmt.Println("============== normalize factors ===============")
+	minFactor := 1e20
+	for _, v := range factor {
+		minFactor = math.Min(v, minFactor)
+	}
+	for i := range factor {
+		factor[i] /= minFactor
+	}
+	sort.Strings(idx2Name)
+	for _, name := range idx2Name {
+		fmt.Printf("%v: %v\n", name, factor[name])
+	}
+
+	fmt.Println("============== draw ===============")
+	updateCost(rs, factor)
+	utils.DrawCostRecordsTo(rs, "./data/regression.png", "linear")
+}
+
 func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []string) {
 	name2Idx := make(map[string]int)
 	wIdxCnt := 0
@@ -40,40 +74,6 @@ func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []strin
 	}
 
 	return
-}
-
-func CostRegression() {
-	fmt.Println("============== prepare data ===============")
-	var rs utils.Records
-	dataDir := "./data"
-	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
-	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{""})
-	x, y, idx2Name := prepareData(rs)
-
-	fmt.Println("============== training ===============")
-	w := regression(x, y)
-	factor := make(map[string]float64)
-	for i := range w {
-		factor[idx2Name[i]] = w[i]
-	}
-
-	fmt.Println("============== normalize factors ===============")
-	minFactor := 1e20
-	for _, v := range factor {
-		minFactor = math.Min(v, minFactor)
-	}
-	for i := range factor {
-		factor[i] /= minFactor
-	}
-	sort.Strings(idx2Name)
-	for _, name := range idx2Name {
-		fmt.Printf("%v: %v\n", name, factor[name])
-	}
-
-	fmt.Println("============== draw ===============")
-	updateCost(rs, factor)
-	utils.DrawCostRecordsTo(rs, "./data/regression.png", "linear")
 }
 
 // x * |w| == y, the returned w is non-negative
