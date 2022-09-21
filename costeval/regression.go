@@ -11,28 +11,18 @@ import (
 	"gorgonia.org/tensor"
 )
 
-func CostRegression() {
-	var rs utils.Records
-	dataDir := "./data"
-	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
-	utils.Must(utils.ReadFrom(recordFile, &rs))
-
-	rs = filterByLabel(rs, []string{""})
-
+func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []string) {
 	nameIdx := make(map[string]int)
-	var idxName []string
 	wIdxCnt := 0
 	for i := range rs {
 		for name := range rs[i].Weights {
 			if _, ok := nameIdx[name]; !ok {
 				nameIdx[name] = wIdxCnt
-				idxName = append(idxName, name)
+				idx2Name = append(idx2Name, name)
 				wIdxCnt++
 			}
 		}
 	}
-	var x [][]float64
-	var y []float64
 	for i := range rs {
 		v := make([]float64, wIdxCnt)
 		for name, val := range rs[i].Weights {
@@ -42,18 +32,30 @@ func CostRegression() {
 		x = append(x, v)
 		y = append(y, rs[i].TimeMS)
 	}
+	return
+}
 
-	fmt.Println("========================== training ======================")
+func CostRegression() {
+	fmt.Println("============== prepare data ===============")
+	var rs utils.Records
+	dataDir := "./data"
+	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
+	utils.Must(utils.ReadFrom(recordFile, &rs))
+	rs = filterByLabel(rs, []string{""})
+	x, y, idx2Name := prepareData(rs)
 	for i := range x {
 		fmt.Println(x[i])
 	}
 	fmt.Println(y)
-	fmt.Println("========================================")
+
+	fmt.Println("============== training ===============")
 	w := regression(x, y)
 	factor := make(map[string]float64)
 	for i := range w {
-		factor[idxName[i]] = w[i]
+		factor[idx2Name[i]] = w[i]
 	}
+
+	fmt.Println("============== normalize factors ===============")
 	minFactor := 1e20
 	for _, v := range factor {
 		minFactor = math.Min(v, minFactor)
@@ -61,14 +63,13 @@ func CostRegression() {
 	for i := range factor {
 		factor[i] /= minFactor
 	}
-	fmt.Println("=============== norm factor =====================")
-	sort.Strings(idxName)
-	for _, name := range idxName {
+	sort.Strings(idx2Name)
+	for _, name := range idx2Name {
 		fmt.Printf("%v: %v\n", name, factor[name])
 	}
-	fmt.Println("=============== norm factor =====================")
-	updateCost(rs, factor)
 
+	fmt.Println("============== draw ===============")
+	updateCost(rs, factor)
 	utils.DrawCostRecordsTo(rs, "./data/regression.png", "linear")
 }
 
