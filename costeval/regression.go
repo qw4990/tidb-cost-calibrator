@@ -43,10 +43,6 @@ func CostRegression() {
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	rs = filterByLabel(rs, []string{""})
 	x, y, idx2Name := prepareData(rs)
-	for i := range x {
-		fmt.Println(x[i])
-	}
-	fmt.Println(y)
 
 	fmt.Println("============== training ===============")
 	w := regression(x, y)
@@ -147,7 +143,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 
 		machine.Reset()
 		lossV := loss.Value().Data().(float64)
-		if i%1000 == 0 {
+		if i%5000 == 0 {
 			fmt.Printf("Iter: %v Loss: %.6f\n", i, lossV)
 		}
 	}
