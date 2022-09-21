@@ -37,7 +37,7 @@ func CostRegression() {
 	}
 	sort.Strings(idx2Name)
 	for _, name := range idx2Name {
-		fmt.Printf("%v: %v\n", name, factor[name])
+		fmt.Printf("%-40s\t%.2f\n", name, factor[name])
 	}
 
 	fmt.Println("============== draw ===============")
@@ -72,7 +72,7 @@ func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []strin
 	}
 
 	for name, weight := range factorWeights {
-		fmt.Printf("%v\t%v\t%v\n", name, factorCounts[name], weight)
+		fmt.Printf("%-40s\t%v\t%.2f\n", name, factorCounts[name], weight)
 	}
 
 	return
