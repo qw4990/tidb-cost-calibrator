@@ -17,7 +17,7 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"Agg1"})
+	rs = filterByLabel(rs, []string{""})
 	x, y, idx2Name := prepareData(rs)
 
 	fmt.Println("============== training ===============")
@@ -49,6 +49,7 @@ func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []strin
 	name2Idx := make(map[string]int)
 	wIdxCnt := 0
 	factorWeights := make(map[string]float64)
+	factorCounts := make(map[string]int)
 	for i := range rs {
 		for name := range rs[i].Weights {
 			if _, ok := name2Idx[name]; !ok {
@@ -64,13 +65,14 @@ func prepareData(rs utils.Records) (x [][]float64, y []float64, idx2Name []strin
 			idx := name2Idx[name]
 			v[idx] = val
 			factorWeights[name] += val
+			factorCounts[name]++
 		}
 		x = append(x, v)
 		y = append(y, rs[i].TimeMS)
 	}
 
 	for name, weight := range factorWeights {
-		fmt.Println(name, weight)
+		fmt.Printf("%v\t%v\t%v\n", name, factorCounts[name], weight)
 	}
 
 	return
