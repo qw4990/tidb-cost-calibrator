@@ -97,3 +97,20 @@ func filterByLabel(rs utils.Records, whiteList []string) utils.Records {
 	}
 	return ret
 }
+
+func scaleByLabel(rs utils.Records, scale map[string]int) utils.Records {
+	var ret utils.Records
+	for _, r := range rs {
+		repeat := 1
+		for k, v := range scale {
+			if strings.Contains(r.Label, k) {
+				repeat = v
+				break
+			}
+		}
+		for i := 0; i < repeat; i++ {
+			ret = append(ret, r)
+		}
+	}
+	return ret
+}
