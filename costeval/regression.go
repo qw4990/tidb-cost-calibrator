@@ -72,7 +72,7 @@ func CostRegression() {
 	utils.DrawCostRecordsTo(rs, "./data/regression.png", "linear")
 }
 
-// x * |w| == y
+// x * |w| == y, the returned w is non-negative
 func regression(x [][]float64, y []float64) (w []float64) {
 	// max norm
 	var maxX, maxY float64
@@ -127,12 +127,12 @@ func regression(x [][]float64, y []float64) (w []float64) {
 		panic(fmt.Sprintf("Failed to backpropagate: %v", err))
 	}
 
-	// training
 	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.2))
 	model := []gorgonia.ValueGrad{weights}
 	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
 
+	// training
 	fmt.Println("init weights: ", weights.Value())
 	iter := 200000
 	for i := 0; i < iter; i++ {
@@ -151,6 +151,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 		}
 	}
 
+	// post-process the results
 	w = absWeights.Value().Data().([]float64)
 	for i := range w {
 		w[i] = w[i] * maxX / maxY
