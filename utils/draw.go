@@ -46,27 +46,24 @@ func (r Records) XY(k int) (x, y float64) {
 	return r[k].Cost, r[k].TimeMS
 }
 
-func minMaxNormCost(r Records) {
-	minCost, maxCost := -1.0, -1.0
+func maxNormCost(r Records) {
+	maxCost := -1.0
 	for _, v := range r {
-		if minCost < 0 || v.Cost < minCost {
-			minCost = v.Cost
-		}
 		if maxCost < 0 || v.Cost > maxCost {
 			maxCost = v.Cost
 		}
 	}
 	for i := range r {
-		r[i].Cost = (r[i].Cost - minCost) / (maxCost - minCost)
+		r[i].Cost /= maxCost
 	}
 }
 
 func DrawCostRecordsTo(r Records, f, scale string) {
-	//minMaxNormCost(r)
+	maxNormCost(r)
 
 	p := plot.New()
 	p.Title.Text = "cost model accuracy scatter plot"
-	p.X.Label.Text = fmt.Sprintf("cost estimation [%v scale]", scale)
+	p.X.Label.Text = fmt.Sprintf("normalized cost estimation [%v scale]", scale)
 	p.Y.Label.Text = fmt.Sprintf("actual exec-time(ms) [%v scale]", scale)
 	fontSize := vg.Length(25)
 	p.Title.TextStyle.Font.Size = fontSize
@@ -84,13 +81,13 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 
 	switch scale {
 	case "linear":
-		p.X.Max = maxX * 1.2
-		p.Y.Max = maxY * 1.05
+		p.X.Max = maxX * 1.1
+		p.Y.Max = maxY * 1.1
 	case "log10":
 		p.X.Min = 1e8
 		p.Y.Min = 10
-		p.X.Max = maxX * 1.2
-		p.Y.Max = maxY * 1.05
+		p.X.Max = maxX * 1.1
+		p.Y.Max = maxY * 1.1
 		p.X.Scale = new(log10Nor)
 		p.Y.Scale = new(log10Nor)
 		p.X.Tick.Marker = new(log10Tick)
