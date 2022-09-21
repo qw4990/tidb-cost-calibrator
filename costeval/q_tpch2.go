@@ -16,15 +16,22 @@ func genTPCHScan(n int, scale float64) utils.Queries {
 			`TableScan1`,
 		},
 		{
-			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_partkey, l_suppkey, l_linenumber, ` +
-				`l_quantity, l_extendedprice, l_discount, l_tax, l_shipdate from lineitem where #`,
-			[]tempitem{{"", "l_orderkey", 1, 4000000}},
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_partkey, l_suppkey, ` +
+				`l_linenumber, l_quantity, l_extendedprice from lineitem where #`,
+			[]tempitem{{"", "l_orderkey", 1, 6000000}},
 			`TableScan2`,
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_partkey, l_suppkey, ` +
+				`l_linenumber, l_quantity, l_extendedprice, l_discount, l_tax, l_returnflag, ` +
+				`l_linestatus, l_shipdate, l_commitdate from lineitem where #`,
+			[]tempitem{{"", "l_orderkey", 1, 4000000}},
+			`TableScan3`,
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ * from lineitem where #`,
 			[]tempitem{{"", "l_orderkey", 1, 3000000}},
-			`TableScan3`,
+			`TableScan4`,
 		},
 		// MPP Scan
 		{
@@ -33,15 +40,22 @@ func genTPCHScan(n int, scale float64) utils.Queries {
 			`MPPScan1`,
 		},
 		{
-			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_partkey, l_suppkey, l_linenumber, ` +
-				`l_quantity, l_extendedprice, l_discount, l_tax, l_shipdate from lineitem where #`,
-			[]tempitem{{"", "l_orderkey", 1, 10000000}},
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_partkey, l_suppkey, ` +
+				`l_linenumber, l_quantity, l_extendedprice from lineitem where #`,
+			[]tempitem{{"", "l_orderkey", 1, 20000000}},
 			`MPPScan2`,
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_partkey, l_suppkey, ` +
+				`l_linenumber, l_quantity, l_extendedprice, l_discount, l_tax, l_returnflag, ` +
+				`l_linestatus, l_shipdate, l_commitdate from lineitem where #`,
+			[]tempitem{{"", "l_orderkey", 1, 10000000}},
+			`MPPScan3`,
 		},
 		{
 			`select /*+ read_from_storage(tiflash[lineitem]) */ * from lineitem where #`,
 			[]tempitem{{"", "l_orderkey", 1, 7500000}},
-			`MPPScan3`,
+			`MPPScan4`,
 		},
 	}, n, scale)
 }
