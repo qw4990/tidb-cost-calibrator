@@ -134,7 +134,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 	defer machine.Close()
 
 	fmt.Println("init weights: ", weights.Value())
-	iter := 500000
+	iter := 200000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))
