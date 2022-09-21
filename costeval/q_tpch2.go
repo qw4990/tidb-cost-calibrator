@@ -60,6 +60,19 @@ func genTPCHScan(n int, scale float64) utils.Queries {
 	}, n, scale)
 }
 
+func genTPCHSel(n int, scale float64) utils.Queries {
+	return gen4Templates([]template{
+		// TiDB
+
+		// TiFlash
+		{
+			`select /*+ */ `,
+			nil,
+			"TiFlashSel",
+		},
+	}, n, scale)
+}
+
 func genTPCHAgg(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// TiDB Agg
