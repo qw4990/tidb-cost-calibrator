@@ -3,7 +3,7 @@ package costeval
 import "github.com/qw4990/tidb-cost-calibrator/utils"
 
 func genTPCHQueries2(n int, scale float64) utils.Queries {
-	return genQueries(n, scale, genTPCHScan, genTPCHAgg)
+	return genQueries(n, scale, genTPCHSel)
 	//return genQueries(n, scale, genTPCHScan, genTPCHAgg, genTPCHSort, genTPCHJoin)
 }
 
@@ -65,14 +65,14 @@ func genTPCHSel(n int, scale float64) utils.Queries {
 		// TiDB
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey from lineitem where l_shipdate < '1995-03-13' and #`,
-			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			[]tempitem{{"", "l_orderkey", 1, 10000000}},
 			"TiDBSel1",
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey from lineitem where l_shipdate >= '1994-01-01' and ` +
 				`l_discount between 0.06 - 0.01 and 0.06 + 0.01 and l_quantity < 24 and ` +
 				`l_shipdate < date_add('1994-01-01', interval '1' year) and #`,
-			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			[]tempitem{{"", "l_orderkey", 1, 8000000}},
 			"TiDBSel2",
 		},
 		{
