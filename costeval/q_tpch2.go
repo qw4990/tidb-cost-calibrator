@@ -63,12 +63,44 @@ func genTPCHScan(n int, scale float64) utils.Queries {
 func genTPCHSel(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		// TiDB
-
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey from lineitem where l_shipdate < '1995-03-13' and #`,
+			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			"TiDBSel1",
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey from lineitem where l_shipdate >= '1994-01-01' and ` +
+				`l_discount between 0.06 - 0.01 and 0.06 + 0.01 and l_quantity < 24 and ` +
+				`l_shipdate < date_add('1994-01-01', interval '1' year) and #`,
+			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			"TiDBSel2",
+		},
+		{
+			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey from lineitem where l_shipmode in ('RAIL', 'FOB') and ` +
+				`l_commitdate < l_receiptdate and l_shipdate < l_commitdate and l_receiptdate >= '1997-01-01' and ` +
+				`l_receiptdate < date_add('1997-01-01', interval '1' year) and #`,
+			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			"TiDBSel3",
+		},
 		// TiFlash
 		{
-			`select /*+ */ `,
-			nil,
-			"TiFlashSel",
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey from lineitem where l_shipdate < '1995-03-13' and #`,
+			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			"TiFlashSel1",
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey from lineitem where l_shipdate >= '1994-01-01' and ` +
+				`l_discount between 0.06 - 0.01 and 0.06 + 0.01 and l_quantity < 24 and ` +
+				`l_shipdate < date_add('1994-01-01', interval '1' year) and #`,
+			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			"TiFlashSel2",
+		},
+		{
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey from lineitem where l_shipmode in ('RAIL', 'FOB') and ` +
+				`l_commitdate < l_receiptdate and l_shipdate < l_commitdate and l_receiptdate >= '1997-01-01' and ` +
+				`l_receiptdate < date_add('1997-01-01', interval '1' year) and #`,
+			[]tempitem{{"", "l_orderkey", 1, 15000000}},
+			"TiFlashSel3",
 		},
 	}, n, scale)
 }
