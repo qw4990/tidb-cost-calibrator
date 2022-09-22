@@ -21,7 +21,7 @@ func CostEval() {
 	}
 	ins := utils.MustConnectTo(opt)
 	//costEval(ins, &evalOpt{"synthetic", 2, 3, 5, true})
-	costEval(ins, &evalOpt{"tpch_clustered", 1, 1, 5, true, 1})
+	costEval(ins, &evalOpt{"tpch_clustered", 2, 1, 5, true, 1})
 }
 
 type evalOpt struct {
