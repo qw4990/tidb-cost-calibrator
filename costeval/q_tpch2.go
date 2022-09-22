@@ -299,43 +299,17 @@ func genTPCHSort(n int, scale float64) utils.Queries {
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate`,
 			[]tempitem{{"", "l_orderkey", 1, 3000000}},
-			`TiDBSort1`,
-		},
-		{
-			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus`,
-			[]tempitem{{"", "l_orderkey", 1, 4000000}},
-			`TiDBSort2`,
+			`TiDBSort`,
 		},
 		{
 			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate limit 100`,
 			[]tempitem{{"", "l_orderkey", 1, 9000000}},
-			`TiDBSort3`,
+			`TiDBSortLimit`,
 		},
 		{
-			`select /*+ read_from_storage(tikv[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus limit 100`,
-			[]tempitem{{"", "l_orderkey", 1, 8000000}},
-			`TiDBSort4`,
+			`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate limit 100`,
+			[]tempitem{{"", "l_orderkey", 1, 9000000}},
+			`TiFlashSortLimit`,
 		},
-		// NOTE: not supported
-		//{
-		//	`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate`,
-		//	[]tempitem{{"", "l_orderkey", 1, 10}},
-		//	`MPPSort1`,
-		//},
-		//{
-		//	`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus`,
-		//	[]tempitem{{"", "l_orderkey", 1, 10}},
-		//	`MPPSort2`,
-		//},
-		//{
-		//	`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_shipdate limit 100`,
-		//	[]tempitem{{"", "l_orderkey", 1, 10}},
-		//	`MPPTopN1`,
-		//},
-		//{
-		//	`select /*+ read_from_storage(tiflash[lineitem]) */ l_orderkey, l_shipmode from lineitem where # order by l_returnflag, l_linestatus limit 100`,
-		//	[]tempitem{{"", "l_orderkey", 1, 10}},
-		//	`MPPTopN2`,
-		//},
 	}, n, scale)
 }
