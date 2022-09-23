@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"path"
 	"strings"
-	
+
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
@@ -18,7 +18,7 @@ func RegDetect() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	qs := getTPCHQueries("/Users/zhangyuanjia/Workspace/go/src/github.com/qw4990/tidb-cost-calibrator/regression/workloads/tpch")
+	qs := getTPCHQueries("workloads/tpch")
 	ins.MustExec("use tpch")
 	compare(qs, ins)
 }

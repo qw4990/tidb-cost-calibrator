@@ -3,8 +3,7 @@ package costeval
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
-
+	
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
@@ -36,18 +35,8 @@ func CostCalibrate() {
 }
 
 func updateCost(rs utils.Records, factors map[string]float64) {
-	mppScanfactors := make(map[string]float64)
-	for k, v := range factors {
-		mppScanfactors[k] = v
-	}
-	mppScanfactors["tidb_opt_mpp_network_factor_v2"] = mppScanfactors["tidb_opt_network_factor_v2"] / 3
-
 	for i := range rs {
 		ff := factors
-		if strings.Contains(rs[i].Label, "MPPScan") {
-			ff = mppScanfactors
-		}
-
 		if rs[i].Weights == nil {
 			fmt.Println(">>> skip >> ", rs[i].Label, rs[i].SQL)
 		}
