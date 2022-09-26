@@ -292,8 +292,8 @@ func genTPCHJoin(n int, scale float64) utils.Queries {
 		{
 			`select /*+ read_from_storage(tiflash[lineitem, part]), broadcast_join(part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
 			[]tempitem{
-				{"", "p_partkey", 1, 750000}, // 1:100
-				{"", "l_orderkey", 1, 75000000},
+				{"", "p_partkey", 1, 600000}, // 1:100
+				{"", "l_orderkey", 1, 60000000},
 			},
 			`BCastJoin2`,
 		},
