@@ -282,13 +282,19 @@ func genTPCHJoin(n int, scale float64) utils.Queries {
 		},
 		// BCastJoin
 		{
-			`select /*+ read_from_storage(tiflash[customer, nation]), broadcast_join(nation) */ c_custkey, n_nationkey from customer, nation where c_nationkey = n_nationkey and #`,
-			[]tempitem{{"", "c_custkey", 1, 3000000}},
+			`select /*+ read_from_storage(tiflash[customer, orders]), broadcast_join(customer) */ c_custkey, o_orderkey from customer, orders where c_custkey = o_custkey and # and #`,
+			[]tempitem{
+				{"", "c_custkey", 1, 10000000}, // 1:10
+				{"", "o_orderkey", 1, 100000000},
+			},
 			`BCastJoin1`,
 		},
 		{
-			`select /*+ read_from_storage(tiflash[supplier, nation]), broadcast_join(nation) */ * from supplier, nation where s_nationkey = n_nationkey and #`,
-			[]tempitem{{"", "s_suppkey", 1, 200000}},
+			`select /*+ read_from_storage(tiflash[lineitem, part]), broadcast_join(part) */ l_orderkey, p_partkey from lineitem, part where l_partkey = p_partkey and # and #`,
+			[]tempitem{
+				{"", "p_partkey", 1, 750000}, // 1:100
+				{"", "l_orderkey", 1, 75000000},
+			},
 			`BCastJoin2`,
 		},
 	}, n, scale)
