@@ -24,11 +24,11 @@ func ParseExplainAnalyzeResultsWithRows(rs *sql.Rows) *ExplainAnalyzeResult {
 	//| TableReader_6          | 10000.00 | 52418.00  | 10000   | root      |               | time:9.93ms, loops:11, cop_task: {num: 1, max: 9.75ms, proc_keys: 10000, tot_proc: 5ms, tot_wait: 2ms, rpc_num: 1, rpc_time: 9.7ms, copr_cache: disabled}                                                                                                   | data:TableRangeScan_5                           | 78.5 KB | N/A  |
 	//| └─TableRangeScan_5     | 10000.00 | 705020.00 | 10000   | cop[tikv] | table:t       | tikv_task:{time:5ms, loops:14}, scan_detail: {total_process_keys: 10000, total_process_keys_size: 270000, total_keys: 10500, rocksdb: {delete_skipped_count: 0, key_skipped_count: 10499, block: {cache_hit_count: 33, read_count: 0, read_byte: 0 Bytes}}} | range:[1,10000], keep order:false, stats:pseudo | N/A     | N/A  |
 	//+------------------------+----------+-----------+---------+-----------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------+---------+------+
-	var id, estRows, actRows, estCost, task, access, execInfo, opInfo, mem, disk string
+	var id, estRows, actRows, estCost, costFormula, task, access, execInfo, opInfo, mem, disk string
 	r := &ExplainAnalyzeResult{OperatorActRows: make(map[string]float64), OperatorEstRows: make(map[string]float64)}
 
 	for rs.Next() {
-		Must(rs.Scan(&id, &estRows, &estCost, &actRows, &task, &access, &execInfo, &opInfo, &mem, &disk))
+		Must(rs.Scan(&id, &estRows, &estCost, &costFormula, &actRows, &task, &access, &execInfo, &opInfo, &mem, &disk))
 		operator, id := parseOperatorName(id)
 		r.OperatorEstRows[id] = mustStr2Float(estRows)
 		r.OperatorActRows[id] = mustStr2Float(actRows)
