@@ -1,10 +1,10 @@
 package costeval
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -148,30 +148,22 @@ func parseCostWeights(ins utils.Instance) map[string]float64 {
 	defer func() {
 		utils.Must(rs.Close())
 	}()
-	// | Warning | 1105 | valid cost trace result: tidb_opt_cpu_factor_v2=1.0000, tidb_opt_copcpu_factor_v2=0.0000, ... |
+	// Warning | 1105 | factor weights: {"tidb_kv_net_factor":23472,"tidb_request_factor":1,"tikv_scan_factor":10854.458609780715}
 	var warn, weightStr string
 	var errno int
-	if !rs.Next() {
+	for rs.Next() {
+		var tmp string
+		utils.Must(rs.Scan(&warn, &errno, &tmp))
+		if strings.Contains(tmp, "factor weights:") {
+			weightStr = tmp
+		}
+	}
+	if weightStr == "" {
 		panic("cannot get weights")
 	}
-	utils.Must(rs.Scan(&warn, &errno, &weightStr))
-	if strings.Contains(weightStr, "invalid") {
-		return nil
-	}
-	idx := strings.Index(weightStr, "result: ")
-	if idx == -1 {
-		panic("unexpected: " + weightStr)
-	}
-	tmp := strings.Split(weightStr[idx+len("result: "):], ",")
-	for _, kv := range tmp {
-		kvList := strings.Split(kv, "=")
-		k := strings.TrimSpace(kvList[0])
-		v, err := strconv.ParseFloat(strings.TrimSpace(kvList[1]), 64)
-		if err != nil {
-			panic("unexpected: " + weightStr)
-		}
-		weights[k] = v
-	}
+	idx := strings.Index(weightStr, "weights:")
+	data := strings.TrimSpace(weightStr[idx+len("weights:"):])
+	utils.Must(json.Unmarshal([]byte(data), &weights))
 	return weights
 }
 
