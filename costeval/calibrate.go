@@ -3,7 +3,7 @@ package costeval
 import (
 	"fmt"
 	"path/filepath"
-	
+
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
@@ -18,16 +18,20 @@ func CostCalibrate() {
 	rs = filterByLabel(rs, whiteList)
 
 	factors := map[string]float64{
-		"tidb_opt_cpu_factor_v2":                30,
-		"tidb_opt_copcpu_factor_v2":             30,
-		"tidb_opt_tiflash_cpu_factor_v2":        5,
-		"tidb_opt_hash_table_factor_v2":         10,
-		"tidb_opt_cop_hash_table_factor_v2":     10,
-		"tidb_opt_tiflash_hash_table_factor_v2": 5,
-		"tidb_opt_scan_factor_v2":               20,
-		"tidb_opt_tiflash_scan_factor_v2":       8,
-		"tidb_opt_network_factor_v2":            8,
-		"tidb_opt_mpp_network_factor_v2":        4,
+		"tikv_scan_factor":       100,
+		"tikv_desc_scan_factor":  150,
+		"tiflash_scan_factor":    5,
+		"tidb_cpu_factor":        30,
+		"tikv_cpu_factor":        30,
+		"tiflash_cpu_factor":     5,
+		"tidb_kv_net_factor":     8,
+		"tidb_flash_net_factor":  4,
+		"tiflash_mpp_net_factor": 4,
+		"tidb_mem_factor":        1,
+		"tikv_mem_factor":        1,
+		"tiflash_mem_factor":     1,
+		"tidb_disk_factor":       1000,
+		"tidb_request_factor":    9500000,
 	}
 	updateCost(rs, factors)
 
