@@ -17,8 +17,11 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{""})
+	rs = filterByLabel(rs, []string{"Agg"})
 	//rs = scaleByLabel(rs, map[string]int{"Scan": 2})
+	for _, r := range rs {
+		fmt.Println("> ", r.Label, r.Cost, r.TimeMS)
+	}
 	x, y, idx2Name := prepareData(rs)
 
 	fmt.Println("============== training ===============")
