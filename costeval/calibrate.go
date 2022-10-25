@@ -13,24 +13,24 @@ func CostCalibrate() {
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	whiteList := []string{
-		"",
+		"Agg", "Scan", "Sel",
 	}
 	rs = filterByLabel(rs, whiteList)
 
 	factors := map[string]float64{
-		"tikv_scan_factor":       100,
-		"tikv_desc_scan_factor":  150,
-		"tiflash_scan_factor":    5,
-		"tidb_cpu_factor":        30,
-		"tikv_cpu_factor":        30,
-		"tiflash_cpu_factor":     5,
-		"tidb_kv_net_factor":     8,
-		"tidb_flash_net_factor":  4,
-		"tiflash_mpp_net_factor": 4,
-		"tidb_mem_factor":        1,
-		"tikv_mem_factor":        1,
-		"tiflash_mem_factor":     1,
-		"tidb_disk_factor":       1000,
+		"tikv_scan_factor":       40.7,
+		"tikv_desc_scan_factor":  61.05,
+		"tiflash_scan_factor":    12.2,
+		"tidb_cpu_factor":        49.9,
+		"tikv_cpu_factor":        49.9,
+		"tiflash_cpu_factor":     2.4,
+		"tidb_kv_net_factor":     3.96,
+		"tidb_flash_net_factor":  2.2,
+		"tiflash_mpp_net_factor": 1,
+		"tidb_mem_factor":        0.198,
+		"tikv_mem_factor":        0.198,
+		"tiflash_mem_factor":     0.05,
+		"tidb_disk_factor":       198,
 		"tidb_request_factor":    9500000,
 	}
 	updateCost(rs, factors)
