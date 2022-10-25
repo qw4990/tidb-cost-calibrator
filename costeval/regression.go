@@ -38,14 +38,14 @@ func CostRegression() {
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	rs = filterByLabel(rs, []string{"Scan"})
 	//rs = scaleByLabel(rs, map[string]int{"Scan": 2})
-	for _, r := range rs {
-		fmt.Println("> ", r.Label, r.Cost, r.TimeMS)
-	}
 
 	fmt.Println("============== handle fixed factor ===============")
 	rs = handleFixedFactors(rs, map[string]float64{
 		"tidb_request_factor": 1e5,
 	})
+	for _, r := range rs {
+		fmt.Println("> ", r.Label, r.Cost, r.TimeMS)
+	}
 
 	fmt.Println("============== training ===============")
 	x, y, idx2Name := prepareData(rs)
