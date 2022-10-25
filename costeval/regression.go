@@ -36,7 +36,7 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"HashAgg", "StreamAgg", "PhaseAgg"})
+	rs = filterByLabel(rs, []string{"Scan"})
 	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
 
 	fmt.Println("============== handle fixed factor ===============")
@@ -44,9 +44,6 @@ func CostRegression() {
 		//"tiflash_mem_factor": 0,
 		//"tidb_cpu_factor":    0,
 	})
-	for _, r := range rs {
-		fmt.Println("> ", r.Label, r.Cost, r.TimeMS)
-	}
 
 	fmt.Println("============== training ===============")
 	x, y, idx2Name := prepareData(rs)
@@ -169,7 +166,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 
 	// training
 	fmt.Println("init weights: ", weights.Value())
-	iter := 20000
+	iter := 200000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))
