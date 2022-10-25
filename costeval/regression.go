@@ -51,10 +51,13 @@ func CostRegression() {
 	fmt.Println("============== shrink factors ===============")
 	rs = shrinkFactors(rs, map[string]float64{
 		"tidb_request_factor": 0,
-		"tidb_mem_factor":     0,
-		"tikv_mem_factor":     0,
 		"tidb_cpu_factor":     1,
 		"tikv_cpu_factor":     1,
+	})
+	rs = shrinkFactors(rs, map[string]float64{
+		"tidb_kv_net_factor": 1,
+		"tidb_mem_factor":    0.05,
+		"tikv_mem_factor":    0.05,
 	})
 
 	fmt.Println("============== training ===============")
