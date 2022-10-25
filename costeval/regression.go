@@ -36,16 +36,13 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"Agg"})
-	//rs = scaleByLabel(rs, map[string]int{"Scan": 2})
+	rs = filterByLabel(rs, []string{"HashAgg", "StreamAgg", "PhaseAgg"})
+	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
 
 	fmt.Println("============== handle fixed factor ===============")
 	rs = handleFixedFactors(rs, map[string]float64{
-		"tidb_request_factor":   0,
-		"tidb_flash_net_factor": 1.00,
-		"tidb_kv_net_factor":    1.64,
-		"tiflash_scan_factor":   5.80,
-		"tikv_scan_factor":      17.82,
+		//"tiflash_mem_factor": 0,
+		//"tidb_cpu_factor":    0,
 	})
 	for _, r := range rs {
 		fmt.Println("> ", r.Label, r.Cost, r.TimeMS)
