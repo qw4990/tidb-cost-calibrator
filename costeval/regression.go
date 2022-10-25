@@ -11,6 +11,22 @@ import (
 	"gorgonia.org/tensor"
 )
 
+func handleFixedFactors(rs utils.Records, fixedFactors map[string]float64) utils.Records {
+	for i, r := range rs {
+		rr := r.Clone()
+		for fn, fv := range fixedFactors {
+			if w, ok := r.Weights[fn]; ok && w > 0 {
+				tot := w * fv
+				rr.Cost -= tot
+				rr.TimeMS -= r.TimeMS * (tot / r.Cost)
+				delete(rr.Weights, fn)
+			}
+		}
+		rs[i] = rr
+	}
+	return rs
+}
+
 func CostRegression() {
 	fmt.Println("============== prepare data ===============")
 	var rs utils.Records
@@ -22,9 +38,12 @@ func CostRegression() {
 	for _, r := range rs {
 		fmt.Println("> ", r.Label, r.Cost, r.TimeMS)
 	}
-	x, y, idx2Name := prepareData(rs)
+
+	fmt.Println("============== handle fixed factor ===============")
+	rs = handleFixedFactors(rs, map[string]float64{})
 
 	fmt.Println("============== training ===============")
+	x, y, idx2Name := prepareData(rs)
 	w := regression(x, y)
 	factor := make(map[string]float64)
 	for i := range w {
