@@ -13,8 +13,8 @@ func CostCalibrate() {
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	whiteList := []string{
-		"Agg", "Scan", "Sel",
-		//"HashAgg3", "2PhaseAgg1",
+		//"TableScan", "BCastJoin",
+		"Agg", "Scan", "Sel", "HashJoin", "MergeJoin",
 	}
 	rs = filterByLabel(rs, whiteList)
 
