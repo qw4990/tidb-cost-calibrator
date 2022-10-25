@@ -13,11 +13,11 @@ func genSYNSort(n int, scale float64) utils.Queries {
 		{
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b from t where # order by c`,
 			[]tempitem{{"t", "b", 0, 2500000}},
-			"Sort",
+			"Sort1",
 		},
 		{`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b from t where # order by c limit 1000`,
 			[]tempitem{{"t", "b", 0, 5000000}},
-			"TopN",
+			"Sort2",
 		},
 	}, n, scale)
 }
@@ -28,34 +28,34 @@ func genSYNScan(n int, scale float64) utils.Queries {
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where #`,
 			[]tempitem{{"t", "a", 0, 10000000}},
-			"TableScan",
+			"TableScan1",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a, c from t where #`,
 			[]tempitem{{"t", "a", 0, 3000000}},
-			"WideTableScan",
+			"TableScan2",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # order by a desc`,
 			[]tempitem{{"t", "a", 0, 6000000}},
-			"DescTableScan",
+			"TableScan3",
 		},
 
 		// TiKV Index Scan
 		{
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where #`,
 			[]tempitem{{"t", "b", 0, 10000000}},
-			"IndexScan",
+			"IndexScan1",
 		},
 		{
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b, c from t where #`,
 			[]tempitem{{"t", "b", 0, 3000000}},
-			"DescIndexScan",
+			"IndexScan2",
 		},
 		{
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where # order by b desc`,
 			[]tempitem{{"t", "b", 0, 6000000}},
-			"DescIndexScan",
+			"IndexScan3",
 		},
 
 		// TiKV Index Lookup
