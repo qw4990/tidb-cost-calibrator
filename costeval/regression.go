@@ -45,16 +45,16 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"TableScan", "HashAgg"})
+	rs = filterByLabel(rs, []string{"TableScan", "HashAgg", "TiDBSel"})
 	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
 
 	fmt.Println("============== shrink factors ===============")
 	rs = shrinkFactors(rs, map[string]float64{
 		"tidb_request_factor": 0,
-		//"tidb_kv_net_factor":  1,
-		//"tikv_scan_factor":    10,
-		"tidb_cpu_factor": 1,
-		"tikv_cpu_factor": 1,
+		"tidb_mem_factor":     0,
+		"tikv_mem_factor":     0,
+		"tidb_cpu_factor":     1,
+		"tikv_cpu_factor":     1,
 	})
 
 	fmt.Println("============== training ===============")
