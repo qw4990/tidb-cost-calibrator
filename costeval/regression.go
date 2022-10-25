@@ -50,7 +50,7 @@ func CostRegression() {
 
 	fmt.Println("============== shrink factors ===============")
 	rs = shrinkFactors(rs, map[string]float64{
-		//"tiflash_mem_factor": 0,
+		"tidb_request_factor": 0,
 		//"tidb_cpu_factor":    0,
 	})
 
