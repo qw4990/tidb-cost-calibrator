@@ -22,6 +22,9 @@ func handleFixedFactors(rs utils.Records, fixedFactors map[string]float64) utils
 				delete(rr.Weights, fn)
 			}
 		}
+		if rr.Cost < 0 {
+			panic("invalid fixed factors")
+		}
 		rs[i] = rr
 	}
 	return rs
@@ -33,14 +36,16 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"Agg"})
+	rs = filterByLabel(rs, []string{"Scan"})
 	//rs = scaleByLabel(rs, map[string]int{"Scan": 2})
 	for _, r := range rs {
 		fmt.Println("> ", r.Label, r.Cost, r.TimeMS)
 	}
 
 	fmt.Println("============== handle fixed factor ===============")
-	rs = handleFixedFactors(rs, map[string]float64{})
+	rs = handleFixedFactors(rs, map[string]float64{
+		"tidb_request_factor": 1e5,
+	})
 
 	fmt.Println("============== training ===============")
 	x, y, idx2Name := prepareData(rs)
