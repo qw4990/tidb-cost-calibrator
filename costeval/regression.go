@@ -11,21 +11,30 @@ import (
 	"gorgonia.org/tensor"
 )
 
-func handleFixedFactors(rs utils.Records, fixedFactors map[string]float64) utils.Records {
-	for i, r := range rs {
-		rr := r.Clone()
-		for fn, fv := range fixedFactors {
-			if w, ok := r.Weights[fn]; ok && w > 0 {
-				tot := w * fv
-				rr.Cost -= tot
-				rr.TimeMS -= r.TimeMS * (tot / r.Cost)
-				delete(rr.Weights, fn)
+func shrinkFactors(rs utils.Records, m map[string]float64) utils.Records {
+	var baseline string
+	for k, v := range m {
+		if v == 0 { // remove factor with zero-weight
+			for i := range rs {
+				delete(rs[i].Weights, k)
 			}
+		} else if v == 1 {
+			baseline = k // the baseline factor
 		}
-		if rr.Cost < 0 {
-			panic("invalid fixed factors")
+	}
+	for k, v := range m {
+		if v == 0 || k == baseline {
+			continue
 		}
-		rs[i] = rr
+		for i, r := range rs {
+			if _, ok := r.Weights[k]; !ok {
+				continue
+			}
+			rr := r.Clone()
+			rr.Weights[baseline] += r.Weights[k] * v
+			delete(rr.Weights, k)
+			rs[i] = rr
+		}
 	}
 	return rs
 }
@@ -39,8 +48,8 @@ func CostRegression() {
 	rs = filterByLabel(rs, []string{"Scan"})
 	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
 
-	fmt.Println("============== handle fixed factor ===============")
-	rs = handleFixedFactors(rs, map[string]float64{
+	fmt.Println("============== shrink factors ===============")
+	rs = shrinkFactors(rs, map[string]float64{
 		//"tiflash_mem_factor": 0,
 		//"tidb_cpu_factor":    0,
 	})
