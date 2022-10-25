@@ -14,13 +14,14 @@ func CostCalibrate() {
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	whiteList := []string{
 		"Agg", "Scan", "Sel",
+		//"HashAgg3", "2PhaseAgg1",
 	}
 	rs = filterByLabel(rs, whiteList)
 
 	factors := map[string]float64{
 		"tikv_scan_factor":       40.7,
 		"tikv_desc_scan_factor":  61.05,
-		"tiflash_scan_factor":    12.2,
+		"tiflash_scan_factor":    11.6,
 		"tidb_cpu_factor":        49.9,
 		"tikv_cpu_factor":        49.9,
 		"tiflash_cpu_factor":     2.4,
@@ -31,7 +32,7 @@ func CostCalibrate() {
 		"tikv_mem_factor":        0.198,
 		"tiflash_mem_factor":     0.05,
 		"tidb_disk_factor":       198,
-		"tidb_request_factor":    9500000,
+		"tidb_request_factor":    0,
 	}
 	updateCost(rs, factors)
 
