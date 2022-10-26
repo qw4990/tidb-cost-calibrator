@@ -7,17 +7,30 @@ import (
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
+func hack(rs utils.Records) utils.Records {
+	for _, r := range rs {
+		if r.Label == "BCastJoin" {
+			r.Weights["tiflash_mpp_net_factor"] *= 3
+			r.Weights["tiflash_cpu_factor"] /= 3
+		} else if r.Label == "ShuffleJoin" {
+			r.Weights["tiflash_mpp_net_factor"] /= 3
+			r.Weights["tiflash_cpu_factor"] /= 3
+		}
+	}
+	return rs
+}
+
 func CostCalibrate() {
 	var rs utils.Records
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	whiteList := []string{
-		"",
-		//"TableScan", "BCastJoin",
+		"TableScan", "BCastJoin", "ShuffleJoin",
 		//"Agg", "Scan", "Sel", "HashJoin", "MergeJoin",
 	}
 	rs = filterByLabel(rs, whiteList)
+	rs = hack(rs)
 
 	factors := map[string]float64{
 		"tikv_scan_factor":       40.7,

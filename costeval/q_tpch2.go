@@ -2,7 +2,7 @@ package costeval
 
 import "github.com/qw4990/tidb-cost-calibrator/utils"
 
-func genTPCHQueries2(n int, scale float64) utils.Queries {
+func genTPCHQueries2(n int, scale float64) utils.Queries { // baseline: 10s
 	return genQueries(n, scale, genTPCHScan, genTPCHSel, genTPCHAgg, genTPCHJoin, genTPCHSort)
 }
 
