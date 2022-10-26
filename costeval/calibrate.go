@@ -3,7 +3,7 @@ package costeval
 import (
 	"fmt"
 	"path/filepath"
-	
+
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
