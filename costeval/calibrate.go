@@ -2,28 +2,16 @@ package costeval
 
 import (
 	"fmt"
-	"path/filepath"
-
 	"github.com/qw4990/tidb-cost-calibrator/utils"
+	"path/filepath"
 )
 
 func hack(rs utils.Records) utils.Records {
 	var tmp utils.Records
 	for _, r := range rs {
-		if r.Label == "BCastJoin" {
-			r.Weights["tiflash_mpp_net_factor"] *= 3
-			r.Weights["tiflash_cpu_factor"] /= 3
-		} else if r.Label == "ShuffleJoin" {
-			r.Weights["tiflash_mpp_net_factor"] /= 3
-			r.Weights["tiflash_cpu_factor"] /= 3
-			//} else if r.Label == "IndexLookup" {
-			//	r.Weights["tidb_request_factor"] /= 2
-		}
-
-		if r.Label == "Sort1" || r.Label == "Sort2" {
-			continue
-		}
-
+		//if strings.Contains(r.Label, "Sort") {
+		//	continue
+		//}
 		tmp = append(tmp, r)
 	}
 	return tmp
@@ -32,7 +20,8 @@ func hack(rs utils.Records) utils.Records {
 func CostCalibrate() {
 	var rs utils.Records
 	dataDir := "./data"
-	recordFile := filepath.Join(dataDir, "synthetic-2-true-records.json")
+	//recordFile := filepath.Join(dataDir, "synthetic-2-true-records.json")
+	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	whiteList := []string{
 		"",
