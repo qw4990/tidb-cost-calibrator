@@ -11,17 +11,57 @@ import (
 	"gorgonia.org/tensor"
 )
 
+func shrinkFactors(rs utils.Records, m map[string]float64) utils.Records {
+	var baseline string
+	for k, v := range m {
+		if v == 0 { // remove factor with zero-weight
+			for i := range rs {
+				delete(rs[i].Weights, k)
+			}
+		} else if v == 1 {
+			baseline = k // the baseline factor
+		}
+	}
+	for k, v := range m {
+		if v == 0 || k == baseline {
+			continue
+		}
+		for i, r := range rs {
+			if _, ok := r.Weights[k]; !ok {
+				continue
+			}
+			rr := r.Clone()
+			rr.Weights[baseline] += r.Weights[k] * v
+			delete(rr.Weights, k)
+			rs[i] = rr
+		}
+	}
+	return rs
+}
+
 func CostRegression() {
 	fmt.Println("============== prepare data ===============")
 	var rs utils.Records
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{""})
-	//rs = scaleByLabel(rs, map[string]int{"Scan": 2})
-	x, y, idx2Name := prepareData(rs)
+	rs = filterByLabel(rs, []string{"Join"})
+	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
+
+	fmt.Println("============== shrink factors ===============")
+	rs = shrinkFactors(rs, map[string]float64{
+		"tidb_request_factor": 0,
+		//"tidb_cpu_factor":     0,
+		//"tikv_cpu_factor":     0,
+	})
+	rs = shrinkFactors(rs, map[string]float64{
+		//"tidb_mem_factor":    0,
+		//"tikv_mem_factor":    0,
+		//"tidb_kv_net_factor": 0,
+	})
 
 	fmt.Println("============== training ===============")
+	x, y, idx2Name := prepareData(rs)
 	w := regression(x, y)
 	factor := make(map[string]float64)
 	for i := range w {
@@ -141,7 +181,7 @@ func regression(x [][]float64, y []float64) (w []float64) {
 
 	// training
 	fmt.Println("init weights: ", weights.Value())
-	iter := 200000
+	iter := 30000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))

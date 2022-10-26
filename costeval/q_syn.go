@@ -13,11 +13,11 @@ func genSYNSort(n int, scale float64) utils.Queries {
 		{
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b from t where # order by c`,
 			[]tempitem{{"t", "b", 0, 2500000}},
-			"Sort",
+			"Sort1",
 		},
 		{`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b from t where # order by c limit 1000`,
 			[]tempitem{{"t", "b", 0, 5000000}},
-			"TopN",
+			"Sort2",
 		},
 	}, n, scale)
 }
@@ -28,34 +28,34 @@ func genSYNScan(n int, scale float64) utils.Queries {
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where #`,
 			[]tempitem{{"t", "a", 0, 10000000}},
-			"TableScan",
+			"TableScan1",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a, c from t where #`,
 			[]tempitem{{"t", "a", 0, 3000000}},
-			"WideTableScan",
+			"TableScan2",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # order by a desc`,
 			[]tempitem{{"t", "a", 0, 6000000}},
-			"DescTableScan",
+			"TableScan3",
 		},
 
 		// TiKV Index Scan
 		{
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where #`,
 			[]tempitem{{"t", "b", 0, 10000000}},
-			"IndexScan",
+			"IndexScan1",
 		},
 		{
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b, c from t where #`,
 			[]tempitem{{"t", "b", 0, 3000000}},
-			"DescIndexScan",
+			"IndexScan2",
 		},
 		{
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b from t where # order by b desc`,
 			[]tempitem{{"t", "b", 0, 6000000}},
-			"DescIndexScan",
+			"IndexScan3",
 		},
 
 		// TiKV Index Lookup
@@ -63,13 +63,6 @@ func genSYNScan(n int, scale float64) utils.Queries {
 			`select /*+ use_index(t, b), read_from_storage(tikv[t]) */ b, d from t where #`,
 			[]tempitem{{"t", "b", 0, 250000}},
 			"IndexLookup",
-		},
-
-		// MPP Scan
-		{
-			`select /*+ read_from_storage(tiflash[t]) */ a from t where #`,
-			[]tempitem{{"t", "a", 0, 20000000}},
-			"MPPScan",
 		},
 	}, n, scale)
 }
@@ -99,28 +92,6 @@ func genSYNAgg(n int, scale float64) utils.Queries {
 			[]tempitem{{"t", "b", 0, 2200000}},
 			"HashAgg2",
 		}, // agg with group-by
-
-		// MPP HashAgg
-		{
-			`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a) from t where #`,
-			[]tempitem{{"t", "b", 0, 20000000}},
-			"MPPTiDBAgg1",
-		}, // mpp tidb agg without group-by
-		{
-			`select /*+ read_from_storage(tiflash[t]), mpp_tidb_agg() */ count(a), b from t where # group by b`,
-			[]tempitem{{"t", "b", 0, 2000000}},
-			"MPPTiDBAgg2",
-		}, // mpp tidb agg with group-by
-		{
-			`select /*+ read_from_storage(tiflash[t]), mpp_1phase_agg() */ count(a), b from t where # group by b`,
-			[]tempitem{{"t", "b", 0, 8000000}},
-			"MPP1PhaseAgg",
-		},
-		{
-			`select /*+ read_from_storage(tiflash[t]), mpp_2phase_agg() */ count(a), b from t where # group by b`,
-			[]tempitem{{"t", "b", 0, 8000000}},
-			"MPP2PhaseAgg",
-		},
 	}, n, scale)
 }
 
@@ -150,24 +121,6 @@ func genSYNJoin(n int, scale float64) utils.Queries {
 				{"t2", "b", 0, 500000},
 			},
 			"IndexJoin",
-		},
-
-		// MPP Join
-		{
-			`SELECT /*+ read_from_storage(tiflash[t1, t2]), shuffle_join(t1, t2) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and # and #`,
-			[]tempitem{
-				{"t1", "a", 0, 5000000},
-				{"t2", "a", 0, 5000000},
-			},
-			"ShuffleJoin",
-		},
-		{
-			`SELECT /*+ read_from_storage(tiflash[t1, t2]), broadcast_join(t1) */ t1.b, t2.b FROM t t1, t t2 WHERE t1.b=t2.b and # and #`,
-			[]tempitem{
-				{"t1", "a", 0, 1000000},
-				{"t2", "a", 5000000, 10000000},
-			},
-			"BroadcastJoin",
 		},
 	}, n, scale)
 }

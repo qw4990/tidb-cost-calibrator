@@ -10,24 +10,30 @@ import (
 func CostCalibrate() {
 	var rs utils.Records
 	dataDir := "./data"
-	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
+	recordFile := filepath.Join(dataDir, "synthetic-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	whiteList := []string{
 		"",
+		//"TableScan", "BCastJoin",
+		//"Agg", "Scan", "Sel", "HashJoin", "MergeJoin",
 	}
 	rs = filterByLabel(rs, whiteList)
 
 	factors := map[string]float64{
-		"tidb_opt_cpu_factor_v2":                30,
-		"tidb_opt_copcpu_factor_v2":             30,
-		"tidb_opt_tiflash_cpu_factor_v2":        5,
-		"tidb_opt_hash_table_factor_v2":         10,
-		"tidb_opt_cop_hash_table_factor_v2":     10,
-		"tidb_opt_tiflash_hash_table_factor_v2": 5,
-		"tidb_opt_scan_factor_v2":               20,
-		"tidb_opt_tiflash_scan_factor_v2":       8,
-		"tidb_opt_network_factor_v2":            8,
-		"tidb_opt_mpp_network_factor_v2":        4,
+		"tikv_scan_factor":       40.7,
+		"tikv_desc_scan_factor":  61.05,
+		"tiflash_scan_factor":    11.6,
+		"tidb_cpu_factor":        49.9,
+		"tikv_cpu_factor":        49.9,
+		"tiflash_cpu_factor":     2.4,
+		"tidb_kv_net_factor":     3.96,
+		"tidb_flash_net_factor":  2.2,
+		"tiflash_mpp_net_factor": 1,
+		"tidb_mem_factor":        0.198,
+		"tikv_mem_factor":        0.198,
+		"tiflash_mem_factor":     0.05,
+		"tidb_disk_factor":       198,
+		"tidb_request_factor":    0,
 	}
 	updateCost(rs, factors)
 

@@ -24,6 +24,15 @@ type Record struct {
 	Weights map[string]float64
 }
 
+func (r Record) Clone() Record {
+	rr := r
+	rr.Weights = make(map[string]float64)
+	for k, v := range r.Weights {
+		rr.Weights[k] = v
+	}
+	return rr
+}
+
 type Records []Record
 
 func Must(err error) {
