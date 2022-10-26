@@ -8,6 +8,7 @@ import (
 )
 
 func hack(rs utils.Records) utils.Records {
+	var tmp utils.Records
 	for _, r := range rs {
 		if r.Label == "BCastJoin" {
 			r.Weights["tiflash_mpp_net_factor"] *= 3
@@ -15,18 +16,28 @@ func hack(rs utils.Records) utils.Records {
 		} else if r.Label == "ShuffleJoin" {
 			r.Weights["tiflash_mpp_net_factor"] /= 3
 			r.Weights["tiflash_cpu_factor"] /= 3
+		} else if r.Label == "IndexLookup" {
+			r.Weights["tidb_request_factor"] /= 2
 		}
+
+		if r.Label == "Sort1" || r.Label == "Sort2" {
+			continue
+		}
+
+		tmp = append(tmp, r)
 	}
-	return rs
+	return tmp
 }
 
 func CostCalibrate() {
 	var rs utils.Records
 	dataDir := "./data"
-	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
+	recordFile := filepath.Join(dataDir, "synthetic-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
 	whiteList := []string{
-		"TableScan", "BCastJoin", "ShuffleJoin",
+		"",
+		//"Lookup", "IndexJoin",
+		//"TableScan", "BCastJoin", "ShuffleJoin",
 		//"Agg", "Scan", "Sel", "HashJoin", "MergeJoin",
 	}
 	rs = filterByLabel(rs, whiteList)
@@ -46,7 +57,7 @@ func CostCalibrate() {
 		"tikv_mem_factor":        0.198,
 		"tiflash_mem_factor":     0.05,
 		"tidb_disk_factor":       198,
-		"tidb_request_factor":    0,
+		"tidb_request_factor":    6000000,
 	}
 	updateCost(rs, factors)
 
