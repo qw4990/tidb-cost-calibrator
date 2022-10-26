@@ -43,9 +43,9 @@ func CostRegression() {
 	fmt.Println("============== prepare data ===============")
 	var rs utils.Records
 	dataDir := "./data"
-	recordFile := filepath.Join(dataDir, "tpch_clustered-2-true-records.json")
+	recordFile := filepath.Join(dataDir, "synthetic-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"Join"})
+	rs = filterByLabel(rs, []string{"TableScan1", "TableScan2", "IndexScan1", "IndexScan2"})
 	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
 
 	fmt.Println("============== shrink factors ===============")

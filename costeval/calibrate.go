@@ -16,8 +16,8 @@ func hack(rs utils.Records) utils.Records {
 		} else if r.Label == "ShuffleJoin" {
 			r.Weights["tiflash_mpp_net_factor"] /= 3
 			r.Weights["tiflash_cpu_factor"] /= 3
-		} else if r.Label == "IndexLookup" {
-			r.Weights["tidb_request_factor"] /= 2
+			//} else if r.Label == "IndexLookup" {
+			//	r.Weights["tidb_request_factor"] /= 2
 		}
 
 		if r.Label == "Sort1" || r.Label == "Sort2" {
