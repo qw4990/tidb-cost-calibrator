@@ -45,19 +45,21 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "synthetic-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"TableScan1", "TableScan2", "IndexScan1", "IndexScan2"})
+	rs = filterByLabel(rs, []string{"StreamAgg"})
 	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
 
 	fmt.Println("============== shrink factors ===============")
 	rs = shrinkFactors(rs, map[string]float64{
+		"tidb_cpu_factor":     0,
 		"tidb_request_factor": 0,
-		//"tidb_cpu_factor":     0,
-		//"tikv_cpu_factor":     0,
+		
+		"tidb_kv_net_factor": 1,
+		"tikv_scan_factor":   45,
+		"tikv_desc_scan":     59,
 	})
 	rs = shrinkFactors(rs, map[string]float64{
-		//"tidb_mem_factor":    0,
-		//"tikv_mem_factor":    0,
-		//"tidb_kv_net_factor": 0,
+		//"tidb_mem_factor": 1,
+		//"tikv_mem_factor": 1,
 	})
 
 	fmt.Println("============== training ===============")
