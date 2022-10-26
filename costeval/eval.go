@@ -1,13 +1,16 @@
 package costeval
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
@@ -27,7 +30,8 @@ func CostEval() {
 }
 
 type evalOpt struct {
-	db           string
+	ceType       string
+	dbName       string
 	costModelVer int
 	repeatTimes  int
 	numPerQuery  int
@@ -36,12 +40,12 @@ type evalOpt struct {
 }
 
 func (opt *evalOpt) name() string {
-	return fmt.Sprintf("%v-%v-%v", opt.db, opt.costModelVer, opt.concurrent1)
+	return fmt.Sprintf("%v-%v-%v", opt.ceType, opt.costModelVer, opt.concurrent1)
 }
 
 func (opt *evalOpt) genInitSQLs() []string {
 	return []string{
-		fmt.Sprintf(`use %v`, opt.db),
+		fmt.Sprintf(`use %v`, opt.dbName),
 		`set @@tidb_distsql_scan_concurrency=1`,
 		`set @@tidb_executor_concurrency=1`,
 		`set @@tidb_opt_tiflash_concurrency_factor=1`,
@@ -50,19 +54,24 @@ func (opt *evalOpt) genInitSQLs() []string {
 	}
 }
 
-func costEval(ins utils.Instance, opt *evalOpt) {
-	info("start cost evaluation, db=%v, ver=%v", opt.db, opt.costModelVer)
+func costEval(ins utils.Instance, opt *evalOpt, minioOption utils.MinioOption) {
+	info("start cost evaluation, ceType=%v, ver=%v", opt.ceType, opt.costModelVer)
 	var qs utils.Queries
 	dataDir := "./data"
-	queryFile := filepath.Join(dataDir, fmt.Sprintf("%v-queries.json", opt.db))
+	if !utils.PathExist(dataDir) {
+		if err := os.Mkdir(dataDir, 0755); err != nil {
+			panic(err)
+		}
+	}
+	queryFile := filepath.Join(dataDir, fmt.Sprintf("%v-queries.json", opt.ceType))
 	if err := utils.ReadFrom(queryFile, &qs); err != nil {
-		switch opt.db {
+		switch opt.ceType {
 		case "synthetic":
 			qs = genSYNQueries(opt.numPerQuery, opt.scaleFactor)
 		case "tpch_clustered":
 			qs = genTPCHQueries2(opt.numPerQuery, opt.scaleFactor)
 		default:
-			panic(fmt.Sprintf("unknown DB/Workload %v", opt.db))
+			panic(fmt.Sprintf("unknown DB/Workload %v", opt.ceType))
 		}
 		utils.SaveTo(queryFile, qs)
 		info("generate %v queries successfully", len(qs))
@@ -101,6 +110,37 @@ func costEval(ins utils.Instance, opt *evalOpt) {
 		info("record %vms \t %.2f \t %v \t %v", r.TimeMS, r.Cost, r.Label, r.SQL)
 	}
 	utils.DrawCostRecordsTo(rs, fmt.Sprintf("./data/%v-scatter.png", opt.name()), "linear")
+
+	if len(minioOption.Endpoint) != 0 {
+		upload(minioOption)
+	}
+}
+
+func upload(minioOption utils.MinioOption) {
+	minioClient, err := minio.New(minioOption.Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(minioOption.ID, minioOption.Secret, ""),
+		Secure: false,
+	})
+	if err != nil {
+		panic(err)
+	}
+	dir := "/cost-calibrator/" + time.Now().Format("2006-01-02-15-04") + "/"
+	fs, err := os.ReadDir("./data")
+	if err != nil {
+		panic(err)
+	}
+	for _, f := range fs {
+		if f.IsDir() {
+			continue
+		}
+
+		object := filepath.Join(dir, f.Name())
+		fp := filepath.Join("./data", f.Name())
+		info("upload %s", object)
+		if _, err := minioClient.FPutObject(context.Background(), "planner", object, fp, minio.PutObjectOptions{}); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Records {
