@@ -3,7 +3,10 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"io/fs"
 	"io/ioutil"
+	"os"
 )
 
 type Query struct {
@@ -56,6 +59,17 @@ func ReadFrom(f string, r interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func PathExist(f string) bool {
+	_, err := os.Stat(f)
+	if err == nil {
+		return true
+	}
+	if errors.Is(err, fs.ErrNotExist) {
+		return false
+	}
+	panic(err)
 }
 
 func MustReadOneLine(ins Instance, q string, ret ...interface{}) {
