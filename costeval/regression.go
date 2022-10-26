@@ -45,21 +45,22 @@ func CostRegression() {
 	dataDir := "./data"
 	recordFile := filepath.Join(dataDir, "synthetic-2-true-records.json")
 	utils.Must(utils.ReadFrom(recordFile, &rs))
-	rs = filterByLabel(rs, []string{"StreamAgg"})
+	rs = filterByLabel(rs, []string{"HashAgg"})
 	//rs = scaleByLabel(rs, map[string]int{"PhaseAgg": 2})
 
 	fmt.Println("============== shrink factors ===============")
 	rs = shrinkFactors(rs, map[string]float64{
-		"tidb_cpu_factor":     0,
+		"tidb_cpu_factor":     4.18,
 		"tidb_request_factor": 0,
-		
+
 		"tidb_kv_net_factor": 1,
 		"tikv_scan_factor":   45,
 		"tikv_desc_scan":     59,
+		"tikv_cpu_factor":    4.18,
 	})
 	rs = shrinkFactors(rs, map[string]float64{
-		//"tidb_mem_factor": 1,
-		//"tikv_mem_factor": 1,
+		"tidb_mem_factor": 1,
+		"tikv_mem_factor": 1,
 	})
 
 	fmt.Println("============== training ===============")
@@ -176,14 +177,14 @@ func regression(x [][]float64, y []float64) (w []float64) {
 		panic(fmt.Sprintf("Failed to backpropagate: %v", err))
 	}
 
-	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.2))
+	solver := gorgonia.NewVanillaSolver(gorgonia.WithLearnRate(0.05))
 	model := []gorgonia.ValueGrad{weights}
 	machine := gorgonia.NewTapeMachine(g, gorgonia.BindDualValues(weights))
 	defer machine.Close()
 
 	// training
 	fmt.Println("init weights: ", weights.Value())
-	iter := 30000
+	iter := 100000
 	for i := 0; i < iter; i++ {
 		if err := machine.RunAll(); err != nil {
 			panic(fmt.Sprintf("Error during iteration: %v: %v\n", i, err))
