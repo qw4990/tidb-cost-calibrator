@@ -15,17 +15,14 @@ import (
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
-func CostEval(costEalOption utils.Option, minioOption utils.MinioOption, dbName string) {
+func CostEval(costEalOption utils.Option, minioOption utils.MinioOption, dbName string, ceType string) {
 	ins := utils.MustConnectTo(costEalOption)
 	//costEval(ins, &evalOpt{"synthetic", 2, 3, 5, true})
-	if len(dbName) == 0 {
-		dbName = "tpch_clustered"
-	}
-	costEval(ins, &evalOpt{"tpch_clustered", dbName, 2, 1, 5, true, 1}, minioOption)
+	costEval(ins, &evalOpt{ceType, dbName, 2, 1, 5, true, 1}, minioOption)
 }
 
 type evalOpt struct {
-	db           string
+	ceType       string
 	dbName       string
 	costModelVer int
 	repeatTimes  int
@@ -35,7 +32,7 @@ type evalOpt struct {
 }
 
 func (opt *evalOpt) name() string {
-	return fmt.Sprintf("%v-%v-%v", opt.db, opt.costModelVer, opt.concurrent1)
+	return fmt.Sprintf("%v-%v-%v", opt.ceType, opt.costModelVer, opt.concurrent1)
 }
 
 func (opt *evalOpt) genInitSQLs() []string {
@@ -50,7 +47,7 @@ func (opt *evalOpt) genInitSQLs() []string {
 }
 
 func costEval(ins utils.Instance, opt *evalOpt, minioOption utils.MinioOption) {
-	info("start cost evaluation, db=%v, ver=%v", opt.db, opt.costModelVer)
+	info("start cost evaluation, ceType=%v, ver=%v", opt.ceType, opt.costModelVer)
 	var qs utils.Queries
 	dataDir := "./data"
 	if !utils.PathExist(dataDir) {
@@ -58,15 +55,15 @@ func costEval(ins utils.Instance, opt *evalOpt, minioOption utils.MinioOption) {
 			panic(err)
 		}
 	}
-	queryFile := filepath.Join(dataDir, fmt.Sprintf("%v-queries.json", opt.db))
+	queryFile := filepath.Join(dataDir, fmt.Sprintf("%v-queries.json", opt.ceType))
 	if err := utils.ReadFrom(queryFile, &qs); err != nil {
-		switch opt.db {
+		switch opt.ceType {
 		case "synthetic":
 			qs = genSYNQueries(opt.numPerQuery, opt.scaleFactor)
 		case "tpch_clustered":
 			qs = genTPCHQueries2(opt.numPerQuery, opt.scaleFactor)
 		default:
-			panic(fmt.Sprintf("unknown DB/Workload %v", opt.db))
+			panic(fmt.Sprintf("unknown DB/Workload %v", opt.ceType))
 		}
 		utils.SaveTo(queryFile, qs)
 		info("generate %v queries successfully", len(qs))
