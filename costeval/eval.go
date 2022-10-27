@@ -68,7 +68,8 @@ func costEval(ins utils.Instance, opt *evalOpt, minioOption utils.MinioOption) {
 	if err := utils.ReadFrom(queryFile, &qs); err != nil {
 		switch opt.ceType {
 		case "synthetic":
-			qs = genSYNQueries(opt.numPerQuery, opt.scaleFactor)
+			//qs = genSYNQueries(opt.numPerQuery, opt.scaleFactor)
+			qs = genSYNQueries2(opt.numPerQuery, opt.scaleFactor)
 		case "tpch_clustered":
 			qs = genTPCHQueries2(opt.numPerQuery, opt.scaleFactor)
 		default:

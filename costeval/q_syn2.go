@@ -7,8 +7,8 @@ func genSYNQueries2(n int, scale float64) utils.Queries { // baseline: 3s
 		genSYNKVScan2,  // tikv_scan, tikv_net factors
 		genSYNKVDScan2, // tikv_desc_scan
 		genSYNKVCPU2,   // tikv_cpu
-		// tidb_cpu
-		genSYNAgg, genSYNJoin, genSYNSort)
+		genSYNDBCPU2,   // tidb_cpu
+	)
 }
 
 func genSYNKVScan2(n int, scale float64) utils.Queries {
