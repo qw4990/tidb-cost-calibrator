@@ -191,7 +191,7 @@ func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 		for op, shape := range shapes {
 			if strings.Contains(strings.ToLower(l), op) {
 				cnt := colorCnt[op]
-				currentColor := colors[op][(cnt % len(colors[op]))]
+				currentColor := colors[op][(cnt % len(colors[strings.ToLower(op)]))]
 				colorCnt[op] = cnt + 1
 				styles[l] = draw.GlyphStyle{
 					Radius: 4,
