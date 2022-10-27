@@ -24,7 +24,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"", "synthetic", 2, 3, 5, true, 1}, utils.MinioOption{})
+	costEval(ins, &evalOpt{"synthetic", "synthetic", 2, 1, 1, true, 1}, utils.MinioOption{})
 	//costEval(ins, &evalOpt{"synthetic", 1, 3, 5, true, 1})
 	//costEval(ins, &evalOpt{"tpch_clustered", 2, 1, 5, true, 1})
 	//costEval(ins, &evalOpt{"tpch_clustered", 1, 1, 5, true, 1})
