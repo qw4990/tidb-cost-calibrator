@@ -149,11 +149,13 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 		var cost float64
 		weights := make(map[string]float64)
 		var execTimes []float64
+		var plan []string
 		for k := 0; k < opt.repeatTimes; k++ {
 			rs := ins.MustQuery(q.SQL)
 			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
 			if k == 0 {
 				cost = r.PlanCost
+				plan = r.RawPlan
 			} else if cost != r.PlanCost { // the plan changes
 				panic(fmt.Sprintf("q=%v, cost=%v, new-cost=%v", q.SQL, cost, r.PlanCost))
 			}
@@ -172,6 +174,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			Label:   q.Label,
 			SQL:     q.SQL,
 			Weights: weights,
+			Plan:    plan,
 		})
 	}
 	return rs
