@@ -1,3 +1,4 @@
+# https://github.com/pingcap/ossinsight/tree/main/api/queries
 import urllib.request
 import json
 
