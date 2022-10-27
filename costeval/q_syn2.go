@@ -69,17 +69,17 @@ func genSYNKVCPU2(n int, scale float64) utils.Queries {
 			"KVCPU1",
 		},
 		{
-			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and b>0 and b+1>0 and b+2>0 and d<0`,
+			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and b>0 and sin(b)>-10 and cos(b)>-10 and d<0`,
 			[]tempitem{{"t", "a", 0, 5000000}},
 			"KVCPU2",
 		},
 		{
-			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ sum(a) from t where #`,
+			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a) from t where #`,
 			[]tempitem{{"t", "a", 0, 5000000}},
 			"KVCPU3",
 		},
 		{
-			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ sum(a), avg(a), sum(b), avg(b) from t where #`,
+			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a), avg(a), sum(b), avg(b) from t where #`,
 			[]tempitem{{"t", "a", 0, 5000000}},
 			"KVCPU3",
 		},
@@ -88,10 +88,25 @@ func genSYNKVCPU2(n int, scale float64) utils.Queries {
 
 func genSYNDBCPU2(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
-		{ // table scan
-			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where #`,
+		{ // tan cannot be pushed down
+			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and tan(b)>-10`,
 			[]tempitem{{"t", "a", 0, 5000000}},
-			"KVScan1",
+			"DBCPU1",
+		},
+		{
+			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and tan(b)>-10 and tan(b+1)>-10 and tan(b+2)>-10 and tan(b+3)<-10`,
+			[]tempitem{{"t", "a", 0, 5000000}},
+			"DBCPU2",
+		},
+		{
+			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a) from t where # and tan(b)>-10`,
+			[]tempitem{{"t", "a", 0, 5000000}},
+			"DBCPU3",
+		},
+		{
+			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a), avg(a), sum(b), avg(b) from t where # and tan(b)>-10`,
+			[]tempitem{{"t", "a", 0, 5000000}},
+			"DBCPU4",
 		},
 	}, n, scale)
 }
