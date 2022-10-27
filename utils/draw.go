@@ -143,6 +143,11 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 var (
 	opTypes = []string{"scan", "agg"}
 	shapes  = map[string]draw.GlyphDrawer{
+		"kvscan":  draw.BoxGlyph{},
+		"kvdscan": draw.PyramidGlyph{},
+		"kvcpu":   draw.PlusGlyph{},
+		"dbcpu":   draw.PlusGlyph{},
+
 		"scan":   draw.BoxGlyph{},
 		"agg":    draw.PyramidGlyph{},
 		"sort":   draw.PlusGlyph{},
@@ -150,11 +155,6 @@ var (
 		"join":   draw.CircleGlyph{},
 		"sel":    draw.RingGlyph{},
 		"lookup": draw.TriangleGlyph{},
-
-		"kvscan":  draw.BoxGlyph{},
-		"kvdscan": draw.PyramidGlyph{},
-		"kvcpu":   draw.PlusGlyph{},
-		"dbcpu":   draw.PlusGlyph{},
 	}
 	// https://www.rapidtables.com/web/color/RGB_Color.html
 	colors = map[string][]color.Color{
