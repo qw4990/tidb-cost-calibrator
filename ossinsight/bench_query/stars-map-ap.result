@@ -1,0 +1,30 @@
+stars-map, ENGINE=ap, TIME=1.734109625s
+
+
+Projection_72	1.03	131	root		time:1.44s, loops:2, Concurrency:OFF	Column#61, Column#62, div(cast(Column#62, decimal(20,0) BINARY), Column#63)->Column#64	8.72 KB	N/A
+└─Projection_73	1.03	131	root		time:1.44s, loops:2, Concurrency:OFF	Column#61, Column#62, Column#63	8.72 KB	N/A
+  └─HashJoin_75	1.03	131	root		time:1.44s, loops:2, build_hash_table:{total:1.44s, fetch:1.44s, build:5.73µs}, probe:{concurrency:15, total:21.6s, max:1.44s, probe:62.6µs, fetch:21.6s}	CARTESIAN inner join	1.43 KB	0 Bytes
+    ├─CTEFullScan_78(Build)	1.00	1	root	CTE:summary	time:1.44s, loops:2	data:CTE_1	2.80 KB	0 Bytes
+    └─CTEFullScan_79(Probe)	1.03	131	root	CTE:group_by_area	time:1.44s, loops:2	data:CTE_0	6.58 KB	0 Bytes
+CTE_1	1.00	1	root		time:1.44s, loops:2	Non-Recursive CTE	2.80 KB	0 Bytes
+└─StreamAgg_66(Seed Part)	1.00	1	root		time:1.44s, loops:2	funcs:sum(Column#77)->Column#60	5.33 KB	N/A
+  └─Projection_69	1.03	131	root		time:1.44s, loops:2, Concurrency:OFF	cast(Column#59, decimal(20,0) BINARY)->Column#77	2.80 KB	N/A
+    └─CTEFullScan_68	1.03	131	root	CTE:group_by_area	time:1.44s, loops:2	data:CTE_0	0 Bytes	0 Bytes
+CTE_0	1.03	131	root		time:1.44s, loops:2	Non-Recursive CTE	6.58 KB	0 Bytes
+└─Sort_17(Seed Part)	1.03	131	root		time:1.44s, loops:2	Column#56:desc	0 Bytes	0 Bytes
+  └─TableReader_59	1.03	131	root	partition:watch_event	time:1.44s, loops:2, cop_task: {num: 5, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_58	N/A	N/A
+    └─ExchangeSender_58	1.03	131	mpp[tiflash]		tiflash_task:{proc max:1.44s, min:1.43s, avg: 1.43s, p80:1.44s, p95:1.44s, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+      └─Projection_20	1.03	131	mpp[tiflash]		tiflash_task:{proc max:1.44s, min:1.43s, avg: 1.43s, p80:1.44s, p95:1.44s, iters:3, tasks:3, threads:48}	upper(gharchive_dev.github_users.country_code)->Column#57, Column#56	N/A	N/A
+        └─Projection_54	1.03	131	mpp[tiflash]		tiflash_task:{proc max:1.44s, min:1.43s, avg: 1.43s, p80:1.44s, p95:1.44s, iters:3, tasks:3, threads:48}	Column#56, gharchive_dev.github_users.country_code	N/A	N/A
+          └─HashAgg_55	1.03	131	mpp[tiflash]		tiflash_task:{proc max:1.44s, min:1.43s, avg: 1.43s, p80:1.44s, p95:1.44s, iters:3, tasks:3, threads:48}	group by:Column#72, funcs:sum(Column#73)->Column#56, funcs:firstrow(Column#74)->gharchive_dev.github_users.country_code	N/A	N/A
+            └─ExchangeReceiver_57	1.03	296	mpp[tiflash]		tiflash_task:{proc max:1.44s, min:1.43s, avg: 1.43s, p80:1.44s, p95:1.44s, iters:48, tasks:3, threads:48}		N/A	N/A
+              └─ExchangeSender_56	1.03	296	mpp[tiflash]		tiflash_task:{proc max:1.43s, min:0s, avg: 478.2ms, p80:1.43s, p95:1.43s, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: Column#72, collate: utf8mb4_bin]	N/A	N/A
+                └─HashAgg_53	1.03	296	mpp[tiflash]		tiflash_task:{proc max:1.43s, min:0s, avg: 478.2ms, p80:1.43s, p95:1.43s, iters:768, tasks:3, threads:48}	group by:Column#76, funcs:count(1)->Column#73, funcs:firstrow(Column#75)->Column#74	N/A	N/A
+                  └─Projection_62	1.03	14769	mpp[tiflash]		tiflash_task:{proc max:1.43s, min:0s, avg: 475.6ms, p80:1.43s, p95:1.43s, iters:1494, tasks:3, threads:48}	gharchive_dev.github_users.country_code, upper(gharchive_dev.github_users.country_code)->Column#76	N/A	N/A
+                    └─HashJoin_43	1.03	14769	mpp[tiflash]		tiflash_task:{proc max:1.43s, min:0s, avg: 475.6ms, p80:1.43s, p95:1.43s, iters:1494, tasks:3, threads:48}	inner join, equal:[eq(gharchive_dev.github_events.actor_login, gharchive_dev.github_users.login)]	N/A	N/A
+                      ├─ExchangeReceiver_32(Build)	1.03	106908	mpp[tiflash]		tiflash_task:{proc max:1.03s, min:0s, avg: 342.2ms, p80:1.03s, p95:1.03s, iters:48, tasks:3, threads:48}		N/A	N/A
+                      │ └─ExchangeSender_31	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:1.03s, min:0s, avg: 342.1ms, p80:1.03s, p95:1.03s, iters:5469, tasks:3, threads:48}	ExchangeType: Broadcast	N/A	N/A
+                      │   └─Selection_30	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:1.02s, min:0s, avg: 340.8ms, p80:1.02s, p95:1.02s, iters:5469, tasks:3, threads:48}	eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "WatchEvent")	N/A	N/A
+                      │     └─TableFullScan_29	5255720312.00	334359827	mpp[tiflash]	table:ge	tiflash_task:{proc max:970.3ms, min:0s, avg: 323.4ms, p80:970.3ms, p95:970.3ms, iters:5738, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
+                      └─Selection_34(Probe)	6294887.07	6387236	mpp[tiflash]		tiflash_task:{proc max:446.7ms, min:0s, avg: 148.9ms, p80:446.7ms, p95:446.7ms, iters:1494, tasks:3, threads:48}	ne(gharchive_dev.github_users.country_code, ""), ne(gharchive_dev.github_users.country_code, "N/A"), ne(gharchive_dev.github_users.country_code, "UND"), not(isnull(gharchive_dev.github_users.country_code))	N/A	N/A
+                        └─TableFullScan_33	95738728.00	95738728	mpp[tiflash]	table:gu	tiflash_task:{proc max:418.7ms, min:0s, avg: 139.6ms, p80:418.7ms, p95:418.7ms, iters:1494, tasks:3, threads:48}	keep order:false	N/A	N/A

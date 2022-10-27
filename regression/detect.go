@@ -18,9 +18,9 @@ func RegDetect() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	qs := getTPCHQueries("workloads/tpch")
+	qs := getTPCHQueries("regression/workloads/tpch")
 	ins.MustExec("use tpch")
-	compare(qs, ins)
+	compare(qs, ins, true, "tidb,tikv,tiflash")
 }
 
 func getTPCHQueries(dir string) []string {
@@ -86,19 +86,20 @@ func printPlan(q Plan) {
 	}
 }
 
-func compare(queries []string, db utils.Instance) {
+func compare(queries []string, db utils.Instance, analyze bool, engines string) {
 	vPlans := make([][]Plan, 3)
 	vPlans[1] = append(vPlans[1], nil)
 	vPlans[2] = append(vPlans[2], nil)
 	for _, costVer := range []int{1, 2} {
+		db.MustExec(fmt.Sprintf("set @@tidb_isolation_read_engines='%v'", engines))
 		db.MustExec(fmt.Sprintf("set @@tidb_cost_model_version=%v", costVer))
+
 		for i := 1; i < len(queries); i++ {
 			if queries[i] == "" { // skip
 				vPlans[costVer] = append(vPlans[costVer], nil)
 				continue
 			}
-			fmt.Printf("get plan for q%v %v\n", i, costVer)
-
+			fmt.Printf("get plan for q%v on model%v\n", i, costVer)
 			vPlans[costVer] = append(vPlans[costVer], getPlan(queries[i], db))
 		}
 	}
@@ -113,10 +114,11 @@ func compare(queries []string, db utils.Instance) {
 			//fmt.Println("SAME: ", queries[i])
 			//printPlan(vPlans[1][i])
 		} else {
-			fmt.Println("DIFF: ", queries[i])
+			fmt.Printf("DIFF: q%v\n", i)
 			printPlan(vPlans[1][i])
-			fmt.Println("---------------------------")
+			fmt.Println("-------------------------------------")
 			printPlan(vPlans[2][i])
+			fmt.Println("\n\n\n")
 		}
 	}
 }

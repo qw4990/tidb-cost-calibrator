@@ -1,0 +1,19 @@
+company-search, ENGINE=mix, TIME=397.218834ms
+
+
+Projection_73	10.00	9	root		time:170.2ms, loops:2, Concurrency:OFF	trim(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(gharchive_dev.github_users.organization, www., ), .com, ), !, ), ,, ), -, ), @, ), ., ), ltd, ), inc, ), corporation, ))->Column#27, Column#26	2.02 KB	N/A
+└─TopN_76	10.00	9	root		time:170.1ms, loops:2	Column#26:desc, offset:0, count:10	14.2 KB	N/A
+  └─HashAgg_81	1466368.00	9	root		time:170.1ms, loops:9, partial_worker:{wall_time:170.031513ms, concurrency:15, task_num:1, tot_wait:2.548827966s, tot_exec:31.459µs, tot_time:2.548890833s, max:169.985499ms, p95:169.985499ms}, final_worker:{wall_time:170.049951ms, concurrency:15, task_num:7, tot_wait:2.549969433s, tot_exec:113.363µs, tot_time:2.550093222s, max:170.023275ms, p95:170.023275ms}	group by:Column#41, funcs:sum(Column#39)->Column#26, funcs:firstrow(Column#40)->gharchive_dev.github_users.organization	97.8 KB	N/A
+    └─Projection_85	1466368.00	10	root		time:169.9ms, loops:2, Concurrency:15	cast(Column#25, decimal(20,0) BINARY)->Column#39, gharchive_dev.github_users.organization, trim(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(gharchive_dev.github_users.organization, www., ), .com, ), !, ), ,, ), -, ), @, ), ., ), ltd, ), inc, ), corporation, ))->Column#41	54.6 KB	N/A
+      └─CTEFullScan_82	1466368.00	10	root	CTE:company_ci	time:169.7ms, loops:2	data:CTE_0	1.98 KB	0 Bytes
+CTE_0	1466368.00	10	root		time:169.7ms, loops:2	Non-Recursive CTE	1.98 KB	0 Bytes
+└─TableReader_72(Seed Part)	1466368.00	10	root		time:169.7ms, loops:2, cop_task: {num: 4, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_71	N/A	N/A
+  └─ExchangeSender_71	1466368.00	10	mpp[tiflash]		tiflash_task:{proc max:169.3ms, min:165.5ms, avg: 166.8ms, p80:169.3ms, p95:169.3ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_13	1466368.00	10	mpp[tiflash]		tiflash_task:{proc max:169.3ms, min:165.5ms, avg: 166.8ms, p80:169.3ms, p95:169.3ms, iters:3, tasks:3, threads:48}	gharchive_dev.github_users.organization, Column#23	N/A	N/A
+      └─Projection_67	1466368.00	10	mpp[tiflash]		tiflash_task:{proc max:169.3ms, min:165.5ms, avg: 166.8ms, p80:169.3ms, p95:169.3ms, iters:3, tasks:3, threads:48}	Column#23, gharchive_dev.github_users.organization	N/A	N/A
+        └─HashAgg_68	1466368.00	10	mpp[tiflash]		tiflash_task:{proc max:169.3ms, min:165.5ms, avg: 166.8ms, p80:169.3ms, p95:169.3ms, iters:3, tasks:3, threads:48}	group by:gharchive_dev.github_users.organization, funcs:sum(Column#37)->Column#23, funcs:firstrow(gharchive_dev.github_users.organization)->gharchive_dev.github_users.organization	N/A	N/A
+          └─ExchangeReceiver_70	1466368.00	14	mpp[tiflash]		tiflash_task:{proc max:165.6ms, min:165.3ms, avg: 165.5ms, p80:165.6ms, p95:165.6ms, iters:12, tasks:3, threads:48}		N/A	N/A
+            └─ExchangeSender_69	1466368.00	14	mpp[tiflash]		tiflash_task:{proc max:168.3ms, min:0s, avg: 56.1ms, p80:168.3ms, p95:168.3ms, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_users.organization, collate: utf8mb4_unicode_ci]	N/A	N/A
+              └─HashAgg_65	1466368.00	14	mpp[tiflash]		tiflash_task:{proc max:168.3ms, min:0s, avg: 56.1ms, p80:168.3ms, p95:168.3ms, iters:768, tasks:3, threads:48}	group by:gharchive_dev.github_users.organization, funcs:count(1)->Column#37	N/A	N/A
+                └─Selection_47	76590982.40	178	mpp[tiflash]		tiflash_task:{proc max:164.3ms, min:0s, avg: 54.8ms, p80:164.3ms, p95:164.3ms, iters:157, tasks:3, threads:48}	like(gharchive_dev.github_users.organization, "%PingCAP%", 92)	N/A	N/A
+                  └─TableFullScan_46	95738728.00	95738728	mpp[tiflash]	table:gu	tiflash_task:{proc max:132.3ms, min:0s, avg: 44.1ms, p80:132.3ms, p95:132.3ms, iters:1479, tasks:3, threads:48}	keep order:false	N/A	N/A

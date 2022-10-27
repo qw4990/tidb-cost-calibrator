@@ -1,0 +1,3 @@
+analyze-issue-creators-company, ENGINE=ap, TIME=218.994333ms
+
+FAIL Error 1105: TiDB doesn't support index in the isolation read engines(value: 'tidb,tiflash')

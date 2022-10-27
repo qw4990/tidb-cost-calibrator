@@ -1,0 +1,15 @@
+rt-osdb-ranking-by-prs, ENGINE=tp, TIME=1m29.058294875s
+
+
+Sort_13	8000.00	21	root		time:1m28.8s, loops:2	Column#38:desc	1.16 KB	0 Bytes
+└─Projection_15	8000.00	21	root		time:1m28.8s, loops:2, Concurrency:15	gharchive_dev.osdb_repos.group_name, Column#38	29.8 KB	N/A
+  └─HashAgg_16	8000.00	21	root		time:1m28.8s, loops:2	group by:gharchive_dev.osdb_repos.group_name, funcs:count(distinct gharchive_dev.github_events.pr_or_issue_id)->Column#38, funcs:firstrow(gharchive_dev.osdb_repos.group_name)->gharchive_dev.osdb_repos.group_name	8.00 MB	0 Bytes
+    └─Projection_17	182128.49	538064	root		time:1m28.5s, loops:535, Concurrency:15	gharchive_dev.github_events.pr_or_issue_id, gharchive_dev.osdb_repos.group_name	929.3 KB	N/A
+      └─HashJoin_19	182128.49	538064	root		time:1m28.8s, loops:535, build_hash_table:{total:163.7µs, fetch:148.6µs, build:15µs}, probe:{concurrency:15, total:22m11.8s, max:1m28.8s, probe:54.8s, fetch:21m17s}	inner join, equal:[eq(Column#40, Column#39)]	2.21 KB	0 Bytes
+        ├─Projection_20(Build)	10000.00	23	root		time:123.2µs, loops:2, Concurrency:15	gharchive_dev.osdb_repos.group_name, cast(gharchive_dev.osdb_repos.id, double BINARY)->Column#40	79.3 KB	N/A
+        │ └─TableReader_22	10000.00	23	root		time:41.5µs, loops:2, cop_task: {num: 1, max: 1.23ms, proc_keys: 23, rpc_num: 1, rpc_time: 1.19ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:TableFullScan_21	1018 Bytes	N/A
+        │   └─TableFullScan_21	10000.00	23	cop[tikv]	table:db	tikv_task:{time:0s, loops:1}, scan_detail: {total_process_keys: 23, total_process_keys_size: 1673, total_keys: 24, get_snapshot_time: 492.6µs, rocksdb: {key_skipped_count: 23, block: {cache_hit_count: 13, read_count: 2, read_byte: 1.56 KB, read_time: 4.99µs}}}	keep order:false, stats:pseudo	N/A	N/A
+        └─Projection_23(Probe)	419006139.66	421796353	root		time:1m25.7s, loops:413746, Concurrency:15	gharchive_dev.github_events.pr_or_issue_id, cast(gharchive_dev.github_events.repo_id, double BINARY)->Column#39	917.5 KB	N/A
+          └─TableReader_26	419006139.66	421796353	root	partition:pull_request_event	time:1m25.8s, loops:413746, cop_task: {num: 19556, max: 333.3ms, min: 1.15ms, avg: 67.3ms, p95: 169.2ms, max_proc_keys: 50144, p95_proc_keys: 50144, tot_proc: 20m23.2s, tot_wait: 8.82s, rpc_num: 19556, rpc_time: 21m55.7s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_25	5.75 MB	N/A
+            └─Selection_25	419006139.66	421796353	cop[tikv]		tikv_task:{proc max:324ms, min:0s, avg: 61.5ms, p80:132ms, p95:160ms, iters:489117, tasks:19556}, scan_detail: {total_process_keys: 421796353, total_process_keys_size: 126322648027, total_keys: 429401250, get_snapshot_time: 3.47s, rocksdb: {delete_skipped_count: 1020187, key_skipped_count: 793584028, block: {cache_hit_count: 525800, read_count: 2130047, read_byte: 37.2 GB, read_time: 6m5.2s}}}	eq(gharchive_dev.github_events.type, "PullRequestEvent")	N/A	N/A
+              └─TableFullScan_24	5262709748.00	421796353	cop[tikv]	table:github_events	tikv_task:{proc max:312ms, min:0s, avg: 59.2ms, p80:128ms, p95:152ms, iters:489117, tasks:19556}	keep order:false	N/A	N/A

@@ -1,0 +1,9 @@
+personal-star-history, ENGINE=tp, TIME=218.568459ms
+
+
+Sort_6	1.00	65	root		time:10.2ms, loops:2	Column#35	15.4 KB	0 Bytes
+└─Projection_8	1.00	65	root		time:10.1ms, loops:16, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#35, Column#34	760 Bytes	N/A
+  └─HashAgg_13	1.00	65	root		time:10ms, loops:16, partial_worker:{wall_time:9.977736ms, concurrency:15, task_num:1, tot_wait:147.065263ms, tot_exec:69.53µs, tot_time:147.175375ms, max:9.913253ms, p95:9.913253ms}, final_worker:{wall_time:10.000448ms, concurrency:15, task_num:15, tot_wait:149.138122ms, tot_exec:238.382µs, tot_time:149.387861ms, max:9.969892ms, p95:9.969892ms}	group by:Column#39, funcs:count(Column#40)->Column#34, funcs:firstrow(Column#41)->gharchive_dev.github_events.created_at	60.8 KB	N/A
+    └─IndexReader_14	1.00	65	root	partition:watch_event	time:9.79ms, loops:2, cop_task: {num: 1, max: 9.83ms, proc_keys: 356, tot_proc: 3ms, tot_wait: 5ms, rpc_num: 1, rpc_time: 9.82ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_9	2.62 KB	N/A
+      └─HashAgg_9	1.00	65	cop[tikv]		tikv_task:{time:4ms, loops:1}, scan_detail: {total_process_keys: 356, total_process_keys_size: 59450, total_keys: 366, get_snapshot_time: 5.57ms, rocksdb: {delete_skipped_count: 13, key_skipped_count: 378, block: {cache_hit_count: 12, read_count: 3, read_byte: 105.1 KB, read_time: 2.24ms}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(1)->Column#40, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#41	N/A	N/A
+        └─IndexRangeScan_12	6.00	356	cop[tikv]	table:ge, index:index_ge_on_actor_id_type_action_created_at_repo_id_commits(actor_id, type, action, created_at, repo_id, push_distinct_size)	tikv_task:{time:4ms, loops:1}	range:[5086433 "WatchEvent" "started",5086433 "WatchEvent" "started"], keep order:false	N/A	N/A

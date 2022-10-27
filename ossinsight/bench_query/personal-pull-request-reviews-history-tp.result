@@ -1,0 +1,25 @@
+personal-pull-request-reviews-history, ENGINE=tp, TIME=303.497209ms
+
+
+Projection_47	0.41	25	root		time:3.02ms, loops:2, Concurrency:OFF	Column#71, ifnull(Column#72, 0)->Column#75, ifnull(Column#74, 0)->Column#76	1.36 KB	N/A
+└─HashJoin_48	0.41	25	root		time:3ms, loops:2, build_hash_table:{total:2.25ms, fetch:2.22ms, build:29µs}, probe:{concurrency:15, total:42ms, max:2.84ms, probe:43.2µs, fetch:42ms}	inner join, equal:[eq(Column#71, Column#73)]	25.7 KB	0 Bytes
+  ├─Selection_52(Build)	0.64	26	root		time:2.19ms, loops:2	not(isnull(Column#73))	1016 Bytes	N/A
+  │ └─CTEFullScan_53	0.80	26	root	CTE:rc	time:2.18ms, loops:3	data:CTE_1	2.48 KB	0 Bytes
+  └─Selection_50(Probe)	0.64	25	root		time:2.77ms, loops:2	not(isnull(Column#71))	1016 Bytes	N/A
+    └─CTEFullScan_51	0.80	25	root	CTE:r	time:2.77ms, loops:3	data:CTE_0	1.98 KB	0 Bytes
+CTE_1	0.80	26	root		time:2.18ms, loops:3	Non-Recursive CTE	2.48 KB	0 Bytes
+└─Sort_34(Seed Part)	0.80	26	root		time:2.17ms, loops:2	Column#70	1.45 KB	0 Bytes
+  └─Projection_36	0.80	26	root		time:2.13ms, loops:2, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#70, Column#69	760 Bytes	N/A
+    └─Selection_37	0.80	26	root		time:2.11ms, loops:2	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	760 Bytes	N/A
+      └─HashAgg_42	1.00	26	root		time:2.05ms, loops:15, partial_worker:{wall_time:2.044308ms, concurrency:15, task_num:1, tot_wait:29.40265ms, tot_exec:36.127µs, tot_time:29.465003ms, max:1.998565ms, p95:1.998565ms}, final_worker:{wall_time:2.055992ms, concurrency:15, task_num:13, tot_wait:30.160883ms, tot_exec:155.941µs, tot_time:30.327319ms, max:2.038425ms, p95:2.038425ms}	group by:Column#88, funcs:count(Column#89)->Column#69, funcs:firstrow(Column#90)->gharchive_dev.github_events.created_at	62.7 KB	N/A
+        └─IndexReader_43	1.00	26	root	partition:pull_request_review_comment_event	time:1.87ms, loops:2, cop_task: {num: 1, max: 2.16ms, proc_keys: 497, tot_proc: 1ms, rpc_num: 1, rpc_time: 2.14ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_38	1.35 KB	N/A
+          └─HashAgg_38	1.00	26	cop[tikv]		tikv_task:{time:0s, loops:1}, scan_detail: {total_process_keys: 497, total_process_keys_size: 101388, total_keys: 552, get_snapshot_time: 15.6µs, rocksdb: {delete_skipped_count: 4, key_skipped_count: 555, block: {cache_hit_count: 17, read_count: 2, read_byte: 79.8 KB, read_time: 78.9µs}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(1)->Column#89, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#90	N/A	N/A
+            └─IndexRangeScan_41	6.00	497	cop[tikv]	table:ge, index:index_ge_on_actor_id_type_action_created_at_repo_id_commits(actor_id, type, action, created_at, repo_id, push_distinct_size)	tikv_task:{time:0s, loops:1}	range:[5086433 "PullRequestReviewCommentEvent" "created",5086433 "PullRequestReviewCommentEvent" "created"], keep order:false	N/A	N/A
+CTE_0	0.80	25	root		time:2.77ms, loops:3	Non-Recursive CTE	1.98 KB	0 Bytes
+└─Sort_20(Seed Part)	0.80	25	root		time:2.75ms, loops:2	Column#35	1.19 KB	0 Bytes
+  └─Projection_22	0.80	25	root		time:2.71ms, loops:2, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#35, Column#34	760 Bytes	N/A
+    └─Selection_23	0.80	25	root		time:2.69ms, loops:2	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	760 Bytes	N/A
+      └─HashAgg_28	1.00	25	root		time:2.65ms, loops:15, partial_worker:{wall_time:2.638361ms, concurrency:15, task_num:1, tot_wait:38.696002ms, tot_exec:30.153µs, tot_time:38.748834ms, max:2.603243ms, p95:2.603243ms}, final_worker:{wall_time:2.64773ms, concurrency:15, task_num:13, tot_wait:39.060197ms, tot_exec:127.96µs, tot_time:39.198677ms, max:2.628892ms, p95:2.628892ms}	group by:Column#80, funcs:count(Column#81)->Column#34, funcs:firstrow(Column#82)->gharchive_dev.github_events.created_at	62.3 KB	N/A
+        └─IndexReader_29	1.00	25	root	partition:pull_request_review_event	time:2.52ms, loops:2, cop_task: {num: 1, max: 2.99ms, proc_keys: 1103, tot_proc: 1ms, rpc_num: 1, rpc_time: 2.97ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_24	1.31 KB	N/A
+          └─HashAgg_24	1.00	25	cop[tikv]		tikv_task:{time:4ms, loops:2}, scan_detail: {total_process_keys: 1103, total_process_keys_size: 207364, total_keys: 1125, get_snapshot_time: 16µs, rocksdb: {delete_skipped_count: 34, key_skipped_count: 1158, block: {cache_hit_count: 19, read_count: 1, read_byte: 63.9 KB, read_time: 54.2µs}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(1)->Column#81, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#82	N/A	N/A
+            └─IndexRangeScan_27	6.00	1103	cop[tikv]	table:ge, index:index_ge_on_actor_id_type_action_created_at_repo_id_commits(actor_id, type, action, created_at, repo_id, push_distinct_size)	tikv_task:{time:4ms, loops:2}	range:[5086433 "PullRequestReviewEvent" "created",5086433 "PullRequestReviewEvent" "created"], keep order:false	N/A	N/A

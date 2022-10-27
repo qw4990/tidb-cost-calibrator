@@ -1,0 +1,48 @@
+analyze-people-issue-comment-contribution-rank, ENGINE=ap, TIME=679.991083ms
+
+
+Projection_140	1.00	50	root		time:405ms, loops:2, Concurrency:OFF	Column#86, gharchive_dev.github_events.actor_login, Column#78, Column#83, Column#84, Column#85	12.1 KB	N/A
+└─Limit_147	1.00	50	root		time:405ms, loops:2	offset:0, count:50	N/A	N/A
+  └─Window_164	1.00	111	root		time:405ms, loops:1	row_number()->Column#86 over(order by Column#78 desc rows between current row and current row)	N/A	N/A
+    └─Sort_163	1.00	111	root		time:405ms, loops:2	Column#78:desc	11.0 KB	0 Bytes
+      └─Projection_150	1.00	111	root		time:404.9ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.actor_login, Column#78, coalesce(Column#81, 0)->Column#83, coalesce(minus(Column#78, Column#81), 0)->Column#84, div(cast(Column#78, decimal(20,0) BINARY), Column#79)->Column#85	10.1 KB	N/A
+        └─Projection_152	1.00	111	root		time:404.8ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.actor_login, Column#78, Column#79, Column#81	10.1 KB	N/A
+          └─HashJoin_153	1.00	111	root		time:404.8ms, loops:2, build_hash_table:{total:395.3ms, fetch:395.3ms, build:6.03µs}, probe:{concurrency:15, total:6.07s, max:404.6ms, probe:77.9µs, fetch:6.07s}	CARTESIAN inner join	1.43 KB	0 Bytes
+            ├─CTEFullScan_161(Build)	1.00	1	root	CTE:s	time:395.3ms, loops:2	data:CTE_2	2.80 KB	0 Bytes
+            └─HashJoin_155(Probe)	1.00	111	root		time:404.5ms, loops:2, build_hash_table:{total:404.3ms, fetch:404.2ms, build:72.4µs}, probe:{concurrency:15, total:6.06s, max:404.4ms, probe:87.4µs, fetch:6.06s}	left outer join, equal:[eq(gharchive_dev.github_events.actor_login, gharchive_dev.github_events.actor_login)]	27.7 KB	0 Bytes
+              ├─Selection_158(Build)	0.80	137	root		time:404.2ms, loops:2	not(isnull(gharchive_dev.github_events.actor_login))	3.77 KB	N/A
+              │ └─CTEFullScan_159	1.00	137	root	CTE:l2m	time:404.1ms, loops:3	data:CTE_1	8.33 KB	0 Bytes
+              └─CTEFullScan_157(Probe)	1.00	111	root	CTE:lm	time:395.2ms, loops:2	data:CTE_0	0 Bytes	0 Bytes
+CTE_2	1.00	1	root		time:395.3ms, loops:2	Non-Recursive CTE	2.80 KB	0 Bytes
+└─Projection_82(Seed Part)	1.00	1	root		time:395.3ms, loops:2, Concurrency:OFF	coalesce(Column#75, 0)->Column#76	1.40 KB	N/A
+  └─StreamAgg_84	1.00	1	root		time:395.3ms, loops:2	funcs:sum(Column#94)->Column#75	4.54 KB	N/A
+    └─Projection_87	1.00	111	root		time:395.2ms, loops:2, Concurrency:OFF	cast(Column#74, decimal(20,0) BINARY)->Column#94	3.01 KB	N/A
+      └─CTEFullScan_86	1.00	111	root	CTE:issue_contribution_last_month	time:395.2ms, loops:2	data:CTE_0	7.52 KB	0 Bytes
+CTE_1	1.00	137	root		time:404.1ms, loops:3	Non-Recursive CTE	8.33 KB	0 Bytes
+└─TableReader_136(Seed Part)	1.00	137	root	partition:issue_comment_event	time:404.1ms, loops:2, cop_task: {num: 3, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_135	N/A	N/A
+  └─ExchangeSender_135	1.00	137	mpp[tiflash]		tiflash_task:{proc max:410.5ms, min:410ms, avg: 410.3ms, p80:410.5ms, p95:410.5ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_90	1.00	137	mpp[tiflash]		tiflash_task:{proc max:410.5ms, min:410ms, avg: 410.3ms, p80:410.5ms, p95:410.5ms, iters:3, tasks:3, threads:48}	gharchive_dev.github_events.actor_login, Column#72	N/A	N/A
+      └─Projection_130	1.00	137	mpp[tiflash]		tiflash_task:{proc max:410.5ms, min:410ms, avg: 410.3ms, p80:410.5ms, p95:410.5ms, iters:3, tasks:3, threads:48}	Column#72, gharchive_dev.github_events.actor_login	N/A	N/A
+        └─HashAgg_128	1.00	137	mpp[tiflash]		tiflash_task:{proc max:410.5ms, min:410ms, avg: 410.3ms, p80:410.5ms, p95:410.5ms, iters:3, tasks:3, threads:48}	group by:gharchive_dev.github_events.actor_login, funcs:count(1)->Column#72, funcs:firstrow(gharchive_dev.github_events.actor_login)->gharchive_dev.github_events.actor_login	N/A	N/A
+          └─ExchangeReceiver_114	0.07	2371	mpp[tiflash]		tiflash_task:{proc max:410.5ms, min:410ms, avg: 410.3ms, p80:410.5ms, p95:410.5ms, iters:48, tasks:3, threads:48}		N/A	N/A
+            └─ExchangeSender_113	0.07	2371	mpp[tiflash]		tiflash_task:{proc max:405.8ms, min:0s, avg: 135.3ms, p80:405.8ms, p95:405.8ms, iters:1750, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.actor_login, collate: utf8mb4_bin]	N/A	N/A
+              └─HashJoin_112	0.07	2371	mpp[tiflash]		tiflash_task:{proc max:405.8ms, min:0s, avg: 135.3ms, p80:405.8ms, p95:405.8ms, iters:1750, tasks:3, threads:48}	anti semi join, equal:[eq(gharchive_dev.github_events.actor_login, gharchive_dev.blacklist_users.login)]	N/A	N/A
+                ├─ExchangeReceiver_103(Build)	2.00	6	mpp[tiflash]		tiflash_task:{proc max:28.6ms, min:0s, avg: 9.53ms, p80:28.6ms, p95:28.6ms, iters:3, tasks:3, threads:48}		N/A	N/A
+                │ └─ExchangeSender_102	2.00	2	mpp[tiflash]		tiflash_task:{proc max:6.5ms, min:0s, avg: 2.17ms, p80:6.5ms, p95:6.5ms, iters:1, tasks:3, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                │   └─TableFullScan_101	2.00	2	mpp[tiflash]	table:bu	tiflash_task:{proc max:6.5ms, min:0s, avg: 2.17ms, p80:6.5ms, p95:6.5ms, iters:1, tasks:3, threads:1}	keep order:false	N/A	N/A
+                └─Selection_100(Probe)	0.09	2371	mpp[tiflash]		tiflash_task:{proc max:404.6ms, min:0s, avg: 134.9ms, p80:404.6ms, p95:404.6ms, iters:1750, tasks:3, threads:48}	eq(gharchive_dev.github_events.action, "created"), eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "IssueCommentEvent"), ge(gharchive_dev.github_events.created_at, 2022-09-01 00:00:00.000000), lt(gharchive_dev.github_events.created_at, 2022-10-01 00:00:00.000000), not(like(gharchive_dev.github_events.actor_login, "%[bot]", 92)), not(like(gharchive_dev.github_events.actor_login, "%bot", 92))	N/A	N/A
+                  └─TableFullScan_99	5255688786.00	46551562	mpp[tiflash]	table:ge	tiflash_task:{proc max:372.6ms, min:0s, avg: 124.2ms, p80:372.6ms, p95:372.6ms, iters:5046, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
+CTE_0	1.00	111	root		time:395.2ms, loops:2	Non-Recursive CTE	0 Bytes	0 Bytes
+└─TableReader_80(Seed Part)	1.00	111	root	partition:issue_comment_event	time:395.2ms, loops:2, cop_task: {num: 3, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_79	N/A	N/A
+  └─ExchangeSender_79	1.00	111	mpp[tiflash]		tiflash_task:{proc max:395.6ms, min:394.6ms, avg: 395ms, p80:395.6ms, p95:395.6ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_34	1.00	111	mpp[tiflash]		tiflash_task:{proc max:395.6ms, min:394.6ms, avg: 395ms, p80:395.6ms, p95:395.6ms, iters:3, tasks:3, threads:48}	gharchive_dev.github_events.actor_login, Column#36	N/A	N/A
+      └─Projection_74	1.00	111	mpp[tiflash]		tiflash_task:{proc max:395.6ms, min:394.6ms, avg: 395ms, p80:395.6ms, p95:395.6ms, iters:3, tasks:3, threads:48}	Column#36, gharchive_dev.github_events.actor_login	N/A	N/A
+        └─HashAgg_72	1.00	111	mpp[tiflash]		tiflash_task:{proc max:395.6ms, min:394.6ms, avg: 395ms, p80:395.6ms, p95:395.6ms, iters:3, tasks:3, threads:48}	group by:gharchive_dev.github_events.actor_login, funcs:count(1)->Column#36, funcs:firstrow(gharchive_dev.github_events.actor_login)->gharchive_dev.github_events.actor_login	N/A	N/A
+          └─ExchangeReceiver_58	0.02	1302	mpp[tiflash]		tiflash_task:{proc max:395.6ms, min:394.6ms, avg: 395ms, p80:395.6ms, p95:395.6ms, iters:46, tasks:3, threads:48}		N/A	N/A
+            └─ExchangeSender_57	0.02	1302	mpp[tiflash]		tiflash_task:{proc max:385.1ms, min:0s, avg: 128.4ms, p80:385.1ms, p95:385.1ms, iters:93, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.actor_login, collate: utf8mb4_bin]	N/A	N/A
+              └─HashJoin_56	0.02	1302	mpp[tiflash]		tiflash_task:{proc max:385.1ms, min:0s, avg: 128.4ms, p80:385.1ms, p95:385.1ms, iters:93, tasks:3, threads:48}	anti semi join, equal:[eq(gharchive_dev.github_events.actor_login, gharchive_dev.blacklist_users.login)]	N/A	N/A
+                ├─ExchangeReceiver_47(Build)	2.00	6	mpp[tiflash]		tiflash_task:{proc max:31.3ms, min:0s, avg: 10.4ms, p80:31.3ms, p95:31.3ms, iters:3, tasks:3, threads:48}		N/A	N/A
+                │ └─ExchangeSender_46	2.00	2	mpp[tiflash]		tiflash_task:{proc max:6.22ms, min:0s, avg: 2.07ms, p80:6.22ms, p95:6.22ms, iters:1, tasks:3, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                │   └─TableFullScan_45	2.00	2	mpp[tiflash]	table:bu	tiflash_task:{proc max:6.22ms, min:0s, avg: 2.07ms, p80:6.22ms, p95:6.22ms, iters:1, tasks:3, threads:1}	keep order:false	N/A	N/A
+                └─Selection_44(Probe)	0.03	1302	mpp[tiflash]		tiflash_task:{proc max:385.1ms, min:0s, avg: 128.4ms, p80:385.1ms, p95:385.1ms, iters:93, tasks:3, threads:48}	eq(gharchive_dev.github_events.action, "created"), eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "IssueCommentEvent"), ge(gharchive_dev.github_events.created_at, 2022-10-01 00:00:00.000000), lt(gharchive_dev.github_events.created_at, 2022-11-01 00:00:00.000000), not(like(gharchive_dev.github_events.actor_login, "%[bot]", 92)), not(like(gharchive_dev.github_events.actor_login, "%bot", 92))	N/A	N/A
+                  └─TableFullScan_43	5255688786.00	6763210	mpp[tiflash]	table:ge	tiflash_task:{proc max:385.1ms, min:0s, avg: 128.4ms, p80:385.1ms, p95:385.1ms, iters:122, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

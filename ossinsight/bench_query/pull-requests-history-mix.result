@@ -1,0 +1,20 @@
+pull-requests-history, ENGINE=mix, TIME=1.127341208s
+
+
+Projection_47	1.00	87	root		time:832ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.event_month, Column#46, Column#49	8.80 KB	N/A
+└─Sort_48	1.00	87	root		time:832ms, loops:2	gharchive_dev.github_events.event_month, Column#46	9.48 KB	0 Bytes
+  └─Window_50	1.00	87	root		time:831.9ms, loops:2	sum(cast(Column#47, decimal(20,0) BINARY))->Column#49 over(partition by Column#46 order by gharchive_dev.github_events.event_month range between unbounded preceding and current row)	N/A	N/A
+    └─Sort_52	1.00	87	root		time:831.9ms, loops:2	Column#46, gharchive_dev.github_events.event_month	4.26 KB	0 Bytes
+      └─CTEFullScan_51	1.00	87	root	CTE:count_per_month	time:831.8ms, loops:2	data:CTE_1	9.28 KB	0 Bytes
+CTE_1	1.00	87	root		time:831.8ms, loops:2	Non-Recursive CTE	9.28 KB	0 Bytes
+└─Sort_41(Seed Part)	1.00	87	root		time:831.8ms, loops:2	gharchive_dev.github_events.event_month, Column#43	5.32 KB	0 Bytes
+  └─Projection_43	1.00	87	root		time:831.8ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.event_month, Column#43, Column#44	4.64 KB	N/A
+    └─HashAgg_44	1.00	87	root		time:831.8ms, loops:2	group by:Column#43, gharchive_dev.github_events.event_month, funcs:count(distinct gharchive_dev.github_events.number)->Column#44, funcs:firstrow(gharchive_dev.github_events.event_month)->gharchive_dev.github_events.event_month, funcs:firstrow(Column#43)->Column#43	785.4 KB	0 Bytes
+      └─CTEFullScan_45	0.08	24643	root	CTE:prs_with_latest_repo_name	time:822ms, loops:26	data:CTE_0	2.39 MB	0 Bytes
+CTE_0	0.08	24643	root		time:822ms, loops:26	Non-Recursive CTE	2.39 MB	0 Bytes
+└─Projection_19(Seed Part)	0.08	24643	root		time:821.5ms, loops:26, Concurrency:OFF	gharchive_dev.github_events.event_month, gharchive_dev.github_events.number, gharchive_dev.github_events.repo_id, Column#35	1.23 MB	N/A
+  └─Window_21	0.08	24643	root		time:821.5ms, loops:26	first_value(gharchive_dev.github_events.repo_name)->Column#35 over(partition by gharchive_dev.github_events.repo_id order by gharchive_dev.github_events.created_at desc range between unbounded preceding and current row)	N/A	N/A
+    └─Sort_40	0.08	24643	root		time:815.9ms, loops:26	gharchive_dev.github_events.repo_id, gharchive_dev.github_events.created_at:desc	2.76 MB	0 Bytes
+      └─IndexLookUp_30	0.08	24643	root	partition:pull_request_event	time:783.3ms, loops:26, index_task: {total_time: 52.9ms, fetch_handle: 52.9ms, build: 5.44µs, wait: 41.6µs}, table_task: {total_time: 2.92s, num: 5, concurrency: 15}		2.73 MB	N/A
+        ├─IndexRangeScan_28(Build)	0.08	24643	cop[tikv]	table:github_events, index:index_github_events_on_repo_id_type_action_month_actor_login(repo_id, type, action, event_month, actor_login)	time:51.6ms, loops:27, cop_task: {num: 8, max: 19.5ms, min: 1.11ms, avg: 6.56ms, p95: 19.5ms, max_proc_keys: 9184, p95_proc_keys: 9184, tot_proc: 30ms, tot_wait: 9ms, rpc_num: 8, rpc_time: 52.4ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}, tikv_task:{proc max:12ms, min:0s, avg: 3ms, p80:8ms, p95:12ms, iters:55, tasks:8}, scan_detail: {total_process_keys: 24643, total_process_keys_size: 4398585, total_keys: 24876, get_snapshot_time: 121.8µs, rocksdb: {key_skipped_count: 24868, block: {cache_hit_count: 163}}}	range:[41986369 "PullRequestEvent" "opened",41986369 "PullRequestEvent" "opened"], keep order:false	N/A	N/A
+        └─TableRowIDScan_29(Probe)	0.08	24643	cop[tikv]	table:github_events	time:2.9s, loops:30, cop_task: {num: 5561, max: 123.3ms, min: 830.3µs, avg: 7.52ms, p95: 23.4ms, max_proc_keys: 28, p95_proc_keys: 10, tot_proc: 856ms, tot_wait: 30.4s, rpc_num: 5561, rpc_time: 41.8s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}, tikv_task:{proc max:100ms, min:0s, avg: 407.1µs, p80:0s, p95:4ms, iters:5561, tasks:5561}, scan_detail: {total_process_keys: 24643, total_process_keys_size: 6958391, total_keys: 24650, get_snapshot_time: 158.1ms, rocksdb: {key_skipped_count: 14, block: {cache_hit_count: 311760, read_count: 1787, read_byte: 2.23 MB, read_time: 210ms}}}	keep order:false	N/A	N/A

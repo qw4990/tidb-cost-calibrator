@@ -1,0 +1,24 @@
+analyze-issue-opened-and-closed, ENGINE=mix, TIME=237.328041ms
+
+
+Sort_102	0.41	87	root		time:18.5ms, loops:2	Column#71	4.62 KB	0 Bytes
+└─Projection_104	0.41	87	root		time:18.3ms, loops:2, Concurrency:OFF	Column#71, Column#72, coalesce(Column#74, 0)->Column#75	4.14 KB	N/A
+  └─HashJoin_105	0.41	87	root		time:18.3ms, loops:2, build_hash_table:{total:15ms, fetch:15ms, build:64.3µs}, probe:{concurrency:15, total:270.1ms, max:18.1ms, probe:131.9µs, fetch:270ms}	inner join, equal:[eq(Column#71, Column#73)]	27.7 KB	0 Bytes
+    ├─Selection_109(Build)	0.64	87	root		time:14.9ms, loops:2	not(isnull(Column#73))	2.51 KB	N/A
+    │ └─CTEFullScan_110	0.80	87	root	CTE:ic	time:14.9ms, loops:3	data:CTE_0	5.88 KB	0 Bytes
+    └─Selection_107(Probe)	0.64	87	root		time:18ms, loops:2	not(isnull(Column#71))	2.51 KB	N/A
+      └─CTEFullScan_108	0.80	87	root	CTE:io	time:18ms, loops:3	data:CTE_1	5.88 KB	0 Bytes
+CTE_0	0.80	87	root		time:14.9ms, loops:3	Non-Recursive CTE	5.88 KB	0 Bytes
+└─Projection_61(Seed Part)	0.80	87	root		time:14.8ms, loops:2, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#35, Column#34	2.02 KB	N/A
+  └─Selection_63	0.80	87	root		time:14.8ms, loops:2	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	760 Bytes	N/A
+    └─HashAgg_73	1.00	87	root		time:14.7ms, loops:17, partial_worker:{wall_time:14.645825ms, concurrency:15, task_num:1, tot_wait:216.149596ms, tot_exec:101.431µs, tot_time:216.30976ms, max:14.55127ms, p95:14.55127ms}, final_worker:{wall_time:14.677562ms, concurrency:15, task_num:15, tot_wait:218.819209ms, tot_exec:463.391µs, tot_time:219.294785ms, max:14.641706ms, p95:14.641706ms}	group by:Column#96, funcs:count(Column#97)->Column#34, funcs:firstrow(Column#98)->gharchive_dev.github_events.created_at	61.3 KB	N/A
+      └─IndexReader_74	1.00	87	root	partition:issues_event	time:14.4ms, loops:2, cop_task: {num: 1, max: 14.8ms, proc_keys: 10324, tot_proc: 13ms, rpc_num: 1, rpc_time: 14.8ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_65	3.32 KB	N/A
+        └─HashAgg_65	1.00	87	cop[tikv]		tikv_task:{time:12ms, loops:11}, scan_detail: {total_process_keys: 10324, total_process_keys_size: 1840654, total_keys: 10389, get_snapshot_time: 9.51µs, rocksdb: {delete_skipped_count: 40, key_skipped_count: 10428, block: {cache_hit_count: 37}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(gharchive_dev.github_events.number)->Column#97, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#98	N/A	N/A
+          └─IndexRangeScan_72	7.00	10324	cop[tikv]	table:ge, index:index_ge_on_repo_id_type_action_created_at_number_pdsize_psize(repo_id, type, action, created_at, number, push_distinct_size, push_size)	tikv_task:{time:12ms, loops:11}	range:[41986369 "IssuesEvent" "closed",41986369 "IssuesEvent" "closed"], keep order:false	N/A	N/A
+CTE_1	0.80	87	root		time:18ms, loops:3	Non-Recursive CTE	5.88 KB	0 Bytes
+└─Projection_19(Seed Part)	0.80	87	root		time:17.9ms, loops:2, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#70, Column#69	2.02 KB	N/A
+  └─Selection_21	0.80	87	root		time:17.9ms, loops:2	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	760 Bytes	N/A
+    └─HashAgg_31	1.00	87	root		time:17.8ms, loops:17, partial_worker:{wall_time:17.763927ms, concurrency:15, task_num:1, tot_wait:262.579953ms, tot_exec:94.917µs, tot_time:262.715264ms, max:17.637675ms, p95:17.637675ms}, final_worker:{wall_time:17.791274ms, concurrency:15, task_num:15, tot_wait:265.37093ms, tot_exec:385.819µs, tot_time:265.768234ms, max:17.738835ms, p95:17.738835ms}	group by:Column#79, funcs:count(Column#80)->Column#69, funcs:firstrow(Column#81)->gharchive_dev.github_events.created_at	61.4 KB	N/A
+      └─IndexReader_32	1.00	87	root	partition:issues_event	time:17.5ms, loops:2, cop_task: {num: 1, max: 18ms, proc_keys: 12527, tot_proc: 16ms, rpc_num: 1, rpc_time: 18ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_23	3.32 KB	N/A
+        └─HashAgg_23	1.00	87	cop[tikv]		tikv_task:{time:16ms, loops:13}, scan_detail: {total_process_keys: 12527, total_process_keys_size: 2234197, total_keys: 12586, get_snapshot_time: 14.2µs, rocksdb: {delete_skipped_count: 59, key_skipped_count: 12644, block: {cache_hit_count: 42}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(gharchive_dev.github_events.number)->Column#80, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#81	N/A	N/A
+          └─IndexRangeScan_30	7.00	12527	cop[tikv]	table:ge, index:index_ge_on_repo_id_type_action_created_at_number_pdsize_psize(repo_id, type, action, created_at, number, push_distinct_size, push_size)	tikv_task:{time:16ms, loops:13}	range:[41986369 "IssuesEvent" "opened",41986369 "IssuesEvent" "opened"], keep order:false	N/A	N/A

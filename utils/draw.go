@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
+	"math/rand"
 	"sort"
 	"strings"
 
@@ -143,6 +144,11 @@ func DrawCostRecordsTo(r Records, f, scale string) {
 var (
 	opTypes = []string{"scan", "agg"}
 	shapes  = map[string]draw.GlyphDrawer{
+		"kvscan":  draw.BoxGlyph{},
+		"kvdscan": draw.PyramidGlyph{},
+		"kvcpu":   draw.PlusGlyph{},
+		"dbcpu":   draw.PlusGlyph{},
+
 		"scan":   draw.BoxGlyph{},
 		"agg":    draw.PyramidGlyph{},
 		"sort":   draw.PlusGlyph{},
@@ -163,6 +169,13 @@ var (
 			rgb(255, 0, 127), rgb(255, 51, 153), rgb(255, 102, 178), rgb(255, 153, 204)},
 		"sel":    {rgb(102, 0, 204), rgb(127, 0, 255), rgb(153, 51, 255)},
 		"lookup": {rgb(102, 0, 204), rgb(127, 0, 255), rgb(153, 51, 255)},
+
+		"kvscan": {rgb(102, 0, 0), rgb(153, 0, 0), rgb(204, 0, 0), rgb(255, 0, 0),
+			rgb(255, 102, 102), rgb(255, 153, 153), rgb(255, 204, 204)},
+		"kvdscan": {rgb(51, 102, 0), rgb(76, 153, 0), rgb(102, 204, 0), rgb(128, 255, 0),
+			rgb(153, 255, 51), rgb(178, 255, 102), rgb(229, 255, 204)},
+		"kvcpu": {rgb(51, 0, 102), rgb(76, 0, 153), rgb(102, 0, 204), rgb(127, 0, 255)},
+		"dbcpu": {rgb(51, 0, 102), rgb(76, 0, 153), rgb(102, 0, 204), rgb(127, 0, 255)},
 	}
 )
 
@@ -174,12 +187,16 @@ func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 	sort.Strings(labels)
 	styles := make(map[string]draw.GlyphStyle)
 	colorCnt := make(map[string]int)
+	var ops []string
+	for op := range shapes {
+		ops = append(ops, op)
+	}
 	for _, l := range labels {
 		ok := false
 		for op, shape := range shapes {
 			if strings.Contains(strings.ToLower(l), op) {
 				cnt := colorCnt[op]
-				currentColor := colors[op][(cnt % len(colors[op]))]
+				currentColor := colors[op][(cnt % len(colors[strings.ToLower(op)]))]
 				colorCnt[op] = cnt + 1
 				styles[l] = draw.GlyphStyle{
 					Radius: 4,
@@ -191,7 +208,16 @@ func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 			}
 		}
 		if !ok {
-			panic(fmt.Sprintf("cannot get style for %v", l))
+			op := ops[rand.Int()%len(ops)]
+			cnt := colorCnt[op]
+			currentColor := colors[op][(cnt % len(colors[strings.ToLower(op)]))]
+			colorCnt[op] = cnt + 1
+			styles[l] = draw.GlyphStyle{
+				Radius: 4,
+				Shape:  shapes[op],
+				Color:  currentColor,
+			}
+			//panic(fmt.Sprintf("cannot get style for %v", l))
 		}
 	}
 	return styles

@@ -1,0 +1,47 @@
+personal-issues-history, ENGINE=ap, TIME=1.785448958s
+
+
+Projection_125	1.60	31	root		time:1.54s, loops:2, Concurrency:OFF	Column#76, ifnull(Column#78, 0)->Column#81, ifnull(Column#80, 0)->Column#82	1.61 KB	N/A
+└─HashJoin_126	1.60	31	root		time:1.54s, loops:2, build_hash_table:{total:1.54s, fetch:1.54s, build:26.3µs}, probe:{concurrency:15, total:23.1s, max:1.54s, probe:53.2µs, fetch:23.1s}	left outer join, equal:[eq(Column#76, Column#79)]	25.7 KB	0 Bytes
+  ├─Selection_134(Build)	0.64	28	root		time:1.54s, loops:2	not(isnull(Column#79))	1016 Bytes	N/A
+  │ └─CTEFullScan_135	0.80	28	root	CTE:ic	time:1.54s, loops:3	data:CTE_1	2.48 KB	0 Bytes
+  └─HashJoin_128(Probe)	1.60	31	root		time:1.54s, loops:2, build_hash_table:{total:961.3ms, fetch:961.3ms, build:28µs}, probe:{concurrency:15, total:23.1s, max:1.54s, probe:59.6µs, fetch:23.1s}	left outer join, equal:[eq(Column#76, Column#77)]	25.7 KB	0 Bytes
+    ├─Selection_131(Build)	0.64	27	root		time:961.3ms, loops:2	not(isnull(Column#77))	1016 Bytes	N/A
+    │ └─CTEFullScan_132	0.80	27	root	CTE:i	time:961.2ms, loops:3	data:CTE_0	2.48 KB	0 Bytes
+    └─CTEFullScan_130(Probe)	1.60	31	root	CTE:m	time:1.54s, loops:2	data:CTE_2	1.74 KB	0 Bytes
+CTE_1	0.80	28	root		time:1.54s, loops:3	Non-Recursive CTE	2.48 KB	0 Bytes
+└─Sort_75(Seed Part)	0.80	28	root		time:1.54s, loops:2	Column#70	1.46 KB	0 Bytes
+  └─TableReader_113	0.80	28	root	partition:issue_comment_event	time:1.54s, loops:2, cop_task: {num: 4, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_112	N/A	N/A
+    └─ExchangeSender_112	0.80	28	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.54s, avg: 1.54s, p80:1.54s, p95:1.54s, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+      └─Projection_78	0.80	28	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.54s, avg: 1.54s, p80:1.54s, p95:1.54s, iters:3, tasks:3, threads:48}	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#70, Column#69	N/A	N/A
+        └─Selection_111	0.80	28	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.54s, avg: 1.54s, p80:1.54s, p95:1.54s, iters:3, tasks:3, threads:48}	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	N/A	N/A
+          └─Projection_105	1.00	28	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.54s, avg: 1.54s, p80:1.54s, p95:1.54s, iters:3, tasks:3, threads:48}	Column#69, gharchive_dev.github_events.created_at	N/A	N/A
+            └─HashAgg_106	1.00	28	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.54s, avg: 1.54s, p80:1.54s, p95:1.54s, iters:3, tasks:3, threads:48}	group by:Column#108, funcs:sum(Column#109)->Column#69, funcs:firstrow(Column#110)->gharchive_dev.github_events.created_at	N/A	N/A
+              └─ExchangeReceiver_108	1.00	78	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.54s, avg: 1.54s, p80:1.54s, p95:1.54s, iters:41, tasks:3, threads:48}		N/A	N/A
+                └─ExchangeSender_107	1.00	78	mpp[tiflash]		tiflash_task:{proc max:1.53s, min:0s, avg: 509.9ms, p80:1.53s, p95:1.53s, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: Column#108, collate: utf8mb4_general_ci]	N/A	N/A
+                  └─HashAgg_104	1.00	78	mpp[tiflash]		tiflash_task:{proc max:1.53s, min:0s, avg: 509.9ms, p80:1.53s, p95:1.53s, iters:768, tasks:3, threads:48}	group by:Column#112, funcs:count(1)->Column#109, funcs:firstrow(Column#111)->Column#110	N/A	N/A
+                    └─Projection_114	6.00	2159	mpp[tiflash]		tiflash_task:{proc max:1.53s, min:0s, avg: 508.6ms, p80:1.53s, p95:1.53s, iters:1752, tasks:3, threads:48}	gharchive_dev.github_events.created_at, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#112	N/A	N/A
+                      └─Selection_94	6.00	2159	mpp[tiflash]		tiflash_task:{proc max:1.53s, min:0s, avg: 508.6ms, p80:1.53s, p95:1.53s, iters:1752, tasks:3, threads:48}	eq(gharchive_dev.github_events.action, "created"), eq(gharchive_dev.github_events.actor_id, 5086433), eq(gharchive_dev.github_events.type, "IssueCommentEvent")	N/A	N/A
+                        └─TableFullScan_93	5255694887.00	338158840	mpp[tiflash]	table:ge	tiflash_task:{proc max:1.42s, min:0s, avg: 472.6ms, p80:1.42s, p95:1.42s, iters:6058, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
+CTE_0	0.80	27	root		time:961.2ms, loops:3	Non-Recursive CTE	2.48 KB	0 Bytes
+└─Sort_33(Seed Part)	0.80	27	root		time:961.2ms, loops:2	Column#35	1.45 KB	0 Bytes
+  └─TableReader_71	0.80	27	root	partition:issues_event	time:961.2ms, loops:2, cop_task: {num: 4, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_70	N/A	N/A
+    └─ExchangeSender_70	0.80	27	mpp[tiflash]		tiflash_task:{proc max:970.1ms, min:962.2ms, avg: 964.9ms, p80:970.1ms, p95:970.1ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+      └─Projection_36	0.80	27	mpp[tiflash]		tiflash_task:{proc max:970.1ms, min:962.2ms, avg: 964.9ms, p80:970.1ms, p95:970.1ms, iters:3, tasks:3, threads:48}	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#35, Column#34	N/A	N/A
+        └─Selection_69	0.80	27	mpp[tiflash]		tiflash_task:{proc max:970.1ms, min:962.2ms, avg: 964.9ms, p80:970.1ms, p95:970.1ms, iters:3, tasks:3, threads:48}	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	N/A	N/A
+          └─Projection_63	1.00	27	mpp[tiflash]		tiflash_task:{proc max:970.1ms, min:962.2ms, avg: 964.9ms, p80:970.1ms, p95:970.1ms, iters:3, tasks:3, threads:48}	Column#34, gharchive_dev.github_events.created_at	N/A	N/A
+            └─HashAgg_64	1.00	27	mpp[tiflash]		tiflash_task:{proc max:970.1ms, min:962.2ms, avg: 964.9ms, p80:970.1ms, p95:970.1ms, iters:3, tasks:3, threads:48}	group by:Column#93, funcs:sum(Column#94)->Column#34, funcs:firstrow(Column#95)->gharchive_dev.github_events.created_at	N/A	N/A
+              └─ExchangeReceiver_66	1.00	57	mpp[tiflash]		tiflash_task:{proc max:962.4ms, min:962.1ms, avg: 962.2ms, p80:962.4ms, p95:962.4ms, iters:33, tasks:3, threads:48}		N/A	N/A
+                └─ExchangeSender_65	1.00	57	mpp[tiflash]		tiflash_task:{proc max:958.9ms, min:0s, avg: 319.6ms, p80:958.9ms, p95:958.9ms, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: Column#93, collate: utf8mb4_general_ci]	N/A	N/A
+                  └─HashAgg_62	1.00	57	mpp[tiflash]		tiflash_task:{proc max:958.9ms, min:0s, avg: 319.6ms, p80:958.9ms, p95:958.9ms, iters:768, tasks:3, threads:48}	group by:Column#97, funcs:count(1)->Column#94, funcs:firstrow(Column#96)->Column#95	N/A	N/A
+                    └─Projection_72	6.00	155	mpp[tiflash]		tiflash_task:{proc max:938.9ms, min:0s, avg: 313ms, p80:938.9ms, p95:938.9ms, iters:150, tasks:3, threads:48}	gharchive_dev.github_events.created_at, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#97	N/A	N/A
+                      └─Selection_52	6.00	155	mpp[tiflash]		tiflash_task:{proc max:938.9ms, min:0s, avg: 313ms, p80:938.9ms, p95:938.9ms, iters:150, tasks:3, threads:48}	eq(gharchive_dev.github_events.action, "opened"), eq(gharchive_dev.github_events.actor_id, 5086433), eq(gharchive_dev.github_events.type, "IssuesEvent")	N/A	N/A
+                        └─TableFullScan_51	5255694887.00	159909978	mpp[tiflash]	table:ge	tiflash_task:{proc max:890.9ms, min:0s, avg: 297ms, p80:890.9ms, p95:890.9ms, iters:2927, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
+CTE_2	1.60	31	root		time:1.54s, loops:2	Non-Recursive CTE	1.74 KB	0 Bytes
+└─Selection_115(Seed Part)	1.60	31	root		time:1.54s, loops:2	1	636 Bytes	N/A
+  └─HashAgg_117	2.00	31	root		time:1.54s, loops:17, partial_worker:{wall_time:1.537278398s, concurrency:15, task_num:2, tot_wait:23.058030291s, tot_exec:80.788µs, tot_time:23.058161243s, max:1.537236798s, p95:1.537236798s}, final_worker:{wall_time:1.537316659s, concurrency:15, task_num:27, tot_wait:23.058794504s, tot_exec:220.324µs, tot_time:23.059029479s, max:1.537291813s, p95:1.537291813s}	group by:Column#75, funcs:firstrow(Column#75)->Column#75	50.9 KB	N/A
+    └─Union_118	1.60	55	root		time:1.54s, loops:3		N/A	N/A
+      ├─Projection_119	0.80	27	root		time:956.8ms, loops:2, Concurrency:OFF	Column#71	1016 Bytes	N/A
+      │ └─CTEFullScan_120	0.80	27	root	CTE:issues	time:956.8ms, loops:2	data:CTE_0	0 Bytes	0 Bytes
+      └─Projection_121	0.80	28	root		time:1.53s, loops:2, Concurrency:OFF	Column#73	1016 Bytes	N/A
+        └─CTEFullScan_122	0.80	28	root	CTE:issue_comments	time:1.53s, loops:2	data:CTE_1	0 Bytes	0 Bytes

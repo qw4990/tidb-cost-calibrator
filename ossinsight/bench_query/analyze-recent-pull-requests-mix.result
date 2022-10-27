@@ -1,0 +1,83 @@
+analyze-recent-pull-requests, ENGINE=mix, TIME=801.050584ms
+
+
+Sort_234	1.80	28	root		time:552.8ms, loops:2	Column#124	123.3 KB	0 Bytes
+└─Projection_236	1.80	28	root		time:552.6ms, loops:16, Concurrency:OFF	Column#124, Column#125, ifnull(Column#129, 0)->Column#143, ifnull(Column#139, 0)->Column#144, ifnull(Column#132, 0)->Column#145, ifnull(Column#140, 0)->Column#146, Column#126, ifnull(Column#135, 0)->Column#147, ifnull(Column#141, 0)->Column#148, ifnull(Column#138, 0)->Column#149, ifnull(Column#142, 0)->Column#150	8.21 KB	N/A
+  └─Projection_237	1.80	28	root		time:552.5ms, loops:16, Concurrency:OFF	Column#124, Column#125, Column#126, Column#129, Column#132, Column#135, Column#138, Column#139, Column#140, Column#141, Column#142	8.21 KB	N/A
+    └─HashJoin_239	1.80	28	root		time:552.5ms, loops:16, build_hash_table:{total:552.3ms, fetch:552.3ms, build:3.55µs}, probe:{concurrency:15, total:8.28s, max:552.3ms, probe:83µs, fetch:8.28s}	CARTESIAN inner join	6.83 KB	0 Bytes
+      ├─HashJoin_240(Build)	1.00	1	root		time:552.2ms, loops:2, build_hash_table:{total:552ms, fetch:552ms, build:4.28µs}, probe:{concurrency:15, total:8.28s, max:552ms, probe:4.05µs, fetch:8.28s}	CARTESIAN inner join	4.03 KB	0 Bytes
+      │ ├─HashJoin_248(Build)	1.00	1	root		time:552ms, loops:2, build_hash_table:{total:551.8ms, fetch:551.8ms, build:5.14µs}, probe:{concurrency:15, total:8.28s, max:551.9ms, probe:6.21µs, fetch:8.28s}	CARTESIAN inner join	1.43 KB	0 Bytes
+      │ │ ├─CTEFullScan_251(Build)	1.00	1	root	CTE:mplpt	time:551.8ms, loops:2	data:CTE_10	2.80 KB	0 Bytes
+      │ │ └─CTEFullScan_250(Probe)	1.00	1	root	CTE:mpcpt	time:551.8ms, loops:2	data:CTE_9	2.80 KB	0 Bytes
+      │ └─HashJoin_242(Probe)	1.00	1	root		time:4.27ms, loops:2, build_hash_table:{total:4.05ms, fetch:4.05ms, build:4.5µs}, probe:{concurrency:15, total:61.9ms, max:4.15ms, probe:8.3µs, fetch:61.9ms}	CARTESIAN inner join	1.43 KB	0 Bytes
+      │   ├─CTEFullScan_245(Build)	1.00	1	root	CTE:oplpt	time:4.01ms, loops:2	data:CTE_8	2.80 KB	0 Bytes
+      │   └─CTEFullScan_244(Probe)	1.00	1	root	CTE:opcpt	time:4.07ms, loops:2	data:CTE_7	2.80 KB	0 Bytes
+      └─HashJoin_254(Probe)	1.80	28	root		time:552.3ms, loops:16, build_hash_table:{total:551.9ms, fetch:551.9ms, build:16.4µs}, probe:{concurrency:15, total:8.28s, max:552.1ms, probe:76.8µs, fetch:8.28s}	left outer join, equal:[eq(Column#124, Column#136)]	33.9 KB	0 Bytes
+        ├─Selection_270(Build)	0.64	21	root		time:551.8ms, loops:2	not(isnull(Column#136))	1.36 KB	N/A
+        │ └─CTEFullScan_271	0.80	21	root	CTE:mplp	time:551.8ms, loops:3	data:CTE_6	2.73 KB	0 Bytes
+        └─HashJoin_256(Probe)	1.80	28	root		time:552ms, loops:16, build_hash_table:{total:551.8ms, fetch:551.8ms, build:17.4µs}, probe:{concurrency:15, total:8.28s, max:551.9ms, probe:97µs, fetch:8.28s}	left outer join, equal:[eq(Column#124, Column#133)]	33.9 KB	0 Bytes
+          ├─Selection_268(Build)	0.64	26	root		time:551.8ms, loops:2	not(isnull(Column#133))	1.36 KB	N/A
+          │ └─CTEFullScan_269	0.80	26	root	CTE:mpcp	time:551.8ms, loops:3	data:CTE_5	3.23 KB	0 Bytes
+          └─HashJoin_258(Probe)	1.80	28	root		time:4.3ms, loops:16, build_hash_table:{total:3.97ms, fetch:3.95ms, build:15.9µs}, probe:{concurrency:15, total:62ms, max:4.14ms, probe:61.2µs, fetch:61.9ms}	left outer join, equal:[eq(Column#124, Column#130)]	33.9 KB	0 Bytes
+            ├─Selection_266(Build)	0.64	27	root		time:3.91ms, loops:2	not(isnull(Column#130))	1.36 KB	N/A
+            │ └─CTEFullScan_267	0.80	27	root	CTE:oplp	time:3.9ms, loops:3	data:CTE_4	0 Bytes	0 Bytes
+            └─HashJoin_260(Probe)	1.80	28	root		time:4.1ms, loops:16, build_hash_table:{total:3.85ms, fetch:3.83ms, build:15.4µs}, probe:{concurrency:15, total:58.8ms, max:3.94ms, probe:85.9µs, fetch:58.7ms}	left outer join, equal:[eq(Column#124, Column#127)]	33.9 KB	0 Bytes
+              ├─Selection_263(Build)	0.64	27	root		time:3.8ms, loops:2	not(isnull(Column#127))	1.36 KB	N/A
+              │ └─CTEFullScan_264	0.80	27	root	CTE:opcp	time:3.79ms, loops:3	data:CTE_3	0 Bytes	0 Bytes
+              └─CTEFullScan_262(Probe)	1.80	28	root	CTE:s	time:582.4µs, loops:29	data:CTE_0	33.4 KB	0 Bytes
+CTE_10	1.00	1	root		time:551.8ms, loops:2	Non-Recursive CTE	2.80 KB	0 Bytes
+└─StreamAgg_218(Seed Part)	1.00	1	root		time:551.8ms, loops:2	funcs:sum(Column#211)->Column#123	1.45 KB	N/A
+  └─Projection_221	0.80	21	root		time:551.7ms, loops:2, Concurrency:OFF	cast(Column#122, decimal(20,0) BINARY)->Column#211	1.36 KB	N/A
+    └─CTEFullScan_220	0.80	21	root	CTE:merged_prs_last_2nd_28_days	time:551.7ms, loops:2	data:CTE_6	0 Bytes	0 Bytes
+CTE_9	1.00	1	root		time:551.8ms, loops:2	Non-Recursive CTE	2.80 KB	0 Bytes
+└─StreamAgg_211(Seed Part)	1.00	1	root		time:551.7ms, loops:2	funcs:sum(Column#210)->Column#119	1.45 KB	N/A
+  └─Projection_214	0.80	26	root		time:551.7ms, loops:2, Concurrency:OFF	cast(Column#118, decimal(20,0) BINARY)->Column#210	1.36 KB	N/A
+    └─CTEFullScan_213	0.80	26	root	CTE:merged_prs_last_28_days	time:551.7ms, loops:2	data:CTE_5	0 Bytes	0 Bytes
+CTE_8	1.00	1	root		time:4.01ms, loops:2	Non-Recursive CTE	2.80 KB	0 Bytes
+└─StreamAgg_204(Seed Part)	1.00	1	root		time:4ms, loops:2	funcs:sum(Column#209)->Column#115	1.45 KB	N/A
+  └─Projection_207	0.80	27	root		time:3.99ms, loops:2, Concurrency:OFF	cast(Column#114, decimal(20,0) BINARY)->Column#209	1.36 KB	N/A
+    └─CTEFullScan_206	0.80	27	root	CTE:opened_prs_last_2nd_28_days	time:3.98ms, loops:2	data:CTE_4	3.23 KB	0 Bytes
+CTE_7	1.00	1	root		time:4.07ms, loops:2	Non-Recursive CTE	2.80 KB	0 Bytes
+└─StreamAgg_197(Seed Part)	1.00	1	root		time:3.95ms, loops:2	funcs:sum(Column#208)->Column#111	1.45 KB	N/A
+  └─Projection_200	0.80	27	root		time:3.95ms, loops:2, Concurrency:OFF	cast(Column#110, decimal(20,0) BINARY)->Column#208	1.36 KB	N/A
+    └─CTEFullScan_199	0.80	27	root	CTE:opened_prs_last_28_days	time:3.94ms, loops:2	data:CTE_3	3.23 KB	0 Bytes
+CTE_6	0.80	21	root		time:551.8ms, loops:3	Non-Recursive CTE	2.73 KB	0 Bytes
+└─Projection_191(Seed Part)	0.80	21	root		time:551.8ms, loops:2, Concurrency:OFF	Column#104, Column#106, Column#107	1.73 KB	N/A
+  └─Selection_192	0.80	21	root		time:551.8ms, loops:2	eq(Column#105, 1), not(isnull(Column#104))	1.73 KB	N/A
+    └─CTEFullScan_193	1.00	48	root	CTE:merged_prs_group_by_day	time:551.8ms, loops:3	data:CTE_2	0 Bytes	0 Bytes
+CTE_5	0.80	26	root		time:551.8ms, loops:3	Non-Recursive CTE	3.23 KB	0 Bytes
+└─Projection_187(Seed Part)	0.80	26	root		time:551.7ms, loops:2, Concurrency:OFF	Column#100, Column#102, Column#103	1.73 KB	N/A
+  └─Selection_188	0.80	26	root		time:551.7ms, loops:2	eq(Column#101, 0), not(isnull(Column#100))	1.73 KB	N/A
+    └─CTEFullScan_189	1.00	48	root	CTE:merged_prs_group_by_day	time:551.7ms, loops:3	data:CTE_2	0 Bytes	0 Bytes
+CTE_4	0.80	27	root		time:3.9ms, loops:3	Non-Recursive CTE	0 Bytes	0 Bytes
+└─Projection_126(Seed Part)	0.80	27	root		time:3.95ms, loops:2, Concurrency:OFF	Column#96, Column#98, Column#99	1.98 KB	N/A
+  └─Selection_127	0.80	27	root		time:3.95ms, loops:2	eq(Column#97, 1), not(isnull(Column#96))	2.80 KB	N/A
+    └─CTEFullScan_128	1.00	55	root	CTE:opened_prs_group_by_day	time:3.93ms, loops:3	data:CTE_1	6.57 KB	0 Bytes
+CTE_3	0.80	27	root		time:3.79ms, loops:3	Non-Recursive CTE	0 Bytes	0 Bytes
+└─Projection_122(Seed Part)	0.80	27	root		time:3.92ms, loops:2, Concurrency:OFF	Column#92, Column#94, Column#95	1.98 KB	N/A
+  └─Selection_123	0.80	27	root		time:3.92ms, loops:2	eq(Column#93, 0), not(isnull(Column#92))	2.80 KB	N/A
+    └─CTEFullScan_124	1.00	55	root	CTE:opened_prs_group_by_day	time:3.91ms, loops:3	data:CTE_1	0 Bytes	0 Bytes
+CTE_0	1.80	28	root		time:582.4µs, loops:29	Recursive CTE	33.4 KB	0 Bytes
+├─Projection_74(Seed Part)	1.00	1	root		time:4.59µs, loops:2, Concurrency:OFF	1->Column#4, 2022-11-16->Column#5, 2022-10-19->Column#6	0 Bytes	N/A
+│ └─TableDual_75	1.00	1	root		time:427ns, loops:2	rows:1	N/A	N/A
+└─Projection_76(Recursive Part)	0.80	27	root		time:223.7µs, loops:55, Concurrency:OFF	cast(plus(Column#7, 1), bigint(1) BINARY)->Column#13, date_sub(2022-11-16, plus(Column#7, 1), DAY)->Column#14, date_sub(2022-11-16, plus(plus(Column#7, 1), 28), DAY)->Column#15	1.11 KB	N/A
+  └─Selection_77	0.80	27	root		time:97.3µs, loops:55	lt(Column#7, 28)	1.11 KB	N/A
+    └─CTETable_78	1.00	28	root		time:38.6µs, loops:83	Scan on CTE_0	N/A	N/A
+CTE_2	1.00	48	root		time:551.8ms, loops:3	Non-Recursive CTE	0 Bytes	0 Bytes
+└─Projection_130(Seed Part)	1.00	48	root		time:551.7ms, loops:2, Concurrency:OFF	plus(mod(datediff(2022-11-16, cast(Column#88, datetime(6) BINARY)), 28), 1)->Column#90, intdiv(datediff(2022-11-16, cast(Column#88, datetime(6) BINARY)), 28)->Column#91, Column#88, Column#87	1016 Bytes	N/A
+  └─Sort_131	1.00	48	root		time:551.6ms, loops:2	Column#88	0 Bytes	0 Bytes
+    └─Projection_133	1.00	48	root		time:551.5ms, loops:15, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-%d)->Column#88, Column#87	760 Bytes	N/A
+      └─HashAgg_137	1.00	48	root		time:551.5ms, loops:15, partial_worker:{wall_time:551.437687ms, concurrency:15, task_num:1, tot_wait:8.266880554s, tot_exec:278.997µs, tot_time:8.267203051s, max:551.382106ms, p95:551.13405ms}, final_worker:{wall_time:551.477047ms, concurrency:15, task_num:14, tot_wait:8.271193434s, tot_exec:309.637µs, tot_time:8.271516185s, max:551.453506ms, p95:551.449265ms}	group by:Column#207, funcs:count(1)->Column#87, funcs:firstrow(Column#206)->gharchive_dev.github_events.created_at	48.2 KB	N/A
+        └─Projection_186	0.00	520	root		time:551.1ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.created_at, date_format(gharchive_dev.github_events.created_at, %Y-%m-%d)->Column#207	2.73 KB	N/A
+          └─IndexLookUp_163	0.00	520	root	partition:pull_request_event	time:550.8ms, loops:2, index_task: {total_time: 7.45ms, fetch_handle: 7.43ms, build: 1.38µs, wait: 12.9µs}, table_task: {total_time: 557.8ms, num: 2, concurrency: 15}		0 Bytes	N/A
+            ├─IndexRangeScan_160(Build)	0.00	1261	cop[tikv]	table:ge, index:index_github_events_on_repo_id_type_action_month_actor_login(repo_id, type, action, event_month, actor_login)	time:7.36ms, loops:4, cop_task: {num: 3, max: 3.05ms, min: 1.24ms, avg: 2.43ms, p95: 3.05ms, max_proc_keys: 557, p95_proc_keys: 557, tot_proc: 1ms, tot_wait: 1ms, rpc_num: 3, rpc_time: 7.24ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}, tikv_task:{proc max:0s, min:0s, avg: 0s, p80:0s, p95:0s, iters:12, tasks:3}, scan_detail: {total_process_keys: 1261, total_process_keys_size: 230943, total_keys: 1423, get_snapshot_time: 1.1ms, rocksdb: {key_skipped_count: 1420, block: {cache_hit_count: 48, read_count: 3, read_byte: 78.2 KB, read_time: 478.8µs}}}	range:[41986369 "PullRequestEvent" "closed" 2022-09-01,41986369 "PullRequestEvent" "closed" 2022-11-01], keep order:false	N/A	N/A
+            └─Selection_162(Probe)	0.00	520	cop[tikv]		time:555.4ms, loops:4, cop_task: {num: 629, max: 157.1ms, min: 487.8µs, avg: 12.6ms, p95: 74.2ms, max_proc_keys: 8, p95_proc_keys: 2, tot_proc: 2.95s, tot_wait: 4.02s, rpc_num: 630, rpc_time: 7.9s, copr_cache_hit_ratio: 0.16, distsql_concurrency: 15}, backoff{regionMiss: 2ms}, tikv_task:{proc max:100ms, min:0s, avg: 6.64ms, p80:8ms, p95:28ms, iters:629, tasks:629}, scan_detail: {total_process_keys: 705, total_process_keys_size: 203881, total_keys: 705, get_snapshot_time: 36.6ms, rocksdb: {block: {cache_hit_count: 10657, read_count: 2107, read_byte: 12.4 MB, read_time: 557.1ms}}}	eq(gharchive_dev.github_events.pr_merged, 1), gt(gharchive_dev.github_events.created_at, 2022-09-21)	N/A	N/A
+              └─TableRowIDScan_161	0.00	1261	cop[tikv]	table:ge	tikv_task:{proc max:100ms, min:0s, avg: 6.64ms, p80:8ms, p95:28ms, iters:629, tasks:629}	keep order:false	N/A	N/A
+CTE_1	1.00	55	root		time:3.93ms, loops:3	Non-Recursive CTE	6.57 KB	0 Bytes
+└─Projection_80(Seed Part)	1.00	55	root		time:3.89ms, loops:2, Concurrency:OFF	plus(mod(datediff(2022-11-16, cast(Column#50, datetime(6) BINARY)), 28), 1)->Column#52, intdiv(datediff(2022-11-16, cast(Column#50, datetime(6) BINARY)), 28)->Column#53, Column#50, Column#49	1016 Bytes	N/A
+  └─Sort_81	1.00	55	root		time:3.8ms, loops:2	Column#50	0 Bytes	0 Bytes
+    └─Projection_83	1.00	55	root		time:3.61ms, loops:15, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-%d)->Column#50, Column#49	760 Bytes	N/A
+      └─HashAgg_87	1.00	55	root		time:3.56ms, loops:15, partial_worker:{wall_time:3.541476ms, concurrency:15, task_num:1, tot_wait:48.292907ms, tot_exec:316.724µs, tot_time:48.638562ms, max:3.501558ms, p95:3.230192ms}, final_worker:{wall_time:3.565648ms, concurrency:15, task_num:14, tot_wait:52.815432ms, tot_exec:208.049µs, tot_time:53.034376ms, max:3.547244ms, p95:3.54406ms}	group by:Column#176, funcs:count(1)->Column#49, funcs:firstrow(Column#175)->gharchive_dev.github_events.created_at	48.2 KB	N/A
+        └─Projection_121	0.22	690	root		time:3.15ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.created_at, date_format(gharchive_dev.github_events.created_at, %Y-%m-%d)->Column#176	1.98 KB	N/A
+          └─IndexReader_102	0.22	690	root	partition:pull_request_event	time:2.76ms, loops:2, cop_task: {num: 2, max: 2.63ms, min: 1.87ms, avg: 2.25ms, p95: 2.63ms, max_proc_keys: 466, p95_proc_keys: 466, tot_proc: 1ms, rpc_num: 2, rpc_time: 4.46ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:IndexRangeScan_101	12.4 KB	N/A
+            └─IndexRangeScan_101	0.22	690	cop[tikv]	table:ge, index:index_ge_on_repo_id_type_action_created_at_actor_login(repo_id, type, action, created_at, actor_login)	tikv_task:{proc max:4ms, min:0s, avg: 2ms, p80:4ms, p95:4ms, iters:7, tasks:2}, scan_detail: {total_process_keys: 690, total_process_keys_size: 124820, total_keys: 838, get_snapshot_time: 307.9µs, rocksdb: {delete_skipped_count: 131, key_skipped_count: 967, block: {cache_hit_count: 31, read_count: 1, read_byte: 7.66 KB, read_time: 757.3µs}}}	range:(41986369 "PullRequestEvent" "opened" 2022-09-21 00:00:00,41986369 "PullRequestEvent" "opened" +inf], keep order:false	N/A	N/A

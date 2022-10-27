@@ -22,6 +22,7 @@ type Record struct {
 	Label   string
 	SQL     string
 	Weights map[string]float64
+	Plan    []string
 }
 
 func (r Record) Clone() Record {

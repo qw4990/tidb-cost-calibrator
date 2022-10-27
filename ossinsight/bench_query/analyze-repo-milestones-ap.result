@@ -1,0 +1,14 @@
+analyze-repo-milestones, ENGINE=ap, TIME=242.036ms
+
+
+Projection_12	32.09	27	root		time:18.9ms, loops:2, Concurrency:OFF	gharchive_dev.sys_repo_milestones.id, gharchive_dev.sys_repo_milestones.milestone_type_id, gharchive_dev.sys_repo_milestone_types.name, gharchive_dev.sys_repo_milestones.milestone_number, gharchive_dev.sys_repo_milestones.payload, gharchive_dev.sys_repo_milestones.reached_at	2.98 KB	N/A
+└─TopN_15	32.09	27	root		time:18.9ms, loops:2	gharchive_dev.sys_repo_milestones.reached_at:desc, offset:0, count:200	3.19 KB	N/A
+  └─TableReader_39	32.09	27	root		time:18.9ms, loops:3, cop_task: {num: 2, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_38	N/A	N/A
+    └─ExchangeSender_38	32.09	27	mpp[tiflash]		tiflash_task:{time:17.3ms, loops:2, threads:16}	ExchangeType: PassThrough	N/A	N/A
+      └─Projection_21	32.09	27	mpp[tiflash]		tiflash_task:{time:17.3ms, loops:2, threads:16}	gharchive_dev.sys_repo_milestones.id, gharchive_dev.sys_repo_milestones.milestone_type_id, gharchive_dev.sys_repo_milestones.milestone_number, gharchive_dev.sys_repo_milestones.payload, gharchive_dev.sys_repo_milestones.reached_at, gharchive_dev.sys_repo_milestone_types.name	N/A	N/A
+        └─HashJoin_37	32.09	27	mpp[tiflash]		tiflash_task:{time:17.3ms, loops:2, threads:16}	inner join, equal:[eq(gharchive_dev.sys_repo_milestone_types.id, gharchive_dev.sys_repo_milestones.milestone_type_id)]	N/A	N/A
+          ├─ExchangeReceiver_27(Build)	6.00	6	mpp[tiflash]		tiflash_task:{time:5.32ms, loops:1, threads:16}		N/A	N/A
+          │ └─ExchangeSender_26	6.00	6	mpp[tiflash]		tiflash_task:{time:3.8ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+          │   └─TableFullScan_25	6.00	6	mpp[tiflash]	table:srmt	tiflash_task:{time:3.8ms, loops:1, threads:1}	keep order:false, stats:pseudo	N/A	N/A
+          └─Selection_29(Probe)	25.67	27	mpp[tiflash]		tiflash_task:{time:17.3ms, loops:2, threads:1}	eq(gharchive_dev.sys_repo_milestones.repo_id, 41986369)	N/A	N/A
+            └─TableFullScan_28	216441.00	215895	mpp[tiflash]	table:srm	tiflash_task:{time:13.3ms, loops:4, threads:1}	keep order:false	N/A	N/A

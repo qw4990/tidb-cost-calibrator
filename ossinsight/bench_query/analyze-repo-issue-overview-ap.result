@@ -1,0 +1,68 @@
+analyze-repo-issue-overview, ENGINE=ap, TIME=1.85600675s
+
+
+Projection_153	1.00	1	root		time:1.61s, loops:2, Concurrency:OFF	41986369->Column#150, Column#143, Column#145, Column#147, Column#149	1.48 KB	N/A
+└─HashJoin_154	1.00	1	root		time:1.61s, loops:2, build_hash_table:{total:1.61s, fetch:1.61s, build:6.77µs}, probe:{concurrency:15, total:24.1s, max:1.61s, probe:7.31µs, fetch:24.1s}	left outer join, equal:[eq(Column#141, Column#148)]	17.7 KB	0 Bytes
+  ├─Selection_170(Build)	0.80	1	root		time:1.61s, loops:2	not(isnull(Column#148))	760 Bytes	N/A
+  │ └─CTEFullScan_171	1.00	1	root	CTE:icc	time:1.61s, loops:3	data:CTE_3	1.48 KB	0 Bytes
+  └─HashJoin_156(Probe)	1.00	1	root		time:1.54s, loops:2, build_hash_table:{total:1.54s, fetch:1.54s, build:7.48µs}, probe:{concurrency:15, total:23.1s, max:1.54s, probe:10.7µs, fetch:23.1s}	left outer join, equal:[eq(Column#141, Column#146)]	17.7 KB	0 Bytes
+    ├─Selection_168(Build)	0.80	1	root		time:1.54s, loops:2	not(isnull(Column#146))	760 Bytes	N/A
+    │ └─CTEFullScan_169	1.00	1	root	CTE:ico	time:1.54s, loops:3	data:CTE_2	1.48 KB	0 Bytes
+    └─HashJoin_158(Probe)	1.00	1	root		time:1.04s, loops:2, build_hash_table:{total:1.04s, fetch:1.04s, build:6.71µs}, probe:{concurrency:15, total:15.7s, max:1.04s, probe:25.9µs, fetch:15.7s}	left outer join, equal:[eq(Column#141, Column#144)]	17.7 KB	0 Bytes
+      ├─Selection_166(Build)	0.80	1	root		time:1.04s, loops:2	not(isnull(Column#144))	760 Bytes	N/A
+      │ └─CTEFullScan_167	1.00	1	root	CTE:ic	time:1.04s, loops:3	data:CTE_1	1.48 KB	0 Bytes
+      └─HashJoin_160(Probe)	1.00	1	root		time:846ms, loops:2, build_hash_table:{total:845.8ms, fetch:845.8ms, build:6.61µs}, probe:{concurrency:15, total:12.7s, max:845.8ms, probe:7.37µs, fetch:12.7s}	left outer join, equal:[eq(Column#141, Column#142)]	17.7 KB	0 Bytes
+        ├─Selection_164(Build)	0.80	1	root		time:845.8ms, loops:2	not(isnull(Column#142))	760 Bytes	N/A
+        │ └─CTEFullScan_165	1.00	1	root	CTE:i	time:845.8ms, loops:3	data:CTE_0	1.48 KB	0 Bytes
+        └─Projection_162(Probe)	1.00	1	root		time:5.99µs, loops:2, Concurrency:OFF	41986369->Column#141	0 Bytes	N/A
+          └─TableDual_163	1.00	1	root		time:779ns, loops:2	rows:1	N/A	N/A
+CTE_3	1.00	1	root		time:1.61s, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─TableReader_145(Seed Part)	1.00	1	root	partition:issue_comment_event	time:1.61s, loops:2, cop_task: {num: 2, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_144	N/A	N/A
+  └─ExchangeSender_144	1.00	1	mpp[tiflash]		tiflash_task:{time:1.59s, loops:1, threads:16}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_119	1.00	1	mpp[tiflash]		tiflash_task:{time:1.59s, loops:1, threads:16}	41986369->Column#140, Column#139	N/A	N/A
+      └─Projection_138	1.00	1	mpp[tiflash]		tiflash_task:{time:1.59s, loops:1, threads:16}	Column#139	N/A	N/A
+        └─HashAgg_139	1.00	4	mpp[tiflash]		tiflash_task:{time:1.6s, loops:4, threads:64}	funcs:sum(Column#168)->Column#139	N/A	N/A
+          └─ExchangeReceiver_143	1.00	3	mpp[tiflash]		tiflash_task:{time:1.59s, loops:3, threads:16}		N/A	N/A
+            └─ExchangeSender_142	1.00	3	mpp[tiflash]		tiflash_task:{time:1.6s, loops:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+              └─HashAgg_139	1.00	4	mpp[tiflash]		tiflash_task:{time:1.6s, loops:4, threads:64}	funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#168	N/A	N/A
+                └─ExchangeReceiver_141	1.00	3888	mpp[tiflash]		tiflash_task:{time:1.6s, loops:48, threads:48}		N/A	N/A
+                  └─ExchangeSender_140	1.00	3888	mpp[tiflash]		tiflash_task:{time:1.59s, loops:258, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.actor_login, collate: utf8mb4_bin]	N/A	N/A
+                    └─HashAgg_137	1.00	3888	mpp[tiflash]		tiflash_task:{time:1.59s, loops:258, threads:48}	group by:gharchive_dev.github_events.actor_login, 	N/A	N/A
+                      └─Selection_128	0.10	228228	mpp[tiflash]		tiflash_task:{time:1.59s, loops:5914, threads:48}	eq(gharchive_dev.github_events.action, "created"), eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "IssueCommentEvent")	N/A	N/A
+                        └─TableFullScan_127	5255688786.00	338155320	mpp[tiflash]	table:github_events	tiflash_task:{time:1.47s, loops:6073, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
+CTE_2	1.00	1	root		time:1.54s, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─Projection_91(Seed Part)	1.00	1	root		time:1.54s, loops:2, Concurrency:OFF	41986369->Column#105, Column#104	380 Bytes	N/A
+  └─HashAgg_108	1.00	1	root		time:1.54s, loops:2, partial_worker:{wall_time:1.539131651s, concurrency:15, task_num:1, tot_wait:23.086047773s, tot_exec:5.014µs, tot_time:23.086070379s, max:1.539085432s, p95:1.539085432s}, final_worker:{wall_time:1.539173202s, concurrency:15, task_num:1, tot_wait:23.086796027s, tot_exec:18.446µs, tot_time:23.086822028s, max:1.539134162s, p95:1.539134162s}	funcs:count(Column#163)->Column#104	29.6 KB	N/A
+    └─TableReader_110	1.00	3	root	partition:issue_comment_event	time:1.54s, loops:2, cop_task: {num: 3, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_109	N/A	N/A
+      └─ExchangeSender_109	1.00	3	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.46s, avg: 1.5s, p80:1.54s, p95:1.54s, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+        └─HashAgg_96	1.00	3	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.46s, avg: 1.5s, p80:1.54s, p95:1.54s, iters:3, tasks:3, threads:48}	funcs:count(1)->Column#163	N/A	N/A
+          └─Selection_107	0.10	228228	mpp[tiflash]		tiflash_task:{proc max:1.54s, min:1.46s, avg: 1.5s, p80:1.54s, p95:1.54s, iters:5914, tasks:3, threads:48}	eq(gharchive_dev.github_events.action, "created"), eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "IssueCommentEvent")	N/A	N/A
+            └─TableFullScan_106	5255688786.00	338155320	mpp[tiflash]	table:github_events	tiflash_task:{proc max:1.49s, min:1.36s, avg: 1.42s, p80:1.49s, p95:1.49s, iters:6076, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
+CTE_1	1.00	1	root		time:1.04s, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─TableReader_89(Seed Part)	1.00	1	root	partition:issues_event	time:1.04s, loops:2, cop_task: {num: 1, max: 0s, proc_keys: 0, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_88	N/A	N/A
+  └─ExchangeSender_88	1.00	1	mpp[tiflash]		tiflash_task:{time:1.05s, loops:1, threads:16}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_63	1.00	1	mpp[tiflash]		tiflash_task:{time:1.05s, loops:1, threads:16}	41986369->Column#70, Column#69	N/A	N/A
+      └─Projection_82	1.00	1	mpp[tiflash]		tiflash_task:{time:1.05s, loops:1, threads:16}	Column#69	N/A	N/A
+        └─HashAgg_83	1.00	4	mpp[tiflash]		tiflash_task:{time:1.05s, loops:4, threads:64}	funcs:sum(Column#160)->Column#69	N/A	N/A
+          └─ExchangeReceiver_87	1.00	3	mpp[tiflash]		tiflash_task:{time:1.05s, loops:3, threads:16}		N/A	N/A
+            └─ExchangeSender_86	1.00	3	mpp[tiflash]		tiflash_task:{time:1.05s, loops:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+              └─HashAgg_83	1.00	4	mpp[tiflash]		tiflash_task:{time:1.05s, loops:4, threads:64}	funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#160	N/A	N/A
+                └─ExchangeReceiver_85	1.00	2367	mpp[tiflash]		tiflash_task:{time:1.04s, loops:48, threads:48}		N/A	N/A
+                  └─ExchangeSender_84	1.00	2367	mpp[tiflash]		tiflash_task:{time:1.04s, loops:768, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.actor_login, collate: utf8mb4_bin]	N/A	N/A
+                    └─HashAgg_81	1.00	2367	mpp[tiflash]		tiflash_task:{time:1.04s, loops:768, threads:48}	group by:gharchive_dev.github_events.actor_login, 	N/A	N/A
+                      └─Selection_72	0.03	12527	mpp[tiflash]		tiflash_task:{time:1.02s, loops:2654, threads:48}	eq(gharchive_dev.github_events.action, "opened"), eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "IssuesEvent")	N/A	N/A
+                        └─TableFullScan_71	5255688786.00	159909364	mpp[tiflash]	table:github_events	tiflash_task:{time:978ms, loops:2932, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
+CTE_0	1.00	1	root		time:845.8ms, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─TableReader_60(Seed Part)	1.00	1	root	partition:issues_event	time:845.7ms, loops:2, cop_task: {num: 1, max: 0s, proc_keys: 0, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_59	N/A	N/A
+  └─ExchangeSender_59	1.00	1	mpp[tiflash]		tiflash_task:{time:858.5ms, loops:1, threads:16}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_34	1.00	1	mpp[tiflash]		tiflash_task:{time:858.5ms, loops:1, threads:16}	41986369->Column#35, Column#34	N/A	N/A
+      └─Projection_53	1.00	1	mpp[tiflash]		tiflash_task:{time:858.5ms, loops:1, threads:16}	Column#34	N/A	N/A
+        └─HashAgg_54	1.00	4	mpp[tiflash]		tiflash_task:{time:858.5ms, loops:4, threads:64}	funcs:sum(Column#157)->Column#34	N/A	N/A
+          └─ExchangeReceiver_58	1.00	3	mpp[tiflash]		tiflash_task:{time:858.5ms, loops:3, threads:16}		N/A	N/A
+            └─ExchangeSender_57	1.00	3	mpp[tiflash]		tiflash_task:{time:853.3ms, loops:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+              └─HashAgg_54	1.00	4	mpp[tiflash]		tiflash_task:{time:858.5ms, loops:4, threads:64}	funcs:count(distinct gharchive_dev.github_events.number)->Column#157	N/A	N/A
+                └─ExchangeReceiver_56	1.00	19515	mpp[tiflash]		tiflash_task:{time:850.4ms, loops:47, threads:48}		N/A	N/A
+                  └─ExchangeSender_55	1.00	19515	mpp[tiflash]		tiflash_task:{time:850.2ms, loops:768, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.number, collate: binary]	N/A	N/A
+                    └─HashAgg_52	1.00	19515	mpp[tiflash]		tiflash_task:{time:850.2ms, loops:768, threads:48}	group by:gharchive_dev.github_events.number, 	N/A	N/A
+                      └─Selection_43	0.49	23283	mpp[tiflash]		tiflash_task:{time:838.2ms, loops:2765, threads:48}	eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "IssuesEvent")	N/A	N/A
+                        └─TableFullScan_42	5255688786.00	159909364	mpp[tiflash]	table:github_events	tiflash_task:{time:810.2ms, loops:2925, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

@@ -1,0 +1,15 @@
+archive-2021-top10-by-stars, ENGINE=tp, TIME=50.632488708s
+
+
+Projection_15	10.00	10	root		time:50.4s, loops:2, Concurrency:OFF	gharchive_dev.db_repos.name, Column#37	1016 Bytes	N/A
+└─TopN_18	10.00	10	root		time:50.4s, loops:2	Column#37:desc, offset:0, count:10	1.07 KB	N/A
+  └─HashAgg_23	8000.00	46	root		time:50.4s, loops:3	group by:gharchive_dev.db_repos.name, funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#37, funcs:firstrow(gharchive_dev.db_repos.name)->gharchive_dev.db_repos.name	5.49 MB	0 Bytes
+    └─Projection_24	182128.49	100742	root		time:50.3s, loops:106, Concurrency:15	gharchive_dev.github_events.actor_login, gharchive_dev.db_repos.name	1.61 MB	N/A
+      └─HashJoin_26	182128.49	100742	root		time:50.4s, loops:106, build_hash_table:{total:340.3µs, fetch:315µs, build:25.3µs}, probe:{concurrency:15, total:12m36.1s, max:50.4s, probe:6.76s, fetch:12m29.3s}	inner join, equal:[eq(Column#39, Column#38)]	3.26 KB	0 Bytes
+        ├─Projection_27(Build)	10000.00	46	root		time:290.1µs, loops:2, Concurrency:15	gharchive_dev.db_repos.name, cast(gharchive_dev.db_repos.id, double BINARY)->Column#39	79.8 KB	N/A
+        │ └─TableReader_29	10000.00	46	root		time:214.5µs, loops:2, cop_task: {num: 1, max: 2.41ms, proc_keys: 46, tot_proc: 1ms, rpc_num: 1, rpc_time: 2.38ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:TableFullScan_28	2.13 KB	N/A
+        │   └─TableFullScan_28	10000.00	46	cop[tikv]	table:db	tikv_task:{time:0s, loops:2}, scan_detail: {total_process_keys: 46, total_process_keys_size: 2885, total_keys: 47, get_snapshot_time: 438.5µs, rocksdb: {key_skipped_count: 46, block: {cache_hit_count: 12, read_count: 2, read_byte: 25.1 KB, read_time: 916.9µs}}}	keep order:false, stats:pseudo	N/A	N/A
+        └─Projection_30(Probe)	64824080.70	49075781	root		time:50.1s, loops:50831, Concurrency:15	gharchive_dev.github_events.actor_login, cast(gharchive_dev.github_events.repo_id, double BINARY)->Column#38	1.25 MB	N/A
+          └─TableReader_33	64824080.70	49075781	root	partition:watch_event	time:50.2s, loops:50831, cop_task: {num: 7838, max: 1.3s, min: 1.37ms, avg: 95.7ms, p95: 319.2ms, max_proc_keys: 322420, p95_proc_keys: 147922, tot_proc: 12m3s, tot_wait: 4.89s, rpc_num: 7838, rpc_time: 12m30.4s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_32	2.80 MB	N/A
+            └─Selection_32	64824080.70	49075781	cop[tikv]		tikv_task:{proc max:1.29s, min:0s, avg: 92ms, p80:152ms, p95:312ms, iters:358153, tasks:7838}, scan_detail: {total_process_keys: 334509562, total_process_keys_size: 86764407543, total_keys: 336763115, get_snapshot_time: 2.29s, rocksdb: {delete_skipped_count: 2329957, key_skipped_count: 353437482, block: {cache_hit_count: 175060, read_count: 1411158, read_byte: 20.7 GB, read_time: 3m48.1s}}}	eq(gharchive_dev.github_events.event_year, 2021), eq(gharchive_dev.github_events.type, "WatchEvent")	N/A	N/A
+              └─TableFullScan_31	5262567989.00	334509562	cop[tikv]	table:github_events	tikv_task:{proc max:1.29s, min:0s, avg: 89.8ms, p80:148ms, p95:304ms, iters:358153, tasks:7838}	keep order:false	N/A	N/A

@@ -1,0 +1,22 @@
+bot-total-history, ENGINE=ap, TIME=15.331511583s
+
+
+Sort_74	34302905.79	12	root		time:15s, loops:2	Column#42	6.77 KB	0 Bytes
+└─Projection_76	34302905.79	12	root		time:15s, loops:10, Concurrency:15	any_value(Column#41)->Column#43, Column#42	22.3 KB	N/A
+  └─HashAgg_77	34302905.79	12	root		time:15s, loops:10, partial_worker:{wall_time:15.030028463s, concurrency:15, task_num:84, tot_wait:3m45.440169387s, tot_exec:8.629202ms, tot_time:3m45.448923001s, max:15.029965719s, p95:15.029965719s}, final_worker:{wall_time:15.03005677s, concurrency:15, task_num:80, tot_wait:3m45.449667904s, tot_exec:179.961µs, tot_time:3m45.449871076s, max:15.030003257s, p95:15.030003257s}	group by:Column#42, funcs:firstrow(Column#41)->Column#41, funcs:firstrow(Column#42)->Column#42	1.12 MB	N/A
+    └─CTEFullScan_78	34302905.79	85914	root	CTE:acc	time:15s, loops:85	data:CTE_1	3.11 MB	0 Bytes
+CTE_1	34302905.79	85914	root		time:15s, loops:85	Non-Recursive CTE	3.11 MB	0 Bytes
+└─Selection_64(Seed Part)	34302905.79	85914	root		time:15s, loops:85	1	19.0 KB	N/A
+  └─Projection_65	42878632.23	85914	root		time:15s, loops:86, Concurrency:15	Column#38, Column#36	993.0 KB	N/A
+    └─Window_71	42878632.23	85914	root		time:15s, loops:85	count(gharchive_dev.github_events.actor_login)->Column#38 over(order by Column#36 range between unbounded preceding and current row)	N/A	N/A
+      └─Sort_73	42878632.23	85914	root		time:15s, loops:85	Column#36	3.28 MB	0 Bytes
+        └─CTEFullScan_72	42878632.23	85914	root	CTE:bwfs	time:15s, loops:85	data:CTE_0	6.08 MB	0 Bytes
+CTE_0	42878632.23	85914	root		time:15s, loops:85	Non-Recursive CTE	6.08 MB	0 Bytes
+└─Sort_18(Seed Part)	42878632.23	85914	root		time:15s, loops:85	Column#34	3.74 MB	0 Bytes
+  └─Projection_20	42878632.23	85914	root		time:15s, loops:91, Concurrency:15	gharchive_dev.github_events.actor_login, Column#34	470.6 KB	N/A
+    └─HashAgg_50	42878632.23	85914	root		time:15s, loops:91, partial_worker:{wall_time:14.941747382s, concurrency:15, task_num:358, tot_wait:3m43.912305911s, tot_exec:170.964583ms, tot_time:3m44.101846089s, max:14.941686475s, p95:14.941686475s}, final_worker:{wall_time:14.95676363s, concurrency:15, task_num:225, tot_wait:3m44.101756818s, tot_exec:211.682356ms, tot_time:3m44.313509062s, max:14.956695406s, p95:14.956695406s}	group by:gharchive_dev.github_events.actor_login, funcs:min(Column#49)->Column#34, funcs:firstrow(gharchive_dev.github_events.actor_login)->gharchive_dev.github_events.actor_login	60.0 MB	N/A
+      └─TableReader_52	42878632.23	202765	root	partition:all	time:14.9s, loops:359, cop_task: {num: 202, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_51	N/A	N/A
+        └─ExchangeSender_51	42878632.23	202765	mpp[tiflash]		tiflash_task:{proc max:14.9s, min:14.8s, avg: 14.9s, p80:14.9s, p95:14.9s, iters:768, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+          └─HashAgg_27	42878632.23	202765	mpp[tiflash]		tiflash_task:{proc max:14.9s, min:14.8s, avg: 14.9s, p80:14.9s, p95:14.9s, iters:768, tasks:3, threads:48}	group by:gharchive_dev.github_events.actor_login, funcs:min(gharchive_dev.github_events.event_year)->Column#49	N/A	N/A
+            └─Selection_43	4209919737.60	659473548	mpp[tiflash]		tiflash_task:{proc max:14.4s, min:14.2s, avg: 14.3s, p80:14.4s, p95:14.4s, iters:89239, tasks:3, threads:48}	regexp(gharchive_dev.github_events.actor_login, "^(bot-.+|.+bot|.+\[bot\]|.+-bot-.+|robot-.+|.+-ci-.+|.+-ci|.+-testing|.+clabot.+|.+-gerrit|k8s-.+|.+-machine|.+-automation|github-.+|.+-github|.+-service|.+-builds|codecov-.+|.+teamcity.+|jenkins-.+|.+-jira-.+)$")	N/A	N/A
+              └─TableFullScan_42	5262399672.00	5262533080	mpp[tiflash]	table:ge	tiflash_task:{proc max:1.01s, min:832.6ms, avg: 927ms, p80:1.01s, p95:1.01s, iters:89288, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

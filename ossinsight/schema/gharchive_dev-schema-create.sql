@@ -1,0 +1,2 @@
+/*!40101 SET NAMES binary*/;
+CREATE DATABASE IF NOT EXISTS gharchive_dev;

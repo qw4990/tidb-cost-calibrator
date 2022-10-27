@@ -24,7 +24,7 @@ func CostEval() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	costEval(ins, &evalOpt{"", "synthetic", 2, 3, 5, true, 1}, utils.MinioOption{})
+	costEval(ins, &evalOpt{"synthetic", "synthetic", 2, 3, 5, true, 1}, utils.MinioOption{})
 	//costEval(ins, &evalOpt{"synthetic", 1, 3, 5, true, 1})
 	//costEval(ins, &evalOpt{"tpch_clustered", 2, 1, 5, true, 1})
 	//costEval(ins, &evalOpt{"tpch_clustered", 1, 1, 5, true, 1})
@@ -68,9 +68,12 @@ func costEval(ins utils.Instance, opt *evalOpt, minioOption utils.MinioOption) {
 	if err := utils.ReadFrom(queryFile, &qs); err != nil {
 		switch opt.ceType {
 		case "synthetic":
-			qs = genSYNQueries(opt.numPerQuery, opt.scaleFactor)
+			//qs = genSYNQueries(opt.numPerQuery, opt.scaleFactor)
+			qs = genSYNQueries2(opt.numPerQuery, opt.scaleFactor)
 		case "tpch_clustered":
 			qs = genTPCHQueries2(opt.numPerQuery, opt.scaleFactor)
+		case "tpch_standard":
+			qs = genTPCHQueries(opt.numPerQuery)
 		default:
 			panic(fmt.Sprintf("unknown DB/Workload %v", opt.ceType))
 		}
@@ -93,15 +96,6 @@ func costEval(ins utils.Instance, opt *evalOpt, minioOption utils.MinioOption) {
 	} else {
 		info("read %v records successfully", len(rs))
 	}
-
-	var tmp utils.Records
-	for _, r := range rs {
-		//if !strings.Contains(r.Label, "MPPScan") {
-		//	continue
-		//}
-		tmp = append(tmp, r)
-	}
-	rs = tmp
 
 	sort.Slice(rs, func(i, j int) bool {
 		return rs[i].TimeMS < rs[j].TimeMS
@@ -157,11 +151,13 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 		var cost float64
 		weights := make(map[string]float64)
 		var execTimes []float64
+		var plan []string
 		for k := 0; k < opt.repeatTimes; k++ {
 			rs := ins.MustQuery(q.SQL)
-			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
+			r := utils.ParseExplainAnalyze(rs)
 			if k == 0 {
 				cost = r.PlanCost
+				plan = r.RawPlan
 			} else if cost != r.PlanCost { // the plan changes
 				panic(fmt.Sprintf("q=%v, cost=%v, new-cost=%v", q.SQL, cost, r.PlanCost))
 			}
@@ -180,6 +176,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 			Label:   q.Label,
 			SQL:     q.SQL,
 			Weights: weights,
+			Plan:    plan,
 		})
 	}
 	return rs

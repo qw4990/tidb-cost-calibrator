@@ -1,0 +1,41 @@
+analyze-repo-pr-overview, ENGINE=tp, TIME=402.557042ms
+
+
+Projection_85	1.00	1	root		time:187.8ms, loops:2, Concurrency:OFF	41986369->Column#150, Column#143, Column#145, Column#147, Column#149	1.48 KB	N/A
+└─HashJoin_86	1.00	1	root		time:187.8ms, loops:2, build_hash_table:{total:187.5ms, fetch:187.5ms, build:6.45µs}, probe:{concurrency:15, total:2.81s, max:187.6ms, probe:4.05µs, fetch:2.81s}	left outer join, equal:[eq(Column#141, Column#148)]	17.7 KB	0 Bytes
+  ├─Selection_102(Build)	0.80	1	root		time:187.4ms, loops:2	not(isnull(Column#148))	760 Bytes	N/A
+  │ └─CTEFullScan_103	1.00	1	root	CTE:prrc	time:187.4ms, loops:3	data:CTE_3	1.48 KB	0 Bytes
+  └─HashJoin_88(Probe)	1.00	1	root		time:187.7ms, loops:2, build_hash_table:{total:187.5ms, fetch:187.5ms, build:4.96µs}, probe:{concurrency:15, total:2.81s, max:187.5ms, probe:6.45µs, fetch:2.81s}	left outer join, equal:[eq(Column#141, Column#146)]	17.7 KB	0 Bytes
+    ├─Selection_100(Build)	0.80	1	root		time:187.4ms, loops:2	not(isnull(Column#146))	760 Bytes	N/A
+    │ └─CTEFullScan_101	1.00	1	root	CTE:prr	time:187.4ms, loops:3	data:CTE_2	1.48 KB	0 Bytes
+    └─HashJoin_90(Probe)	1.00	1	root		time:162.7ms, loops:2, build_hash_table:{total:32ms, fetch:32ms, build:6.02µs}, probe:{concurrency:15, total:2.44s, max:162.6ms, probe:5.54µs, fetch:2.44s}	left outer join, equal:[eq(Column#141, Column#144)]	17.7 KB	0 Bytes
+      ├─Selection_98(Build)	0.80	1	root		time:32ms, loops:2	not(isnull(Column#144))	760 Bytes	N/A
+      │ └─CTEFullScan_99	1.00	1	root	CTE:prc	time:32ms, loops:3	data:CTE_1	1.48 KB	0 Bytes
+      └─HashJoin_92(Probe)	1.00	1	root		time:162.6ms, loops:2, build_hash_table:{total:162.4ms, fetch:162.4ms, build:6.64µs}, probe:{concurrency:15, total:2.44s, max:162.5ms, probe:7.8µs, fetch:2.44s}	left outer join, equal:[eq(Column#141, Column#142)]	17.7 KB	0 Bytes
+        ├─Selection_96(Build)	0.80	1	root		time:162.4ms, loops:2	not(isnull(Column#142))	760 Bytes	N/A
+        │ └─CTEFullScan_97	1.00	1	root	CTE:pr	time:162.4ms, loops:3	data:CTE_0	1.48 KB	0 Bytes
+        └─Projection_94(Probe)	1.00	1	root		time:5.97µs, loops:2, Concurrency:OFF	41986369->Column#141	0 Bytes	N/A
+          └─TableDual_95	1.00	1	root		time:632ns, loops:2	rows:1	N/A	N/A
+CTE_3	1.00	1	root		time:187.4ms, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─Projection_71(Seed Part)	1.00	1	root		time:187.4ms, loops:2, Concurrency:OFF	41986369->Column#140, Column#139	380 Bytes	N/A
+  └─HashAgg_76	1.00	1	root		time:187.4ms, loops:2	funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#139	30.4 KB	0 Bytes
+    └─IndexReader_77	1.00	594	root	partition:pull_request_review_event	time:187.2ms, loops:2, cop_task: {num: 3, max: 94.8ms, min: 13ms, avg: 62.4ms, p95: 94.8ms, max_proc_keys: 22528, p95_proc_keys: 22528, tot_proc: 138ms, tot_wait: 33ms, rpc_num: 3, rpc_time: 187.3ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_72	8.12 KB	N/A
+      └─HashAgg_72	1.00	594	cop[tikv]		tikv_task:{proc max:72ms, min:12ms, avg: 46.7ms, p80:72ms, p95:72ms, iters:47, tasks:3}, scan_detail: {total_process_keys: 47606, total_process_keys_size: 8836600, total_keys: 48349, get_snapshot_time: 165.9µs, rocksdb: {delete_skipped_count: 1482, key_skipped_count: 49828, block: {cache_hit_count: 45, read_count: 85, read_byte: 526.6 KB, read_time: 8.09ms}}}	group by:gharchive_dev.github_events.actor_login, 	N/A	N/A
+        └─IndexRangeScan_74	0.02	47606	cop[tikv]	table:github_events, index:index_github_events_on_repo_id_type_action_month_actor_login(repo_id, type, action, event_month, actor_login)	tikv_task:{proc max:72ms, min:12ms, avg: 46.7ms, p80:72ms, p95:72ms, iters:47, tasks:3}	range:[41986369 "PullRequestReviewEvent" "created",41986369 "PullRequestReviewEvent" "created"], keep order:false	N/A	N/A
+CTE_2	1.00	1	root		time:187.4ms, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─Projection_48(Seed Part)	1.00	1	root		time:187.4ms, loops:2, Concurrency:OFF	41986369->Column#105, Column#104	380 Bytes	N/A
+  └─StreamAgg_53	1.00	1	root		time:187.4ms, loops:2	funcs:count(1)->Column#104	67.2 KB	N/A
+    └─IndexReader_61	0.02	47606	root	partition:pull_request_review_event	time:185.9ms, loops:49, cop_task: {num: 9, max: 57.4ms, min: 1.45ms, avg: 20.8ms, p95: 57.4ms, max_proc_keys: 17376, p95_proc_keys: 17376, tot_proc: 83ms, tot_wait: 58ms, rpc_num: 9, rpc_time: 187ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:IndexRangeScan_60	1.35 MB	N/A
+      └─IndexRangeScan_60	0.02	47606	cop[tikv]	table:github_events, index:index_github_events_on_repo_id_type_action_month_actor_login(repo_id, type, action, event_month, actor_login)	tikv_task:{proc max:48ms, min:0s, avg: 9.33ms, p80:12ms, p95:48ms, iters:82, tasks:9}, scan_detail: {total_process_keys: 47606, total_process_keys_size: 8836600, total_keys: 48355, get_snapshot_time: 90.9µs, rocksdb: {delete_skipped_count: 1482, key_skipped_count: 49828, block: {cache_hit_count: 211, read_count: 3, read_byte: 31.5 KB, read_time: 319.5µs}}}	range:[41986369 "PullRequestReviewEvent" "created",41986369 "PullRequestReviewEvent" "created"], keep order:false	N/A	N/A
+CTE_1	1.00	1	root		time:32ms, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─Projection_40(Seed Part)	1.00	1	root		time:31.9ms, loops:2, Concurrency:OFF	41986369->Column#70, Column#69	380 Bytes	N/A
+  └─HashAgg_45	1.00	1	root		time:31.9ms, loops:2	funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#69	84.7 KB	0 Bytes
+    └─IndexReader_46	1.00	1176	root	partition:pull_request_event	time:31.5ms, loops:3, cop_task: {num: 4, max: 14.5ms, min: 4.34ms, avg: 8ms, p95: 14.5ms, max_proc_keys: 11264, p95_proc_keys: 11264, tot_proc: 24ms, tot_wait: 2ms, rpc_num: 4, rpc_time: 32ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_41	13.4 KB	N/A
+      └─HashAgg_41	1.00	1176	cop[tikv]		tikv_task:{proc max:8ms, min:4ms, avg: 6ms, p80:8ms, p95:8ms, iters:25, tasks:4}, scan_detail: {total_process_keys: 24649, total_process_keys_size: 4399668, total_keys: 24895, get_snapshot_time: 41.8µs, rocksdb: {key_skipped_count: 24891, block: {cache_hit_count: 99}}}	group by:gharchive_dev.github_events.actor_login, 	N/A	N/A
+        └─IndexRangeScan_43	0.08	24649	cop[tikv]	table:github_events, index:index_github_events_on_repo_id_type_action_month_actor_login(repo_id, type, action, event_month, actor_login)	tikv_task:{proc max:8ms, min:4ms, avg: 6ms, p80:8ms, p95:8ms, iters:25, tasks:4}	range:[41986369 "PullRequestEvent" "opened",41986369 "PullRequestEvent" "opened"], keep order:false	N/A	N/A
+CTE_0	1.00	1	root		time:162.4ms, loops:3	Non-Recursive CTE	1.48 KB	0 Bytes
+└─Projection_33(Seed Part)	1.00	1	root		time:162.3ms, loops:2, Concurrency:OFF	41986369->Column#35, Column#34	380 Bytes	N/A
+  └─HashAgg_37	1.00	1	root		time:162.3ms, loops:2	funcs:count(distinct gharchive_dev.github_events.number)->Column#34	667.6 KB	0 Bytes
+    └─IndexReader_38	1.00	49136	root	partition:pull_request_event	time:155.2ms, loops:10, cop_task: {num: 9, max: 61.8ms, min: 4.46ms, avg: 18ms, p95: 61.8ms, max_proc_keys: 17408, p95_proc_keys: 17408, tot_proc: 105ms, tot_wait: 23ms, rpc_num: 9, rpc_time: 161.6ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_34	212.2 KB	N/A
+      └─HashAgg_34	1.00	49136	cop[tikv]		tikv_task:{proc max:52ms, min:4ms, avg: 12ms, p80:12ms, p95:52ms, iters:49, tasks:9}, scan_detail: {total_process_keys: 49881, total_process_keys_size: 9602706, total_keys: 50300, get_snapshot_time: 90.8µs, rocksdb: {delete_skipped_count: 137, key_skipped_count: 50428, block: {cache_hit_count: 120, read_count: 121, read_byte: 1.04 MB, read_time: 16.7ms}}}	group by:gharchive_dev.github_events.number, 	N/A	N/A
+        └─IndexRangeScan_36	7.00	49881	cop[tikv]	table:github_events, index:index_ge_on_repo_id_type_action_created_at_number_pdsize_psize(repo_id, type, action, created_at, number, push_distinct_size, push_size)	tikv_task:{proc max:48ms, min:4ms, avg: 11.1ms, p80:12ms, p95:48ms, iters:49, tasks:9}	range:[41986369 "PullRequestEvent",41986369 "PullRequestEvent"], keep order:false	N/A	N/A

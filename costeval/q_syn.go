@@ -1,8 +1,16 @@
 package costeval
 
-import (
-	"github.com/qw4990/tidb-cost-calibrator/utils"
-)
+import "github.com/qw4990/tidb-cost-calibrator/utils"
+
+//CREATE TABLE `t` (
+//`a` int(11) NOT NULL,
+//`b` int(11) DEFAULT NULL,
+//`c` varchar(128) DEFAULT NULL,
+//`d` int(11) DEFAULT NULL,
+//PRIMARY KEY (`a`) /*T![clustered_index] CLUSTERED */,
+//KEY `b` (`b`),
+//KEY `bc` (`b`,`c`)
+//)
 
 func genSYNQueries(n int, scale float64) utils.Queries { // baseline: 3s
 	return genQueries(n, scale, genSYNScan, genSYNAgg, genSYNJoin, genSYNSort)

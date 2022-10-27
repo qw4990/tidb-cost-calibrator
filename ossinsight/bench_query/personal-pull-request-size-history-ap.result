@@ -1,0 +1,25 @@
+personal-pull-request-size-history, ENGINE=ap, TIME=1.27089825s
+
+
+Projection_25	0.00	26	root		time:941.6ms, loops:2, Concurrency:OFF	Column#34, Column#63, Column#61, Column#59, Column#57, Column#55, Column#51	9.00 KB	N/A
+└─Selection_27	0.00	26	root		time:941.6ms, loops:2	eq(Column#50, 1)	168.8 KB	N/A
+  └─Window_29	0.00	575	root		time:941.6ms, loops:3	sum(cast(Column#62, decimal(20,0) BINARY))->Column#63 over(partition by Column#34)	N/A	N/A
+    └─Projection_30	0.00	575	root		time:941.3ms, loops:2, Concurrency:OFF	Column#34, Column#50, Column#51, Column#55, Column#57, Column#59, Column#61, case(lt(Column#35, 10), 1, 0)->Column#62	146.0 KB	N/A
+      └─Window_34	0.00	575	root		time:941.3ms, loops:2	sum(cast(Column#60, decimal(20,0) BINARY))->Column#61 over(partition by Column#34)	N/A	N/A
+        └─Projection_35	0.00	575	root		time:941ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, Column#55, Column#57, Column#59, case(and(ge(Column#35, 10), lt(Column#35, 30)), 1, 0)->Column#60	117.7 KB	N/A
+          └─Window_39	0.00	575	root		time:940.9ms, loops:2	sum(cast(Column#58, decimal(20,0) BINARY))->Column#59 over(partition by Column#34)	N/A	N/A
+            └─Projection_40	0.00	575	root		time:940.6ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, Column#55, Column#57, case(and(ge(Column#35, 30), lt(Column#35, 100)), 1, 0)->Column#58	89.4 KB	N/A
+              └─Window_44	0.00	575	root		time:940.6ms, loops:2	sum(cast(Column#56, decimal(20,0) BINARY))->Column#57 over(partition by Column#34)	N/A	N/A
+                └─Projection_45	0.00	575	root		time:940.3ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, Column#55, case(and(ge(Column#35, 100), lt(Column#35, 500)), 1, 0)->Column#56	61.2 KB	N/A
+                  └─Window_49	0.00	575	root		time:940.2ms, loops:2	sum(cast(Column#54, decimal(20,0) BINARY))->Column#55 over(partition by Column#34)	N/A	N/A
+                    └─Projection_50	0.00	575	root		time:940ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, case(and(ge(Column#35, 500), lt(Column#35, 1000)), 1, 0)->Column#54	61.2 KB	N/A
+                      └─Window_54	0.00	575	root		time:939.9ms, loops:2	sum(cast(Column#52, decimal(20,0) BINARY))->Column#53 over(partition by Column#34)	N/A	N/A
+                        └─Projection_55	0.00	575	root		time:939.6ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, case(ge(Column#35, 1000), 1, 0)->Column#52	28.2 KB	N/A
+                          └─Window_59	0.00	575	root		time:939.6ms, loops:2	count(1)->Column#51 over(partition by Column#34)	N/A	N/A
+                            └─Window_60	0.00	575	root		time:939.4ms, loops:2	row_number()->Column#50 over(partition by Column#34 rows between current row and current row)	N/A	N/A
+                              └─Sort_73	0.00	575	root		time:939.2ms, loops:2	Column#34	21.7 KB	0 Bytes
+                                └─TableReader_72	0.00	575	root	partition:pull_request_event	time:938.4ms, loops:2, cop_task: {num: 48, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_71	N/A	N/A
+                                  └─ExchangeSender_71	0.00	575	mpp[tiflash]		tiflash_task:{proc max:933.9ms, min:909.5ms, avg: 923.3ms, p80:933.9ms, p95:933.9ms, iters:546, tasks:3, threads:49}	ExchangeType: PassThrough	N/A	N/A
+                                    └─Projection_64	0.00	575	mpp[tiflash]		tiflash_task:{proc max:933.9ms, min:909.5ms, avg: 923.3ms, p80:933.9ms, p95:933.9ms, iters:546, tasks:3, threads:49}	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#34, plus(gharchive_dev.github_events.additions, gharchive_dev.github_events.deletions)->Column#35	N/A	N/A
+                                      └─Selection_70	0.00	575	mpp[tiflash]		tiflash_task:{proc max:933.9ms, min:909.5ms, avg: 923.3ms, p80:933.9ms, p95:933.9ms, iters:546, tasks:3, threads:49}	eq(gharchive_dev.github_events.action, "closed"), eq(gharchive_dev.github_events.creator_user_id, 5086433), eq(gharchive_dev.github_events.pr_merged, 1), eq(gharchive_dev.github_events.type, "PullRequestEvent")	N/A	N/A
+                                        └─TableFullScan_69	5255711329.00	421256176	mpp[tiflash]	table:ge	tiflash_task:{proc max:806.5ms, min:793.5ms, avg: 802ms, p80:806.5ms, p95:806.5ms, iters:7018, tasks:3, threads:49}	keep order:false, PartitionTableScan:true	N/A	N/A

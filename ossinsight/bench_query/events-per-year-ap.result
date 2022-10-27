@@ -1,0 +1,21 @@
+events-per-year, ENGINE=ap, TIME=520.414416ms
+
+
+Projection_15	10.00	10	root		time:289.6ms, loops:2, Concurrency:OFF	any_value(gharchive_dev.db_repos.name)->Column#38, Column#37	1016 Bytes	N/A
+└─TopN_19	10.00	10	root		time:289.6ms, loops:2	Column#37:desc, offset:0, count:10	1.69 KB	N/A
+  └─TableReader_86	10.00	28	root	partition:watch_event	time:289.6ms, loops:4, cop_task: {num: 4, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_85	N/A	N/A
+    └─ExchangeSender_85	10.00	28	mpp[tiflash]		tiflash_task:{proc max:288.1ms, min:287.5ms, avg: 287.7ms, p80:288.1ms, p95:288.1ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+      └─TopN_84	10.00	28	mpp[tiflash]		tiflash_task:{proc max:288.1ms, min:287.5ms, avg: 287.7ms, p80:288.1ms, p95:288.1ms, iters:3, tasks:3, threads:3}	Column#37:desc, offset:0, count:10	N/A	N/A
+        └─Projection_79	182128.49	46	mpp[tiflash]		tiflash_task:{proc max:288.1ms, min:287.5ms, avg: 287.7ms, p80:288.1ms, p95:288.1ms, iters:3, tasks:3, threads:48}	Column#37, gharchive_dev.db_repos.name	N/A	N/A
+          └─HashAgg_77	182128.49	46	mpp[tiflash]		tiflash_task:{proc max:288.1ms, min:287.5ms, avg: 287.7ms, p80:288.1ms, p95:288.1ms, iters:3, tasks:3, threads:48}	group by:gharchive_dev.github_events.repo_id, funcs:count(1)->Column#37, funcs:firstrow(gharchive_dev.db_repos.name)->gharchive_dev.db_repos.name	N/A	N/A
+            └─ExchangeReceiver_63	182128.49	100742	mpp[tiflash]		tiflash_task:{proc max:288.1ms, min:287.5ms, avg: 287.7ms, p80:288.1ms, p95:288.1ms, iters:48, tasks:3, threads:48}		N/A	N/A
+              └─ExchangeSender_62	182128.49	100742	mpp[tiflash]		tiflash_task:{proc max:283.1ms, min:0s, avg: 94.4ms, p80:283.1ms, p95:283.1ms, iters:5205, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.repo_id, collate: binary]	N/A	N/A
+                └─Projection_61	182128.49	100742	mpp[tiflash]		tiflash_task:{proc max:283.1ms, min:0s, avg: 94.4ms, p80:283.1ms, p95:283.1ms, iters:5205, tasks:3, threads:48}	gharchive_dev.github_events.repo_id, gharchive_dev.db_repos.name	N/A	N/A
+                  └─HashJoin_57	182128.49	100742	mpp[tiflash]		tiflash_task:{proc max:283.1ms, min:0s, avg: 94.4ms, p80:283.1ms, p95:283.1ms, iters:5205, tasks:3, threads:48}	inner join, equal:[eq(Column#41, Column#40)]	N/A	N/A
+                    ├─ExchangeReceiver_38(Build)	10000.00	138	mpp[tiflash]		tiflash_task:{proc max:26.5ms, min:0s, avg: 8.82ms, p80:26.5ms, p95:26.5ms, iters:3, tasks:3, threads:48}		N/A	N/A
+                    │ └─ExchangeSender_37	10000.00	46	mpp[tiflash]		tiflash_task:{proc max:6.64ms, min:0s, avg: 2.21ms, p80:6.64ms, p95:6.64ms, iters:1, tasks:3, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                    │   └─Projection_35	10000.00	46	mpp[tiflash]		tiflash_task:{proc max:6.64ms, min:0s, avg: 2.21ms, p80:6.64ms, p95:6.64ms, iters:1, tasks:3, threads:1}	gharchive_dev.db_repos.name, cast(gharchive_dev.db_repos.id, double BINARY)->Column#41	N/A	N/A
+                    │     └─TableFullScan_36	10000.00	46	mpp[tiflash]	table:repo_subset	tiflash_task:{proc max:6.64ms, min:0s, avg: 2.21ms, p80:6.64ms, p95:6.64ms, iters:1, tasks:3, threads:1}	keep order:false, stats:pseudo	N/A	N/A
+                    └─Projection_39(Probe)	64776490.45	49075781	mpp[tiflash]		tiflash_task:{proc max:275.1ms, min:0s, avg: 91.7ms, p80:275.1ms, p95:275.1ms, iters:5205, tasks:3, threads:48}	gharchive_dev.github_events.repo_id, cast(gharchive_dev.github_events.repo_id, double BINARY)->Column#40	N/A	N/A
+                      └─Selection_41	64776490.45	49075781	mpp[tiflash]		tiflash_task:{proc max:275.1ms, min:0s, avg: 91.7ms, p80:275.1ms, p95:275.1ms, iters:5205, tasks:3, threads:48}	eq(gharchive_dev.github_events.event_year, 2021), eq(gharchive_dev.github_events.type, "WatchEvent")	N/A	N/A
+                        └─TableFullScan_40	5258704503.00	130586096	mpp[tiflash]	table:github_events	tiflash_task:{proc max:231.1ms, min:0s, avg: 77ms, p80:231.1ms, p95:231.1ms, iters:5553, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

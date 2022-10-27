@@ -1,0 +1,9 @@
+stars-common-stargazer-total, ENGINE=tp, TIME=399.293667ms
+
+
+StreamAgg_12	1.00	1	root		time:176.1ms, loops:2	funcs:count(gharchive_dev.github_events.actor_login)->Column#57	31.0 KB	N/A
+└─Selection_13	0.80	3726	root		time:176ms, loops:5	gt(Column#56, 1)	33.7 KB	N/A
+  └─HashAgg_18	1.00	68092	root		time:173.6ms, loops:69	group by:gharchive_dev.github_events.actor_login, funcs:count(distinct gharchive_dev.github_events.repo_id)->Column#56, funcs:firstrow(gharchive_dev.github_events.actor_login)->gharchive_dev.github_events.actor_login	24.6 MB	0 Bytes
+    └─IndexReader_19	1.00	72685	root	partition:watch_event	time:45.9ms, loops:16, cop_task: {num: 15, max: 46.1ms, min: 2.01ms, avg: 9.05ms, p95: 46.1ms, max_proc_keys: 22107, p95_proc_keys: 22107, tot_proc: 92ms, rpc_num: 15, rpc_time: 135.6ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_14	938.7 KB	N/A
+      └─HashAgg_14	1.00	72685	cop[tikv]		tikv_task:{proc max:28ms, min:0s, avg: 6.67ms, p80:12ms, p95:28ms, iters:75, tasks:15}, scan_detail: {total_process_keys: 75900, total_process_keys_size: 12500726, total_keys: 76171, get_snapshot_time: 196.1µs, rocksdb: {delete_skipped_count: 120, key_skipped_count: 76276, block: {cache_hit_count: 366}}}	group by:gharchive_dev.github_events.actor_login, gharchive_dev.github_events.repo_id, 	N/A	N/A
+        └─IndexRangeScan_16	2.06	75900	cop[tikv]	table:ge, index:index_github_events_on_repo_id_type_action_month_actor_login(repo_id, type, action, event_month, actor_login)	tikv_task:{proc max:16ms, min:0s, avg: 4.27ms, p80:8ms, p95:16ms, iters:75, tasks:15}	range:[156018 "WatchEvent",156018 "WatchEvent"], [48833910 "WatchEvent",48833910 "WatchEvent"], keep order:false	N/A	N/A

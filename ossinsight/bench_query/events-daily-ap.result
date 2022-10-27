@@ -1,0 +1,14 @@
+events-daily, ENGINE=ap, TIME=514.230084ms
+
+
+Sort_6	53.85	320	root		time:270.9ms, loops:2	gharchive_dev.github_events.event_day	8.86 KB	0 Bytes
+└─TableReader_49	53.85	320	root	partition:pull_request_event	time:270.7ms, loops:2, cop_task: {num: 4, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_48	N/A	N/A
+  └─ExchangeSender_48	53.85	320	mpp[tiflash]		tiflash_task:{proc max:269.2ms, min:265.1ms, avg: 266.8ms, p80:269.2ms, p95:269.2ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_9	53.85	320	mpp[tiflash]		tiflash_task:{proc max:269.2ms, min:265.1ms, avg: 266.8ms, p80:269.2ms, p95:269.2ms, iters:3, tasks:3, threads:48}	gharchive_dev.github_events.event_day, Column#34	N/A	N/A
+      └─Projection_44	53.85	320	mpp[tiflash]		tiflash_task:{proc max:269.2ms, min:265.1ms, avg: 266.8ms, p80:269.2ms, p95:269.2ms, iters:3, tasks:3, threads:48}	Column#34, gharchive_dev.github_events.event_day	N/A	N/A
+        └─HashAgg_45	53.85	320	mpp[tiflash]		tiflash_task:{proc max:269.2ms, min:265.1ms, avg: 266.8ms, p80:269.2ms, p95:269.2ms, iters:3, tasks:3, threads:48}	group by:gharchive_dev.github_events.event_day, funcs:sum(Column#41)->Column#34, funcs:firstrow(gharchive_dev.github_events.event_day)->gharchive_dev.github_events.event_day	N/A	N/A
+          └─ExchangeReceiver_47	53.85	892	mpp[tiflash]		tiflash_task:{proc max:269.2ms, min:265.1ms, avg: 266.8ms, p80:269.2ms, p95:269.2ms, iters:48, tasks:3, threads:48}		N/A	N/A
+            └─ExchangeSender_46	53.85	892	mpp[tiflash]		tiflash_task:{proc max:266.5ms, min:0s, avg: 88.8ms, p80:266.5ms, p95:266.5ms, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.event_day, collate: binary]	N/A	N/A
+              └─HashAgg_42	53.85	892	mpp[tiflash]		tiflash_task:{proc max:266.5ms, min:0s, avg: 88.8ms, p80:266.5ms, p95:266.5ms, iters:768, tasks:3, threads:48}	group by:gharchive_dev.github_events.event_day, funcs:count(1)->Column#41	N/A	N/A
+                └─Selection_31	75339654.74	108413246	mpp[tiflash]		tiflash_task:{proc max:254.5ms, min:0s, avg: 84.8ms, p80:254.5ms, p95:254.5ms, iters:5677, tasks:3, threads:48}	eq(gharchive_dev.github_events.event_year, 2022), eq(gharchive_dev.github_events.type, "PullRequestEvent")	N/A	N/A
+                  └─TableFullScan_30	5258704503.00	149191659	mpp[tiflash]	table:ge	tiflash_task:{proc max:193.3ms, min:0s, avg: 64.4ms, p80:193.3ms, p95:193.3ms, iters:5707, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

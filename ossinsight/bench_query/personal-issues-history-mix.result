@@ -1,0 +1,35 @@
+personal-issues-history, ENGINE=mix, TIME=226.228458ms
+
+
+Projection_129	1.60	31	root		time:4.04ms, loops:2, Concurrency:OFF	Column#76, ifnull(Column#78, 0)->Column#81, ifnull(Column#80, 0)->Column#82	1.61 KB	N/A
+└─HashJoin_130	1.60	31	root		time:4.03ms, loops:2, build_hash_table:{total:3.59ms, fetch:3.57ms, build:24.1µs}, probe:{concurrency:15, total:58ms, max:3.9ms, probe:40.7µs, fetch:57.9ms}	left outer join, equal:[eq(Column#76, Column#79)]	25.7 KB	0 Bytes
+  ├─Selection_138(Build)	0.64	28	root		time:3.54ms, loops:2	not(isnull(Column#79))	1016 Bytes	N/A
+  │ └─CTEFullScan_139	0.80	28	root	CTE:ic	time:3.53ms, loops:3	data:CTE_1	2.48 KB	0 Bytes
+  └─HashJoin_132(Probe)	1.60	31	root		time:3.82ms, loops:2, build_hash_table:{total:1.62ms, fetch:1.6ms, build:23.7µs}, probe:{concurrency:15, total:54.2ms, max:3.66ms, probe:52.7µs, fetch:54.2ms}	left outer join, equal:[eq(Column#76, Column#77)]	25.7 KB	0 Bytes
+    ├─Selection_135(Build)	0.64	27	root		time:1.57ms, loops:2	not(isnull(Column#77))	1016 Bytes	N/A
+    │ └─CTEFullScan_136	0.80	27	root	CTE:i	time:1.57ms, loops:3	data:CTE_0	2.48 KB	0 Bytes
+    └─CTEFullScan_134(Probe)	1.60	31	root	CTE:m	time:3.6ms, loops:2	data:CTE_2	1.74 KB	0 Bytes
+CTE_1	0.80	28	root		time:3.53ms, loops:3	Non-Recursive CTE	2.48 KB	0 Bytes
+└─Sort_77(Seed Part)	0.80	28	root		time:3.51ms, loops:2	Column#70	1.46 KB	0 Bytes
+  └─Projection_79	0.80	28	root		time:3.47ms, loops:2, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#70, Column#69	760 Bytes	N/A
+    └─Selection_81	0.80	28	root		time:3.43ms, loops:2	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	760 Bytes	N/A
+      └─HashAgg_91	1.00	28	root		time:3.38ms, loops:16, partial_worker:{wall_time:3.362186ms, concurrency:15, task_num:1, tot_wait:48.725945ms, tot_exec:78.744µs, tot_time:48.841665ms, max:3.30476ms, p95:3.266483ms}, final_worker:{wall_time:3.363097ms, concurrency:15, task_num:14, tot_wait:49.836802ms, tot_exec:182.145µs, tot_time:50.03061ms, max:3.344529ms, p95:3.342272ms}	group by:Column#103, funcs:count(Column#104)->Column#69, funcs:firstrow(Column#105)->gharchive_dev.github_events.created_at	63.2 KB	N/A
+        └─IndexReader_92	1.00	28	root	partition:issue_comment_event	time:3.19ms, loops:2, cop_task: {num: 1, max: 3.58ms, proc_keys: 2159, tot_proc: 3ms, rpc_num: 1, rpc_time: 3.55ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_83	1.40 KB	N/A
+          └─HashAgg_83	1.00	28	cop[tikv]		tikv_task:{time:4ms, loops:3}, scan_detail: {total_process_keys: 2159, total_process_keys_size: 395097, total_keys: 2167, get_snapshot_time: 9.04µs, rocksdb: {delete_skipped_count: 25, key_skipped_count: 2191, block: {cache_hit_count: 19}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(1)->Column#104, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#105	N/A	N/A
+            └─IndexRangeScan_90	6.00	2159	cop[tikv]	table:ge, index:index_ge_on_actor_id_type_action_created_at_repo_id_commits(actor_id, type, action, created_at, repo_id, push_distinct_size)	tikv_task:{time:4ms, loops:3}	range:[5086433 "IssueCommentEvent" "created",5086433 "IssueCommentEvent" "created"], keep order:false	N/A	N/A
+CTE_0	0.80	27	root		time:1.57ms, loops:3	Non-Recursive CTE	2.48 KB	0 Bytes
+└─Sort_33(Seed Part)	0.80	27	root		time:1.53ms, loops:2	Column#35	1.45 KB	0 Bytes
+  └─Projection_35	0.80	27	root		time:1.47ms, loops:2, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#35, Column#34	760 Bytes	N/A
+    └─Selection_37	0.80	27	root		time:1.44ms, loops:2	not(isnull(date_format(gharchive_dev.github_events.created_at, "%Y-%m-01")))	760 Bytes	N/A
+      └─HashAgg_47	1.00	27	root		time:1.39ms, loops:15, partial_worker:{wall_time:1.374178ms, concurrency:15, task_num:1, tot_wait:18.011046ms, tot_exec:38.868µs, tot_time:18.084321ms, max:1.26309ms, p95:1.216461ms}, final_worker:{wall_time:1.397497ms, concurrency:15, task_num:13, tot_wait:19.432632ms, tot_exec:163.085µs, tot_time:19.607012ms, max:1.332874ms, p95:1.326244ms}	group by:Column#86, funcs:count(Column#87)->Column#34, funcs:firstrow(Column#88)->gharchive_dev.github_events.created_at	59.6 KB	N/A
+        └─IndexReader_48	1.00	27	root	partition:issues_event	time:1.2ms, loops:2, cop_task: {num: 1, max: 1.91ms, proc_keys: 155, rpc_num: 1, rpc_time: 1.88ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_39	1.32 KB	N/A
+          └─HashAgg_39	1.00	27	cop[tikv]		tikv_task:{time:0s, loops:1}, scan_detail: {total_process_keys: 155, total_process_keys_size: 25885, total_keys: 156, get_snapshot_time: 928.7µs, rocksdb: {key_skipped_count: 155, block: {cache_hit_count: 14}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(1)->Column#87, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#88	N/A	N/A
+            └─IndexRangeScan_46	6.00	155	cop[tikv]	table:ge, index:index_ge_on_actor_id_type_action_created_at_repo_id_commits(actor_id, type, action, created_at, repo_id, push_distinct_size)	tikv_task:{time:0s, loops:1}	range:[5086433 "IssuesEvent" "opened",5086433 "IssuesEvent" "opened"], keep order:false	N/A	N/A
+CTE_2	1.60	31	root		time:3.6ms, loops:2	Non-Recursive CTE	1.74 KB	0 Bytes
+└─Selection_119(Seed Part)	1.60	31	root		time:3.52ms, loops:2	1	636 Bytes	N/A
+  └─HashAgg_121	2.00	31	root		time:3.48ms, loops:17, partial_worker:{wall_time:3.464988ms, concurrency:15, task_num:2, tot_wait:50.068053ms, tot_exec:75.281µs, tot_time:50.189076ms, max:3.382477ms, p95:3.382477ms}, final_worker:{wall_time:3.482826ms, concurrency:15, task_num:27, tot_wait:50.906284ms, tot_exec:179.034µs, tot_time:51.098552ms, max:3.431052ms, p95:3.431052ms}	group by:Column#75, funcs:firstrow(Column#75)->Column#75	48.5 KB	N/A
+    └─Union_122	1.60	55	root		time:3.35ms, loops:3		N/A	N/A
+      ├─Projection_123	0.80	27	root		time:1.28ms, loops:2, Concurrency:OFF	Column#71	1016 Bytes	N/A
+      │ └─CTEFullScan_124	0.80	27	root	CTE:issues	time:1.27ms, loops:2	data:CTE_0	0 Bytes	0 Bytes
+      └─Projection_125	0.80	28	root		time:3.12ms, loops:2, Concurrency:OFF	Column#73	1016 Bytes	N/A
+        └─CTEFullScan_126	0.80	28	root	CTE:issue_comments	time:3.12ms, loops:2	data:CTE_1	0 Bytes	0 Bytes

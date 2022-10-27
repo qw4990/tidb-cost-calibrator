@@ -1,0 +1,9 @@
+personal-pushes-and-commits, ENGINE=tp, TIME=299.24975ms
+
+
+Sort_6	1.00	35	root		time:4.05ms, loops:2	Column#36	36.2 KB	0 Bytes
+└─Projection_8	1.00	35	root		time:3.96ms, loops:16, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#36, Column#34, ifnull(Column#35, 0)->Column#37	2.14 KB	N/A
+  └─HashAgg_13	1.00	35	root		time:3.9ms, loops:16, partial_worker:{wall_time:3.870568ms, concurrency:15, task_num:1, tot_wait:55.971031ms, tot_exec:55.655µs, tot_time:56.063253ms, max:3.820058ms, p95:3.820058ms}, final_worker:{wall_time:3.89556ms, concurrency:15, task_num:15, tot_wait:57.670773ms, tot_exec:218.392µs, tot_time:57.900426ms, max:3.877763ms, p95:3.877763ms}	group by:Column#42, funcs:count(Column#43)->Column#34, funcs:sum(Column#44)->Column#35, funcs:firstrow(Column#45)->gharchive_dev.github_events.created_at	103.0 KB	N/A
+    └─IndexReader_14	1.00	35	root	partition:push_event	time:3.72ms, loops:2, cop_task: {num: 1, max: 3.78ms, proc_keys: 1987, tot_proc: 3ms, rpc_num: 1, rpc_time: 3.77ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:HashAgg_9	2.93 KB	N/A
+      └─HashAgg_9	1.00	35	cop[tikv]		tikv_task:{time:0s, loops:2}, scan_detail: {total_process_keys: 1987, total_process_keys_size: 315943, total_keys: 2021, get_snapshot_time: 16.1µs, rocksdb: {delete_skipped_count: 1, key_skipped_count: 2021, block: {cache_hit_count: 16}}}	group by:date_format(gharchive_dev.github_events.created_at, "%Y-%m-01"), funcs:count(1)->Column#43, funcs:sum(gharchive_dev.github_events.push_distinct_size)->Column#44, funcs:firstrow(gharchive_dev.github_events.created_at)->Column#45	N/A	N/A
+        └─IndexRangeScan_12	6.00	1987	cop[tikv]	table:ge, index:index_ge_on_actor_id_type_action_created_at_repo_id_commits(actor_id, type, action, created_at, repo_id, push_distinct_size)	tikv_task:{time:0s, loops:2}	range:[5086433 "PushEvent",5086433 "PushEvent"], keep order:false	N/A	N/A

@@ -1,0 +1,21 @@
+rt-osdb-ranking-by-stars, ENGINE=ap, TIME=1.113526042s
+
+
+Sort_13	8000.00	21	root		time:798.8ms, loops:2	Column#38:desc	1.16 KB	0 Bytes
+└─TableReader_56	8000.00	21	root	partition:watch_event	time:798.7ms, loops:2, cop_task: {num: 3, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_55	N/A	N/A
+  └─ExchangeSender_55	8000.00	21	mpp[tiflash]		tiflash_task:{proc max:794.2ms, min:785.9ms, avg: 790.1ms, p80:794.2ms, p95:794.2ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_16	8000.00	21	mpp[tiflash]		tiflash_task:{proc max:794.2ms, min:785.9ms, avg: 790.1ms, p80:794.2ms, p95:794.2ms, iters:3, tasks:3, threads:48}	gharchive_dev.osdb_repos.group_name, Column#38	N/A	N/A
+      └─Projection_51	8000.00	21	mpp[tiflash]		tiflash_task:{proc max:794.2ms, min:785.9ms, avg: 790.1ms, p80:794.2ms, p95:794.2ms, iters:3, tasks:3, threads:48}	Column#38, gharchive_dev.osdb_repos.group_name	N/A	N/A
+        └─HashAgg_52	8000.00	21	mpp[tiflash]		tiflash_task:{proc max:794.2ms, min:785.9ms, avg: 790.1ms, p80:794.2ms, p95:794.2ms, iters:3, tasks:3, threads:48}	group by:gharchive_dev.osdb_repos.group_name, funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#38, funcs:firstrow(gharchive_dev.osdb_repos.group_name)->gharchive_dev.osdb_repos.group_name	N/A	N/A
+          └─ExchangeReceiver_54	8000.00	299471	mpp[tiflash]		tiflash_task:{proc max:786.1ms, min:782.2ms, avg: 784.7ms, p80:786.1ms, p95:786.1ms, iters:63, tasks:3, threads:48}		N/A	N/A
+            └─ExchangeSender_53	8000.00	299471	mpp[tiflash]		tiflash_task:{proc max:781.4ms, min:0s, avg: 260.5ms, p80:781.4ms, p95:781.4ms, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.osdb_repos.group_name, collate: utf8mb4_bin]	N/A	N/A
+              └─HashAgg_49	8000.00	299471	mpp[tiflash]		tiflash_task:{proc max:781.4ms, min:0s, avg: 260.5ms, p80:781.4ms, p95:781.4ms, iters:768, tasks:3, threads:48}	group by:gharchive_dev.github_events.actor_login, gharchive_dev.osdb_repos.group_name, 	N/A	N/A
+                └─Projection_38	182128.49	308205	mpp[tiflash]		tiflash_task:{proc max:761.4ms, min:0s, avg: 253.8ms, p80:761.4ms, p95:761.4ms, iters:5717, tasks:3, threads:48}	gharchive_dev.github_events.actor_login, gharchive_dev.osdb_repos.group_name	N/A	N/A
+                  └─HashJoin_24	182128.49	308205	mpp[tiflash]		tiflash_task:{proc max:761.4ms, min:0s, avg: 253.8ms, p80:761.4ms, p95:761.4ms, iters:5717, tasks:3, threads:48}	inner join, equal:[eq(Column#40, Column#39)]	N/A	N/A
+                    ├─ExchangeReceiver_29(Build)	10000.00	69	mpp[tiflash]		tiflash_task:{proc max:113.4ms, min:0s, avg: 37.8ms, p80:113.4ms, p95:113.4ms, iters:3, tasks:3, threads:48}		N/A	N/A
+                    │ └─ExchangeSender_28	10000.00	23	mpp[tiflash]		tiflash_task:{proc max:48.3ms, min:0s, avg: 16.1ms, p80:48.3ms, p95:48.3ms, iters:1, tasks:3, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                    │   └─Projection_26	10000.00	23	mpp[tiflash]		tiflash_task:{proc max:48.3ms, min:0s, avg: 16.1ms, p80:48.3ms, p95:48.3ms, iters:1, tasks:3, threads:1}	gharchive_dev.osdb_repos.group_name, cast(gharchive_dev.osdb_repos.id, double BINARY)->Column#40	N/A	N/A
+                    │     └─TableFullScan_27	10000.00	23	mpp[tiflash]	table:db	tiflash_task:{proc max:48.3ms, min:0s, avg: 16.1ms, p80:48.3ms, p95:48.3ms, iters:1, tasks:3, threads:1}	keep order:false, stats:pseudo	N/A	N/A
+                    └─Projection_30(Probe)	339026857.47	334359687	mpp[tiflash]		tiflash_task:{proc max:695.9ms, min:0s, avg: 232ms, p80:695.9ms, p95:695.9ms, iters:5717, tasks:3, threads:48}	gharchive_dev.github_events.actor_login, cast(gharchive_dev.github_events.repo_id, double BINARY)->Column#39	N/A	N/A
+                      └─Selection_32	339026857.47	334359687	mpp[tiflash]		tiflash_task:{proc max:687.9ms, min:0s, avg: 229.3ms, p80:687.9ms, p95:687.9ms, iters:5717, tasks:3, threads:48}	eq(gharchive_dev.github_events.type, "WatchEvent")	N/A	N/A
+                        └─TableFullScan_31	5255720312.00	334359687	mpp[tiflash]	table:github_events	tiflash_task:{proc max:610.1ms, min:0s, avg: 203.4ms, p80:610.1ms, p95:610.1ms, iters:5717, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

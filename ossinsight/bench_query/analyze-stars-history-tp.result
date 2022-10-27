@@ -1,0 +1,14 @@
+analyze-stars-history, ENGINE=tp, TIME=419.677375ms
+
+
+Projection_30	0.82	87	root		time:195.8ms, loops:2, Concurrency:OFF	Column#34, gharchive_dev.github_events.repo_id, Column#40	9.40 KB	N/A
+└─Sort_31	0.82	87	root		time:195.8ms, loops:2	Column#34	10.1 KB	0 Bytes
+  └─Selection_20	0.82	87	root		time:195.7ms, loops:2	eq(Column#38, 1)	98.4 KB	N/A
+    └─Window_21	1.03	35641	root		time:194.6ms, loops:37	count(gharchive_dev.github_events.actor_login)->Column#40 over(order by Column#39 range between unbounded preceding and current row)	N/A	N/A
+      └─Sort_28	1.03	35641	root		time:171.5ms, loops:36	Column#39	3.11 MB	0 Bytes
+        └─Projection_22	1.03	35641	root		time:154.2ms, loops:36, Concurrency:OFF	Column#34, gharchive_dev.github_events.repo_id, gharchive_dev.github_events.actor_login, Column#38, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#39	2.15 MB	N/A
+          └─Window_23	1.03	35641	root		time:137.2ms, loops:36	row_number()->Column#38 over(partition by Column#37 rows between current row and current row)	N/A	N/A
+            └─Sort_27	1.03	35641	root		time:125.6ms, loops:36	Column#37	2.73 MB	0 Bytes
+              └─Projection_24	1.03	35641	root		time:108.5ms, loops:37, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#34, gharchive_dev.github_events.repo_id, gharchive_dev.github_events.actor_login, gharchive_dev.github_events.created_at, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#37	1.15 MB	N/A
+                └─IndexReader_26	5.00	35641	root	partition:watch_event	time:75ms, loops:37, cop_task: {num: 8, max: 33.8ms, min: 2.3ms, avg: 11.8ms, p95: 33.8ms, max_proc_keys: 14617, p95_proc_keys: 14617, tot_proc: 73ms, tot_wait: 2ms, rpc_num: 8, rpc_time: 94.3ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:IndexRangeScan_25	1.15 MB	N/A
+                  └─IndexRangeScan_25	5.00	35641	cop[tikv]	table:github_events, index:index_ge_on_repo_id_type_action_created_at_actor_login(repo_id, type, action, created_at, actor_login)	tikv_task:{proc max:28ms, min:4ms, avg: 10ms, p80:12ms, p95:28ms, iters:66, tasks:8}, scan_detail: {total_process_keys: 35641, total_process_keys_size: 5858064, total_keys: 35825, get_snapshot_time: 2.56ms, rocksdb: {delete_skipped_count: 237, key_skipped_count: 36054, block: {cache_hit_count: 114, read_count: 79, read_byte: 1.84 MB, read_time: 28.3ms}}}	range:[41986369 "WatchEvent",41986369 "WatchEvent"], keep order:false	N/A	N/A

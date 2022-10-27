@@ -1,0 +1,20 @@
+pull-requests-history, ENGINE=ap, TIME=4.08252925s
+
+
+Projection_32	1.00	87	root		time:3.79s, loops:2, Concurrency:OFF	gharchive_dev.github_events.event_month, Column#46, Column#49	8.80 KB	N/A
+└─Sort_33	1.00	87	root		time:3.79s, loops:2	gharchive_dev.github_events.event_month, Column#46	9.48 KB	0 Bytes
+  └─Window_35	1.00	87	root		time:3.79s, loops:2	sum(cast(Column#47, decimal(20,0) BINARY))->Column#49 over(partition by Column#46 order by gharchive_dev.github_events.event_month range between unbounded preceding and current row)	N/A	N/A
+    └─Sort_37	1.00	87	root		time:3.79s, loops:2	Column#46, gharchive_dev.github_events.event_month	4.26 KB	0 Bytes
+      └─CTEFullScan_36	1.00	87	root	CTE:count_per_month	time:3.79s, loops:2	data:CTE_1	9.28 KB	0 Bytes
+CTE_1	1.00	87	root		time:3.79s, loops:2	Non-Recursive CTE	9.28 KB	0 Bytes
+└─Sort_26(Seed Part)	1.00	87	root		time:3.79s, loops:2	gharchive_dev.github_events.event_month, Column#43	5.32 KB	0 Bytes
+  └─Projection_28	1.00	87	root		time:3.79s, loops:2, Concurrency:OFF	gharchive_dev.github_events.event_month, Column#43, Column#44	4.64 KB	N/A
+    └─HashAgg_29	1.00	87	root		time:3.79s, loops:2	group by:Column#43, gharchive_dev.github_events.event_month, funcs:count(distinct gharchive_dev.github_events.number)->Column#44, funcs:firstrow(gharchive_dev.github_events.event_month)->gharchive_dev.github_events.event_month, funcs:firstrow(Column#43)->Column#43	785.4 KB	0 Bytes
+      └─CTEFullScan_30	0.08	24643	root	CTE:prs_with_latest_repo_name	time:3.78s, loops:26	data:CTE_0	2.39 MB	0 Bytes
+CTE_0	0.08	24643	root		time:3.78s, loops:26	Non-Recursive CTE	2.39 MB	0 Bytes
+└─Projection_19(Seed Part)	0.08	24643	root		time:3.78s, loops:26, Concurrency:OFF	gharchive_dev.github_events.event_month, gharchive_dev.github_events.number, gharchive_dev.github_events.repo_id, Column#35	1.23 MB	N/A
+  └─Window_21	0.08	24643	root		time:3.78s, loops:26	first_value(gharchive_dev.github_events.repo_name)->Column#35 over(partition by gharchive_dev.github_events.repo_id order by gharchive_dev.github_events.created_at desc range between unbounded preceding and current row)	N/A	N/A
+    └─Sort_25	0.08	24643	root		time:3.78s, loops:26	gharchive_dev.github_events.repo_id, gharchive_dev.github_events.created_at:desc	2.94 MB	0 Bytes
+      └─TableReader_24	0.08	24643	root	partition:pull_request_event	time:3.74s, loops:25, cop_task: {num: 1326, max: 76.7ms, min: 17.1ms, avg: 41.9ms, p95: 49.3ms, rpc_num: 1326, rpc_time: 55.6s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_23	6.18 KB	N/A
+        └─Selection_23	0.08	24643	cop[tiflash]		tiflash_task:{proc max:76.4ms, min:13.4ms, avg: 40.5ms, p80:43.1ms, p95:48.6ms, iters:6374, tasks:1326, threads:1326}	eq(gharchive_dev.github_events.action, "opened"), eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "PullRequestEvent")	N/A	N/A
+          └─TableFullScan_22	5255720312.00	421381644	cop[tiflash]	table:github_events	tiflash_task:{proc max:64.4ms, min:13.2ms, avg: 34.3ms, p80:38ms, p95:42.7ms, iters:7174, tasks:1326, threads:1326}	keep order:false	N/A	N/A

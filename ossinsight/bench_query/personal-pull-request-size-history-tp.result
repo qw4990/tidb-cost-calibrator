@@ -1,0 +1,23 @@
+personal-pull-request-size-history, ENGINE=tp, TIME=306.370584ms
+
+
+Projection_25	0.00	26	root		time:19.5ms, loops:2, Concurrency:OFF	Column#34, Column#63, Column#61, Column#59, Column#57, Column#55, Column#51	9.00 KB	N/A
+└─Selection_26	0.00	26	root		time:19.5ms, loops:2	eq(Column#50, 1)	168.8 KB	N/A
+  └─Window_27	0.00	575	root		time:19.4ms, loops:3	sum(cast(Column#62, decimal(20,0) BINARY))->Column#63 over(partition by Column#34)	N/A	N/A
+    └─Projection_28	0.00	575	root		time:19.1ms, loops:2, Concurrency:OFF	Column#34, Column#50, Column#51, Column#55, Column#57, Column#59, Column#61, case(lt(Column#35, 10), 1, 0)->Column#62	146.0 KB	N/A
+      └─Window_30	0.00	575	root		time:19.1ms, loops:2	sum(cast(Column#60, decimal(20,0) BINARY))->Column#61 over(partition by Column#34)	N/A	N/A
+        └─Projection_31	0.00	575	root		time:18.8ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, Column#55, Column#57, Column#59, case(and(ge(Column#35, 10), lt(Column#35, 30)), 1, 0)->Column#60	117.7 KB	N/A
+          └─Window_33	0.00	575	root		time:18.7ms, loops:2	sum(cast(Column#58, decimal(20,0) BINARY))->Column#59 over(partition by Column#34)	N/A	N/A
+            └─Projection_34	0.00	575	root		time:18.4ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, Column#55, Column#57, case(and(ge(Column#35, 30), lt(Column#35, 100)), 1, 0)->Column#58	89.4 KB	N/A
+              └─Window_36	0.00	575	root		time:18.4ms, loops:2	sum(cast(Column#56, decimal(20,0) BINARY))->Column#57 over(partition by Column#34)	N/A	N/A
+                └─Projection_37	0.00	575	root		time:18.1ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, Column#55, case(and(ge(Column#35, 100), lt(Column#35, 500)), 1, 0)->Column#56	61.2 KB	N/A
+                  └─Window_39	0.00	575	root		time:18.1ms, loops:2	sum(cast(Column#54, decimal(20,0) BINARY))->Column#55 over(partition by Column#34)	N/A	N/A
+                    └─Projection_40	0.00	575	root		time:17.8ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, case(and(ge(Column#35, 500), lt(Column#35, 1000)), 1, 0)->Column#54	61.2 KB	N/A
+                      └─Window_42	0.00	575	root		time:17.8ms, loops:2	sum(cast(Column#52, decimal(20,0) BINARY))->Column#53 over(partition by Column#34)	N/A	N/A
+                        └─Projection_43	0.00	575	root		time:17.5ms, loops:2, Concurrency:OFF	Column#34, Column#35, Column#50, Column#51, case(ge(Column#35, 1000), 1, 0)->Column#52	28.2 KB	N/A
+                          └─Window_45	0.00	575	root		time:17.4ms, loops:2	count(1)->Column#51 over(partition by Column#34)	N/A	N/A
+                            └─Window_46	0.00	575	root		time:17.3ms, loops:2	row_number()->Column#50 over(partition by Column#34 rows between current row and current row)	N/A	N/A
+                              └─Sort_51	0.00	575	root		time:17ms, loops:2	Column#34	20.1 KB	0 Bytes
+                                └─Projection_48	0.00	575	root		time:16.8ms, loops:2, Concurrency:OFF	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#34, plus(gharchive_dev.github_events.additions, gharchive_dev.github_events.deletions)->Column#35	51.9 KB	N/A
+                                  └─IndexReader_50	0.00	575	root	partition:pull_request_event	time:16.5ms, loops:2, cop_task: {num: 2, max: 12.4ms, min: 4.16ms, avg: 8.28ms, p95: 12.4ms, max_proc_keys: 351, p95_proc_keys: 351, rpc_num: 2, rpc_time: 16.5ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:IndexRangeScan_49	44.8 KB	N/A
+                                    └─IndexRangeScan_49	0.00	575	cop[tikv]	table:ge, index:index_ge_on_creator_id_type_action_merged_created_at_add_del(creator_user_id, type, action, pr_merged, created_at, additions, deletions)	tikv_task:{proc max:0s, min:0s, avg: 0s, p80:0s, p95:0s, iters:7, tasks:2}, scan_detail: {total_process_keys: 575, total_process_keys_size: 110016, total_keys: 582, get_snapshot_time: 10.9ms, rocksdb: {key_skipped_count: 580, block: {cache_hit_count: 35}}}	range:[5086433 "PullRequestEvent" "closed" 1,5086433 "PullRequestEvent" "closed" 1], keep order:false	N/A	N/A

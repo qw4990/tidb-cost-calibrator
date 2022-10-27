@@ -1,0 +1,6 @@
+events-increment, ENGINE=ap, TIME=221.82225ms
+
+
+Projection_6	1.00	1	root		time:10.6µs, loops:2, Concurrency:OFF	Column#34, Column#35, unix_timestamp(Column#35)->Column#36	760 Bytes	N/A
+└─StreamAgg_8	1.00	1	root		time:1.93µs, loops:2	funcs:count(1)->Column#34, funcs:max(gharchive_dev.github_events.created_at)->Column#35	152 Bytes	N/A
+  └─TableDual_10	0.00	0	root		time:296ns, loops:1	rows:0	N/A	N/A

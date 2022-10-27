@@ -1,0 +1,9 @@
+events-total, ENGINE=mix, TIME=3.643107334s
+
+
+Projection_4	1.00	1	root		time:3.29s, loops:2, Concurrency:OFF	Column#34, Column#35, unix_timestamp(Column#35)->Column#36	760 Bytes	N/A
+└─HashAgg_42	1.00	1	root		time:3.29s, loops:2, partial_worker:{wall_time:3.289326845s, concurrency:15, task_num:1, tot_wait:49.33881668s, tot_exec:6.236µs, tot_time:49.338843253s, max:3.289267851s, p95:3.289267851s}, final_worker:{wall_time:3.289373458s, concurrency:15, task_num:1, tot_wait:49.339536816s, tot_exec:24.187µs, tot_time:49.339568612s, max:3.289320429s, p95:3.289320429s}	funcs:count(Column#106)->Column#34, funcs:max(Column#107)->Column#35	40.7 KB	N/A
+  └─TableReader_44	1.00	3	root	partition:all	time:3.29s, loops:2, cop_task: {num: 3, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_43	N/A	N/A
+    └─ExchangeSender_43	1.00	3	mpp[tiflash]		tiflash_task:{proc max:3.26s, min:3.15s, avg: 3.19s, p80:3.26s, p95:3.26s, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+      └─HashAgg_9	1.00	3	mpp[tiflash]		tiflash_task:{proc max:3.26s, min:3.15s, avg: 3.19s, p80:3.26s, p95:3.26s, iters:3, tasks:3, threads:48}	funcs:count(1)->Column#106, funcs:max(gharchive_dev.github_events.created_at)->Column#107	N/A	N/A
+        └─TableFullScan_41	5258704503.00	5258949959	mpp[tiflash]	table:github_events	tiflash_task:{proc max:1.67s, min:1.56s, avg: 1.63s, p80:1.67s, p95:1.67s, iters:89259, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

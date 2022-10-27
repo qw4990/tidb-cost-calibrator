@@ -16,6 +16,7 @@ type Option struct {
 	Port     int    `toml:"port"`
 	User     string `toml:"user"`
 	Password string `toml:"password"`
+	DB       string `toml:"db"`
 	Label    string `toml:"label"`
 }
 
@@ -28,12 +29,20 @@ type Instance interface {
 	Version() string
 	Opt() Option
 	Close() error
+
+	SetLogThreshold(duration time.Duration)
 }
 
 type instance struct {
 	db  *sql.DB
 	opt Option
 	ver string
+
+	logThreshold time.Duration
+}
+
+func (ins *instance) SetLogThreshold(dur time.Duration) {
+	ins.logThreshold = dur
 }
 
 func (ins *instance) ExecInNewSession(sql string) error {
@@ -44,7 +53,7 @@ func (ins *instance) ExecInNewSession(sql string) error {
 	}
 	defer c.Close()
 	_, err = c.ExecContext(context.Background(), sql)
-	if time.Since(begin) > time.Second*3 {
+	if ins.logThreshold > 0 && time.Since(begin) > ins.logThreshold {
 		fmt.Printf("[SLOW-QUERY] access %v with SQL %v cost %v\n", ins.opt.Label, sql, time.Since(begin))
 	}
 	return errors.Trace(err)
@@ -63,7 +72,7 @@ func (ins *instance) Exec(sql string) error {
 	if name == "" {
 		name = fmt.Sprintf("%v:%v", ins.opt.Addr, ins.opt.Port)
 	}
-	if time.Since(begin) > time.Second*3 {
+	if ins.logThreshold > 0 && time.Since(begin) > ins.logThreshold {
 		fmt.Printf("[SLOW-QUERY] access %v with SQL %v cost %v\n", name, sql, time.Since(begin))
 	}
 	return errors.Trace(err)
@@ -84,7 +93,7 @@ func (ins *instance) Query(query string) (*sql.Rows, error) {
 	if name == "" {
 		name = fmt.Sprintf("%v:%v", ins.opt.Addr, ins.opt.Port)
 	}
-	if time.Since(begin) > time.Second*3 {
+	if ins.logThreshold > 0 && time.Since(begin) > ins.logThreshold {
 		fmt.Printf("[SLOW-QUERY]access %v with SQL %v cost %v\n", name, query, time.Since(begin))
 	}
 	return rows, errors.Trace(err)
@@ -145,9 +154,14 @@ func MustConnectTo(opt Option) Instance {
 }
 
 func ConnectTo(opt Option) (Instance, error) {
-	dns := fmt.Sprintf("%s:%s@tcp(%s:%v)/%v", opt.User, opt.Password, opt.Addr, opt.Port, "mysql")
+	dbName := opt.DB
+	if dbName == "" {
+		dbName = "mysql"
+	}
+
+	dns := fmt.Sprintf("%s:%s@tcp(%s:%v)/%v", opt.User, opt.Password, opt.Addr, opt.Port, dbName)
 	if opt.Password == "" {
-		dns = fmt.Sprintf("%s@tcp(%s:%v)/%v", opt.User, opt.Addr, opt.Port, "mysql")
+		dns = fmt.Sprintf("%s@tcp(%s:%v)/%v", opt.User, opt.Addr, opt.Port, dbName)
 	}
 	db, err := sql.Open("mysql", dns)
 	if err != nil {
@@ -156,7 +170,8 @@ func ConnectTo(opt Option) (Instance, error) {
 	if err := db.Ping(); err != nil {
 		return nil, errors.Trace(err)
 	}
-	ins := &instance{db: db, opt: opt}
-	db.SetMaxOpenConns(256)
+	ins := &instance{db: db, opt: opt, logThreshold: time.Second * 3}
+	db.SetMaxOpenConns(1)
+	db.SetMaxIdleConns(1)
 	return ins, ins.initVersion()
 }

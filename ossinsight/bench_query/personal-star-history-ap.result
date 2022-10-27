@@ -1,0 +1,15 @@
+personal-star-history, ENGINE=ap, TIME=1.058239125s
+
+
+Sort_6	1.00	65	root		time:719.9ms, loops:2	Column#35	3.08 KB	0 Bytes
+└─TableReader_39	1.00	65	root	partition:watch_event	time:719.8ms, loops:2, cop_task: {num: 5, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_38	N/A	N/A
+  └─ExchangeSender_38	1.00	65	mpp[tiflash]		tiflash_task:{proc max:718.4ms, min:714.6ms, avg: 717ms, p80:718.4ms, p95:718.4ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_9	1.00	65	mpp[tiflash]		tiflash_task:{proc max:718.4ms, min:714.6ms, avg: 717ms, p80:718.4ms, p95:718.4ms, iters:3, tasks:3, threads:48}	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#35, Column#34	N/A	N/A
+      └─Projection_34	1.00	65	mpp[tiflash]		tiflash_task:{proc max:718.4ms, min:714.6ms, avg: 717ms, p80:718.4ms, p95:718.4ms, iters:3, tasks:3, threads:48}	Column#34, gharchive_dev.github_events.created_at	N/A	N/A
+        └─HashAgg_35	1.00	65	mpp[tiflash]		tiflash_task:{proc max:718.4ms, min:714.6ms, avg: 717ms, p80:718.4ms, p95:718.4ms, iters:3, tasks:3, threads:48}	group by:Column#46, funcs:sum(Column#47)->Column#34, funcs:firstrow(Column#48)->gharchive_dev.github_events.created_at	N/A	N/A
+          └─ExchangeReceiver_37	1.00	145	mpp[tiflash]		tiflash_task:{proc max:718.1ms, min:714.4ms, avg: 715.7ms, p80:718.1ms, p95:718.1ms, iters:48, tasks:3, threads:48}		N/A	N/A
+            └─ExchangeSender_36	1.00	145	mpp[tiflash]		tiflash_task:{proc max:712.4ms, min:0s, avg: 237.5ms, p80:712.4ms, p95:712.4ms, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: Column#46, collate: utf8mb4_general_ci]	N/A	N/A
+              └─HashAgg_33	1.00	145	mpp[tiflash]		tiflash_task:{proc max:712.4ms, min:0s, avg: 237.5ms, p80:712.4ms, p95:712.4ms, iters:768, tasks:3, threads:48}	group by:Column#50, funcs:count(1)->Column#47, funcs:firstrow(Column#49)->Column#48	N/A	N/A
+                └─Projection_40	6.00	356	mpp[tiflash]		tiflash_task:{proc max:708.4ms, min:0s, avg: 236.1ms, p80:708.4ms, p95:708.4ms, iters:338, tasks:3, threads:49}	gharchive_dev.github_events.created_at, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#50	N/A	N/A
+                  └─Selection_23	6.00	356	mpp[tiflash]		tiflash_task:{proc max:708.4ms, min:0s, avg: 236.1ms, p80:708.4ms, p95:708.4ms, iters:338, tasks:3, threads:49}	eq(gharchive_dev.github_events.action, "started"), eq(gharchive_dev.github_events.actor_id, 5086433), eq(gharchive_dev.github_events.type, "WatchEvent")	N/A	N/A
+                    └─TableFullScan_22	5255711329.00	334027821	mpp[tiflash]	table:ge	tiflash_task:{proc max:648.4ms, min:0s, avg: 216.1ms, p80:648.4ms, p95:648.4ms, iters:5706, tasks:3, threads:49}	keep order:false, PartitionTableScan:true	N/A	N/A

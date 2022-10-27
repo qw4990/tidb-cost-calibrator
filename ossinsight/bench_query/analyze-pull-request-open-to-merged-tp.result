@@ -1,0 +1,55 @@
+analyze-pull-request-open-to-merged, ENGINE=tp, TIME=625.936083ms
+
+
+Sort_100	1.00	87	root		time:318ms, loops:2	Column#113	115.2 KB	0 Bytes
+└─HashAgg_102	1.00	87	root		time:317.8ms, loops:16, partial_worker:{wall_time:317.773884ms, concurrency:15, task_num:24, tot_wait:4.730737736s, tot_exec:27.185272ms, tot_time:4.75810191s, max:317.715719ms, p95:317.715719ms}, final_worker:{wall_time:317.813457ms, concurrency:15, task_num:84, tot_wait:4.765892522s, tot_exec:439.65µs, tot_time:4.76635772s, max:317.769035ms, p95:317.769035ms}	group by:Column#113, Column#117, Column#118, Column#120, Column#122, Column#124, funcs:firstrow(Column#113)->Column#113, funcs:firstrow(Column#117)->Column#117, funcs:firstrow(Column#120)->Column#120, funcs:firstrow(Column#122)->Column#122, funcs:firstrow(Column#124)->Column#124, funcs:firstrow(Column#118)->Column#118	7.45 MB	N/A
+  └─HashJoin_103	0.00	23796	root		time:316.7ms, loops:25, build_hash_table:{total:308ms, fetch:308ms, build:62.7µs}, probe:{concurrency:15, total:4.74s, max:316.5ms, probe:49.6ms, fetch:4.69s}	left outer join, equal:[eq(Column#113, Column#123)]	59.7 KB	0 Bytes
+    ├─Selection_115(Build)	0.00	87	root		time:307.9ms, loops:2	not(isnull(Column#123))	5.86 KB	N/A
+    │ └─CTEFullScan_116	0.00	87	root	CTE:p75	time:307.9ms, loops:3	data:CTE_6	12.6 KB	0 Bytes
+    └─HashJoin_105(Probe)	0.00	23796	root		time:315.2ms, loops:25, build_hash_table:{total:307.8ms, fetch:307.8ms, build:64µs}, probe:{concurrency:15, total:4.71s, max:315ms, probe:66.3ms, fetch:4.65s}	left outer join, equal:[eq(Column#113, Column#121)]	59.7 KB	0 Bytes
+      ├─Selection_113(Build)	0.00	87	root		time:307.7ms, loops:2	not(isnull(Column#121))	5.86 KB	N/A
+      │ └─CTEFullScan_114	0.00	87	root	CTE:p50	time:307.7ms, loops:3	data:CTE_5	12.6 KB	0 Bytes
+      └─HashJoin_107(Probe)	0.00	23796	root		time:309.9ms, loops:25, build_hash_table:{total:307.7ms, fetch:307.7ms, build:60.9µs}, probe:{concurrency:15, total:4.7s, max:313.5ms, probe:82ms, fetch:4.62s}	left outer join, equal:[eq(Column#113, Column#119)]	59.7 KB	0 Bytes
+        ├─Selection_110(Build)	0.00	87	root		time:307.6ms, loops:2	not(isnull(Column#119))	5.86 KB	N/A
+        │ └─CTEFullScan_111	0.00	87	root	CTE:p25	time:307.6ms, loops:3	data:CTE_4	12.6 KB	0 Bytes
+        └─CTEFullScan_109(Probe)	0.00	23796	root	CTE:tr	time:302.3ms, loops:25	data:CTE_3	0 Bytes	0 Bytes
+CTE_6	0.00	87	root		time:307.9ms, loops:3	Non-Recursive CTE	12.6 KB	0 Bytes
+└─Projection_91(Seed Part)	0.00	87	root		time:307.9ms, loops:2, Concurrency:OFF	Column#107, Column#108	16.6 KB	N/A
+  └─Selection_92	0.00	87	root		time:307.9ms, loops:2	eq(cast(Column#109, decimal(20,0) BINARY), round(mul(cast(Column#110, decimal(20,0) BINARY), 0.75))), not(isnull(Column#107))	156.8 KB	N/A
+    └─CTEFullScan_93	0.00	23796	root	CTE:tr	time:302.6ms, loops:26	data:CTE_3	7.46 MB	0 Bytes
+CTE_5	0.00	87	root		time:307.7ms, loops:3	Non-Recursive CTE	12.6 KB	0 Bytes
+└─Projection_87(Seed Part)	0.00	87	root		time:307.7ms, loops:2, Concurrency:OFF	Column#101, Column#102	16.6 KB	N/A
+  └─Selection_88	0.00	87	root		time:307.7ms, loops:2	eq(cast(Column#103, decimal(20,0) BINARY), round(mul(cast(Column#104, decimal(20,0) BINARY), 0.5))), not(isnull(Column#101))	156.8 KB	N/A
+    └─CTEFullScan_89	0.00	23796	root	CTE:tr	time:302.4ms, loops:26	data:CTE_3	0 Bytes	0 Bytes
+CTE_4	0.00	87	root		time:307.6ms, loops:3	Non-Recursive CTE	12.6 KB	0 Bytes
+└─Projection_83(Seed Part)	0.00	87	root		time:307.6ms, loops:2, Concurrency:OFF	Column#95, Column#96	16.6 KB	N/A
+  └─Selection_84	0.00	87	root		time:307.6ms, loops:2	eq(cast(Column#97, decimal(20,0) BINARY), round(mul(cast(Column#98, decimal(20,0) BINARY), 0.25))), not(isnull(Column#95))	156.8 KB	N/A
+    └─CTEFullScan_85	0.00	23796	root	CTE:tr	time:302.3ms, loops:26	data:CTE_3	0 Bytes	0 Bytes
+CTE_3	0.00	23796	root		time:302.3ms, loops:25	Non-Recursive CTE	0 Bytes	0 Bytes
+└─Selection_65(Seed Part)	0.00	23796	root		time:301.5ms, loops:25	1	5.57 KB	N/A
+  └─Projection_66	0.00	23796	root		time:296ms, loops:26, Concurrency:OFF	Column#74, Column#76, Column#87, Column#88, Column#86, Column#84	7.34 KB	N/A
+    └─Window_67	0.00	23796	root		time:295.9ms, loops:26	count(1)->Column#88 over(partition by Column#74)	N/A	N/A
+      └─Window_68	0.00	23796	root		time:289.1ms, loops:25	row_number()->Column#87 over(partition by Column#74 order by Column#75 rows between current row and current row)	N/A	N/A
+        └─Window_70	0.00	23796	root		time:280.9ms, loops:25	first_value(Column#85)->Column#86 over(partition by Column#74 order by Column#75 range between unbounded preceding and current row)	N/A	N/A
+          └─Sort_79	0.00	23796	root		time:271ms, loops:25	Column#74, Column#75	0 Bytes	0 Bytes
+            └─Projection_73	0.00	23796	root		time:211.2ms, loops:25, Concurrency:OFF	Column#74, Column#76, Column#75, Column#84, div(div(cast(Column#75, decimal(20,0) BINARY), 60), 60)->Column#85	5.20 KB	N/A
+              └─Window_74	0.00	23796	root		time:201.6ms, loops:25	first_value(Column#83)->Column#84 over(partition by Column#74 order by Column#75 desc range between unbounded preceding and current row)	N/A	N/A
+                └─Sort_78	0.00	23796	root		time:191.6ms, loops:25	Column#74, Column#75:desc	0 Bytes	0 Bytes
+                  └─Projection_76	0.00	23796	root		time:112.6ms, loops:33, Concurrency:OFF	Column#74, div(div(cast(Column#75, decimal(20,0) BINARY), 60), 60)->Column#76, Column#75, div(div(cast(Column#75, decimal(20,0) BINARY), 60), 60)->Column#83	1016 Bytes	N/A
+                    └─CTEFullScan_77	0.00	23796	root	CTE:tdiff	time:92.3ms, loops:33	data:CTE_2	0 Bytes	0 Bytes
+CTE_2	0.00	23796	root		time:92.3ms, loops:33	Non-Recursive CTE	0 Bytes	0 Bytes
+└─Projection_57(Seed Part)	0.00	23796	root		time:92ms, loops:33, Concurrency:OFF	Column#71, minus(unix_timestamp(gharchive_dev.github_events.created_at), unix_timestamp(gharchive_dev.github_events.created_at))->Column#73	1.36 KB	N/A
+  └─Projection_58	0.00	23796	root		time:77.9ms, loops:33, Concurrency:OFF	gharchive_dev.github_events.created_at, Column#71, gharchive_dev.github_events.created_at	1.36 KB	N/A
+    └─HashJoin_60	0.00	23796	root		time:77.8ms, loops:33, build_hash_table:{total:75.3ms, fetch:69.4ms, build:5.83ms}, probe:{concurrency:15, total:1.26s, max:89ms, probe:120ms, fetch:1.14s}	inner join, equal:[eq(gharchive_dev.github_events.number, gharchive_dev.github_events.number)], other cond:gt(gharchive_dev.github_events.created_at, gharchive_dev.github_events.created_at)	0 Bytes	0 Bytes
+      ├─Selection_61(Build)	0.05	24677	root		time:71.5ms, loops:26	not(isnull(gharchive_dev.github_events.created_at)), not(isnull(gharchive_dev.github_events.number))	1.36 KB	N/A
+      │ └─CTEFullScan_62	0.06	24677	root	CTE:pwm	time:69.3ms, loops:27	data:CTE_0	0 Bytes	0 Bytes
+      └─Selection_63(Probe)	0.07	24650	root		time:70.5ms, loops:26	not(isnull(gharchive_dev.github_events.created_at)), not(isnull(gharchive_dev.github_events.number))	760 Bytes	N/A
+        └─CTEFullScan_64	0.08	24650	root	CTE:pwo	time:68.4ms, loops:27	data:CTE_1	0 Bytes	0 Bytes
+CTE_0	0.06	24677	root		time:69.3ms, loops:27	Non-Recursive CTE	0 Bytes	0 Bytes
+└─Projection_52(Seed Part)	0.06	24677	root		time:68.9ms, loops:26, Concurrency:OFF	gharchive_dev.github_events.number, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#34, gharchive_dev.github_events.created_at	2.36 KB	N/A
+  └─IndexReader_54	7.00	24677	root	partition:pull_request_event	time:56.2ms, loops:26, cop_task: {num: 8, max: 16ms, min: 2.7ms, avg: 8.46ms, p95: 16ms, max_proc_keys: 9184, p95_proc_keys: 9184, tot_proc: 40ms, tot_wait: 8ms, rpc_num: 8, rpc_time: 67.6ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:IndexRangeScan_53	14.2 KB	N/A
+    └─IndexRangeScan_53	7.00	24677	cop[tikv]	table:ge, index:index_ge_on_repo_id_type_action_created_at_number_pdsize_psize(repo_id, type, action, created_at, number, push_distinct_size, push_size)	tikv_task:{proc max:12ms, min:0s, avg: 4.5ms, p80:8ms, p95:12ms, iters:55, tasks:8}, scan_detail: {total_process_keys: 24677, total_process_keys_size: 4744824, total_keys: 24862, get_snapshot_time: 8.7ms, rocksdb: {delete_skipped_count: 84, key_skipped_count: 24938, block: {cache_hit_count: 138, read_count: 55, read_byte: 409.0 KB, read_time: 10.9ms}}}	range:[41986369 "PullRequestEvent" "closed",41986369 "PullRequestEvent" "closed"], keep order:false	N/A	N/A
+CTE_1	0.08	24650	root		time:68.4ms, loops:27	Non-Recursive CTE	0 Bytes	0 Bytes
+└─Projection_49(Seed Part)	0.08	24650	root		time:68.2ms, loops:26, Concurrency:OFF	gharchive_dev.github_events.number, gharchive_dev.github_events.created_at	2.36 KB	N/A
+  └─IndexReader_51	7.00	24650	root	partition:pull_request_event	time:68.2ms, loops:26, cop_task: {num: 8, max: 18.2ms, min: 2.68ms, avg: 8.59ms, p95: 18.2ms, max_proc_keys: 9184, p95_proc_keys: 9184, tot_proc: 43ms, tot_wait: 5ms, rpc_num: 8, rpc_time: 68.6ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:IndexRangeScan_50	14.2 KB	N/A
+    └─IndexRangeScan_50	7.00	24650	cop[tikv]	table:ge, index:index_ge_on_repo_id_type_action_created_at_number_pdsize_psize(repo_id, type, action, created_at, number, push_distinct_size, push_size)	tikv_task:{proc max:12ms, min:0s, avg: 5.5ms, p80:8ms, p95:12ms, iters:55, tasks:8}, scan_detail: {total_process_keys: 24650, total_process_keys_size: 4740242, total_keys: 24891, get_snapshot_time: 5.65ms, rocksdb: {delete_skipped_count: 53, key_skipped_count: 24936, block: {cache_hit_count: 133, read_count: 60, read_byte: 526.1 KB, read_time: 13.5ms}}}	range:[41986369 "PullRequestEvent" "opened",41986369 "PullRequestEvent" "opened"], keep order:false	N/A	N/A

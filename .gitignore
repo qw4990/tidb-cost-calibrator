@@ -1,4 +1,6 @@
 tidb-cost-calibrator
+*.toml
 vendor
 data
 .idea
+ossinsight/stats/*.json

@@ -1,0 +1,9 @@
+events-increment-intervals, ENGINE=tp, TIME=233.992041ms
+
+
+Sort_6	31.89	13	root		time:7.8ms, loops:2	Column#36	10.1 KB	0 Bytes
+└─Projection_8	31.89	13	root		time:7.75ms, loops:10, Concurrency:OFF	Column#34, Column#35, unix_timestamp(Column#35)->Column#36	760 Bytes	N/A
+  └─HashAgg_9	31.89	13	root		time:7.72ms, loops:10, partial_worker:{wall_time:7.673321ms, concurrency:15, task_num:4, tot_wait:112.072858ms, tot_exec:748.184µs, tot_time:112.869084ms, max:7.627356ms, p95:7.627356ms}, final_worker:{wall_time:7.73677ms, concurrency:15, task_num:32, tot_wait:115.18767ms, tot_exec:119.591µs, tot_time:115.320843ms, max:7.722698ms, p95:7.722698ms}	group by:Column#39, funcs:count(1)->Column#34, funcs:max(Column#38)->Column#35	239.4 KB	N/A
+    └─Projection_16	507.37	3964	root		time:7.37ms, loops:5, Concurrency:OFF	gharchive_dev.github_events.created_at, minus(minus(unix_timestamp(gharchive_dev.github_events.created_at), 1668672320), mod(minus(unix_timestamp(gharchive_dev.github_events.created_at), 1668672380), 5))->Column#39	37.2 KB	N/A
+      └─IndexReader_13	507.37	3964	root	partition:all	time:4.91ms, loops:5, cop_task: {num: 27, max: 1.77ms, min: 416.4µs, avg: 1.08ms, p95: 1.75ms, max_proc_keys: 992, p95_proc_keys: 480, rpc_num: 27, rpc_time: 28.7ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:IndexRangeScan_12	12.0 KB	N/A
+        └─IndexRangeScan_12	507.37	3964	cop[tikv]	table:github_events, index:index_github_events_on_created_at(created_at)	tikv_task:{proc max:0s, min:0s, avg: 0s, p80:0s, p95:0s, iters:61, tasks:27}, scan_detail: {total_process_keys: 3964, total_process_keys_size: 182344, total_keys: 3991, get_snapshot_time: 275.8µs, rocksdb: {delete_skipped_count: 3672, key_skipped_count: 7636, block: {cache_hit_count: 373}}}	range:[2022-11-17 08:05:20,2022-11-17 08:06:20], keep order:false	N/A	N/A

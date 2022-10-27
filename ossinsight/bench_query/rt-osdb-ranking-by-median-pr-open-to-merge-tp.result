@@ -1,0 +1,25 @@
+rt-osdb-ranking-by-median-pr-open-to-merge, ENGINE=tp, TIME=1m42.717872s
+
+
+Sort_46	93249.79	21	root		time:1m42.5s, loops:2	Column#46	2.19 KB	0 Bytes
+└─Projection_48	93249.79	21	root		time:1m42.5s, loops:2, Concurrency:15	gharchive_dev.osdb_repos.group_name, Column#46	71.8 KB	N/A
+  └─Selection_49	93249.79	21	root		time:1m42.5s, loops:2	eq(Column#47, intdiv(Column#48, 2))	2.77 KB	N/A
+    └─CTEFullScan_50	116562.23	21	root	CTE:trank	time:1m42.5s, loops:3	data:CTE_1	5.53 KB	0 Bytes
+CTE_1	116562.23	21	root		time:1m42.5s, loops:3	Non-Recursive CTE	5.53 KB	0 Bytes
+└─Selection_37(Seed Part)	116562.23	21	root		time:1m42.5s, loops:2	eq(Column#43, intdiv(Column#44, 2))	87.5 KB	N/A
+  └─Window_38	145702.79	164474	root		time:1m42.5s, loops:163	count(1)->Column#44 over(partition by gharchive_dev.osdb_repos.group_name)	N/A	N/A
+    └─Window_39	145702.79	164474	root		time:1m42.5s, loops:162	row_number()->Column#43 over(partition by gharchive_dev.osdb_repos.group_name order by Column#40 rows between current row and current row)	N/A	N/A
+      └─Sort_44	145702.79	164474	root		time:1m42.4s, loops:162	gharchive_dev.osdb_repos.group_name, Column#40	10.9 MB	0 Bytes
+        └─Selection_42	145702.79	164474	root		time:1m42s, loops:162	gt(Column#40, 0.1)	59.0 KB	N/A
+          └─CTEFullScan_43	182128.49	221164	root	CTE:tdiff	time:1m42s, loops:227	data:CTE_0	25.9 MB	0 Bytes
+CTE_0	182128.49	221164	root		time:1m42s, loops:227	Non-Recursive CTE	25.9 MB	0 Bytes
+└─Projection_25(Seed Part)	182128.49	221164	root		time:1m42s, loops:226, Concurrency:15	gharchive_dev.osdb_repos.group_name, div(cast(timestampdiff(HOUR, gharchive_dev.github_events.pr_or_issue_created_at, gharchive_dev.github_events.created_at), decimal(20,0) BINARY), 24)->Column#38	524.9 KB	N/A
+  └─Projection_26	182128.49	221164	root		time:1m42s, loops:226, Concurrency:15	gharchive_dev.github_events.created_at, gharchive_dev.github_events.pr_or_issue_created_at, gharchive_dev.osdb_repos.group_name	805.8 KB	N/A
+    └─HashJoin_28	182128.49	221164	root		time:1m42s, loops:226, build_hash_table:{total:14.8ms, fetch:14.8ms, build:19.1µs}, probe:{concurrency:15, total:25m29.6s, max:1m42s, probe:16.5s, fetch:25m13.1s}	inner join, equal:[eq(Column#50, Column#49)]	2.21 KB	0 Bytes
+      ├─Projection_29(Build)	10000.00	23	root		time:14.8ms, loops:2, Concurrency:15	gharchive_dev.osdb_repos.group_name, cast(gharchive_dev.osdb_repos.id, double BINARY)->Column#50	79.3 KB	N/A
+      │ └─TableReader_31	10000.00	23	root		time:14.7ms, loops:2, cop_task: {num: 1, max: 17.8ms, proc_keys: 23, rpc_num: 1, rpc_time: 17.8ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:TableFullScan_30	1.00 KB	N/A
+      │   └─TableFullScan_30	10000.00	23	cop[tikv]	table:db	tikv_task:{time:0s, loops:1}, scan_detail: {total_process_keys: 23, total_process_keys_size: 1673, total_keys: 24, get_snapshot_time: 13.1ms, rocksdb: {key_skipped_count: 23, block: {cache_hit_count: 15, read_count: 2, read_byte: 1.56 KB, read_time: 4.53µs}}}	keep order:false, stats:pseudo	N/A	N/A
+      └─Projection_32(Probe)	15730218.27	136086319	root		time:1m41.8s, loops:132447, Concurrency:15	gharchive_dev.github_events.created_at, gharchive_dev.github_events.pr_or_issue_created_at, cast(gharchive_dev.github_events.repo_id, double BINARY)->Column#49	1.91 MB	N/A
+        └─TableReader_35	15730218.27	136086319	root	partition:pull_request_event	time:1m41.7s, loops:132447, cop_task: {num: 13188, max: 712.7ms, min: 2.23ms, avg: 114.7ms, p95: 421.8ms, max_proc_keys: 143837, p95_proc_keys: 121358, tot_proc: 24m10.2s, tot_wait: 6.39s, rpc_num: 13188, rpc_time: 25m13s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_34	7.97 MB	N/A
+          └─Selection_34	15730218.27	136086319	cop[tikv]		tikv_task:{proc max:684ms, min:0s, avg: 108.1ms, p80:216ms, p95:404ms, iters:465293, tasks:13188}, scan_detail: {total_process_keys: 421795697, total_process_keys_size: 126322449695, total_keys: 429394336, get_snapshot_time: 2.81s, rocksdb: {delete_skipped_count: 1019869, key_skipped_count: 793588954, block: {cache_hit_count: 355272, read_count: 2143880, read_byte: 37.4 GB, read_time: 6m26.3s}}}	eq(gharchive_dev.github_events.action, "closed"), eq(gharchive_dev.github_events.type, "PullRequestEvent"), not(like(gharchive_dev.github_events.actor_login, "%bot%", 92))	N/A	N/A
+            └─TableFullScan_33	5262709748.00	421795697	cop[tikv]	table:ge	tikv_task:{proc max:628ms, min:0s, avg: 94.8ms, p80:192ms, p95:352ms, iters:465293, tasks:13188}	keep order:false	N/A	N/A

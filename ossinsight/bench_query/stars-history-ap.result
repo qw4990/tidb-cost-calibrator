@@ -1,0 +1,20 @@
+stars-history, ENGINE=ap, TIME=6.2935695s
+
+
+Sort_41	1.00	87	root		time:6.07s, loops:2	gharchive_dev.github_events.event_month	21.1 KB	0 Bytes
+└─Projection_43	1.00	87	root		time:6.07s, loops:16, Concurrency:OFF	gharchive_dev.github_events.event_month, any_value(Column#48)->Column#50, any_value(Column#49)->Column#51	1.36 KB	N/A
+  └─HashAgg_44	1.00	87	root		time:6.07s, loops:16, partial_worker:{wall_time:6.072293551s, concurrency:15, task_num:34, tot_wait:1m31.078633191s, tot_exec:4.431672ms, tot_time:1m31.083200853s, max:6.072261387s, p95:6.072261387s}, final_worker:{wall_time:6.072347164s, concurrency:15, task_num:93, tot_wait:1m31.084083457s, tot_exec:309.395µs, tot_time:1m31.084420392s, max:6.072316789s, p95:6.072316789s}	group by:gharchive_dev.github_events.event_month, funcs:firstrow(gharchive_dev.github_events.event_month)->gharchive_dev.github_events.event_month, funcs:firstrow(Column#48)->Column#48, funcs:firstrow(Column#49)->Column#49	1.67 MB	N/A
+    └─CTEFullScan_45	0.82	34022	root	CTE:acc	time:6.07s, loops:35	data:CTE_0	2.80 MB	0 Bytes
+CTE_0	0.82	34022	root		time:6.07s, loops:35	Non-Recursive CTE	2.80 MB	0 Bytes
+└─Projection_22(Seed Part)	0.82	34022	root		time:6.07s, loops:35, Concurrency:OFF	gharchive_dev.github_events.event_month, Column#36, Column#43	1.45 MB	N/A
+  └─Sort_24	0.82	34022	root		time:6.07s, loops:35	gharchive_dev.github_events.event_month	4.86 MB	0 Bytes
+    └─Window_26	0.82	34022	root		time:6.06s, loops:35	count(gharchive_dev.github_events.actor_login)->Column#43 over(partition by Column#36 order by gharchive_dev.github_events.event_month range between unbounded preceding and current row)	N/A	N/A
+      └─Sort_39	0.82	34022	root		time:6.05s, loops:35	Column#36, gharchive_dev.github_events.event_month	4.55 MB	0 Bytes
+        └─Selection_29	0.82	34022	root		time:5.99s, loops:35	eq(Column#37, 1)	134.9 KB	N/A
+          └─Window_32	1.03	35636	root		time:5.98s, loops:37	row_number()->Column#37 over(partition by gharchive_dev.github_events.actor_login rows between current row and current row)	N/A	N/A
+            └─Sort_38	1.03	35636	root		time:5.96s, loops:36	gharchive_dev.github_events.actor_login	4.37 MB	0 Bytes
+              └─Window_33	1.03	35636	root		time:5.88s, loops:36	first_value(gharchive_dev.github_events.repo_name)->Column#36 over(partition by gharchive_dev.github_events.repo_id order by gharchive_dev.github_events.created_at desc range between unbounded preceding and current row)	N/A	N/A
+                └─Sort_37	1.03	35636	root		time:5.87s, loops:36	gharchive_dev.github_events.repo_id, gharchive_dev.github_events.created_at:desc	3.70 MB	0 Bytes
+                  └─TableReader_36	1.03	35636	root	partition:watch_event	time:5.81s, loops:36, cop_task: {num: 896, max: 289.6ms, min: 28.2ms, avg: 96.4ms, p95: 180.8ms, rpc_num: 896, rpc_time: 1m26.3s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_35	11.0 KB	N/A
+                    └─Selection_35	1.03	35636	cop[tiflash]		tiflash_task:{proc max:290ms, min:28.7ms, avg: 94.6ms, p80:131.7ms, p95:178.3ms, iters:5466, tasks:896, threads:896}	eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "WatchEvent")	N/A	N/A
+                      └─TableFullScan_34	5255720312.00	334359808	cop[tiflash]	table:github_events	tiflash_task:{proc max:278ms, min:20.7ms, avg: 89.1ms, p80:128.6ms, p95:173.7ms, iters:5790, tasks:896, threads:896}	keep order:false	N/A	N/A

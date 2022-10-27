@@ -1,0 +1,10 @@
+get-user-by-login, ENGINE=ap, TIME=5.793960334s
+
+
+Projection_7	1.00	1	root		time:244.9ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.actor_id, Mini256->Column#34	136 Bytes	N/A
+└─Limit_11	1.00	1	root		time:244.9ms, loops:2	offset:0, count:1	N/A	N/A
+  └─TableReader_23	1.00	1	root	partition:all	time:244.9ms, loops:1, cop_task: {num: 1, max: 0s, proc_keys: 0, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_22	N/A	N/A
+    └─ExchangeSender_22	1.00	1	mpp[tiflash]		tiflash_task:{time:211.7ms, loops:1, threads:16}	ExchangeType: PassThrough	N/A	N/A
+      └─Limit_21	1.00	1	mpp[tiflash]		tiflash_task:{time:211.7ms, loops:1, threads:1}	offset:0, count:1	N/A	N/A
+        └─Selection_20	1.00	3	mpp[tiflash]		tiflash_task:{time:211.7ms, loops:3, threads:16}	eq(gharchive_dev.github_events.actor_login, "Mini256"), ne(gharchive_dev.github_events.actor_id, 0)	N/A	N/A
+          └─TableFullScan_19	67229258.70	1215093	mpp[tiflash]	table:github_events	tiflash_task:{time:211.7ms, loops:20, threads:16}	keep order:false, PartitionTableScan:true	N/A	N/A

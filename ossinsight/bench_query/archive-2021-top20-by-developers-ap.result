@@ -1,0 +1,22 @@
+archive-2021-top20-by-developers, ENGINE=ap, TIME=1.005449458s
+
+
+Projection_15	20.00	20	root		time:759ms, loops:2, Concurrency:OFF	gharchive_dev.github_events.actor_login, Column#37	1016 Bytes	N/A
+└─TopN_19	20.00	20	root		time:759ms, loops:2	Column#37:desc, offset:0, count:20	909 Bytes	N/A
+  └─TableReader_86	20.00	60	root	partition:pull_request_event	time:759ms, loops:3, cop_task: {num: 3, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_85	N/A	N/A
+    └─ExchangeSender_85	20.00	60	mpp[tiflash]		tiflash_task:{proc max:755.3ms, min:754.8ms, avg: 755ms, p80:755.3ms, p95:755.3ms, iters:3, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+      └─TopN_84	20.00	60	mpp[tiflash]		tiflash_task:{proc max:755.3ms, min:754.8ms, avg: 755ms, p80:755.3ms, p95:755.3ms, iters:3, tasks:3, threads:3}	Column#37:desc, offset:0, count:20	N/A	N/A
+        └─Projection_80	41678.41	5408	mpp[tiflash]		tiflash_task:{proc max:755.3ms, min:754.8ms, avg: 755ms, p80:755.3ms, p95:755.3ms, iters:3, tasks:3, threads:48}	Column#37, gharchive_dev.github_events.actor_login	N/A	N/A
+          └─HashAgg_81	41678.41	5408	mpp[tiflash]		tiflash_task:{proc max:755.3ms, min:754.8ms, avg: 755ms, p80:755.3ms, p95:755.3ms, iters:3, tasks:3, threads:48}	group by:gharchive_dev.github_events.actor_login, funcs:sum(Column#46)->Column#37, funcs:firstrow(gharchive_dev.github_events.actor_login)->gharchive_dev.github_events.actor_login	N/A	N/A
+            └─ExchangeReceiver_83	41678.41	9898	mpp[tiflash]		tiflash_task:{proc max:755.3ms, min:754.8ms, avg: 755ms, p80:755.3ms, p95:755.3ms, iters:48, tasks:3, threads:48}		N/A	N/A
+              └─ExchangeSender_82	41678.41	9898	mpp[tiflash]		tiflash_task:{proc max:751.9ms, min:0s, avg: 250.6ms, p80:751.9ms, p95:751.9ms, iters:768, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: gharchive_dev.github_events.actor_login, collate: utf8mb4_bin]	N/A	N/A
+                └─HashAgg_78	41678.41	9898	mpp[tiflash]		tiflash_task:{proc max:751.9ms, min:0s, avg: 250.6ms, p80:751.9ms, p95:751.9ms, iters:768, tasks:3, threads:48}	group by:gharchive_dev.github_events.actor_login, funcs:count(1)->Column#46	N/A	N/A
+                  └─Projection_67	182128.49	68993	mpp[tiflash]		tiflash_task:{proc max:743.9ms, min:0s, avg: 248ms, p80:743.9ms, p95:743.9ms, iters:5399, tasks:3, threads:48}	gharchive_dev.github_events.actor_login	N/A	N/A
+                    └─HashJoin_57	182128.49	68993	mpp[tiflash]		tiflash_task:{proc max:743.9ms, min:0s, avg: 248ms, p80:743.9ms, p95:743.9ms, iters:5399, tasks:3, threads:48}	inner join, equal:[eq(Column#39, Column#38)]	N/A	N/A
+                      ├─ExchangeReceiver_38(Build)	10000.00	138	mpp[tiflash]		tiflash_task:{proc max:27.9ms, min:0s, avg: 9.31ms, p80:27.9ms, p95:27.9ms, iters:3, tasks:3, threads:48}		N/A	N/A
+                      │ └─ExchangeSender_37	10000.00	46	mpp[tiflash]		tiflash_task:{proc max:4.11ms, min:0s, avg: 1.37ms, p80:4.11ms, p95:4.11ms, iters:1, tasks:3, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                      │   └─Projection_35	10000.00	46	mpp[tiflash]		tiflash_task:{proc max:4.11ms, min:0s, avg: 1.37ms, p80:4.11ms, p95:4.11ms, iters:1, tasks:3, threads:1}	cast(gharchive_dev.db_repos.id, double BINARY)->Column#39	N/A	N/A
+                      │     └─TableFullScan_36	10000.00	46	mpp[tiflash]	table:db	tiflash_task:{proc max:4.11ms, min:0s, avg: 1.37ms, p80:4.11ms, p95:4.11ms, iters:1, tasks:3, threads:1}	keep order:false, stats:pseudo	N/A	N/A
+                      └─Projection_39(Probe)	4092079.17	22885931	mpp[tiflash]		tiflash_task:{proc max:731.9ms, min:0s, avg: 244ms, p80:731.9ms, p95:731.9ms, iters:5399, tasks:3, threads:48}	gharchive_dev.github_events.actor_login, cast(gharchive_dev.github_events.repo_id, double BINARY)->Column#38	N/A	N/A
+                        └─Selection_41	4092079.17	22885931	mpp[tiflash]		tiflash_task:{proc max:731.9ms, min:0s, avg: 244ms, p80:731.9ms, p95:731.9ms, iters:5399, tasks:3, threads:48}	eq(gharchive_dev.github_events.action, "opened"), eq(gharchive_dev.github_events.event_year, 2021), eq(gharchive_dev.github_events.type, "PullRequestEvent"), not(like(gharchive_dev.github_events.actor_login, "%bot%", 92))	N/A	N/A
+                          └─TableFullScan_40	5255652695.00	174082270	mpp[tiflash]	table:github_events	tiflash_task:{proc max:507.9ms, min:0s, avg: 169.3ms, p80:507.9ms, p95:507.9ms, iters:10459, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

@@ -1,0 +1,21 @@
+issue-creators-map, ENGINE=tp, TIME=530.309083ms
+
+
+Projection_63	1.00	30	root		time:46.9ms, loops:2, Concurrency:OFF	gharchive_dev.github_users.country_code, Column#61, div(cast(Column#61, decimal(20,0) BINARY), Column#62)->Column#63	2.39 KB	N/A
+└─HashJoin_64	1.00	30	root		time:46.9ms, loops:2, build_hash_table:{total:46.7ms, fetch:46.7ms, build:5.25µs}, probe:{concurrency:15, total:700.6ms, max:46.7ms, probe:20.2µs, fetch:700.5ms}	CARTESIAN inner join	1.43 KB	0 Bytes
+  ├─CTEFullScan_67(Build)	1.00	1	root	CTE:summary	time:46.6ms, loops:2	data:CTE_1	2.80 KB	0 Bytes
+  └─CTEFullScan_66(Probe)	1.00	30	root	CTE:group_by_area	time:46.6ms, loops:2	data:CTE_0	1.98 KB	0 Bytes
+CTE_1	1.00	1	root		time:46.6ms, loops:2	Non-Recursive CTE	2.80 KB	0 Bytes
+└─StreamAgg_58(Seed Part)	1.00	1	root		time:46.6ms, loops:2	funcs:sum(Column#75)->Column#59	1.45 KB	N/A
+  └─Projection_61	1.00	30	root		time:46.6ms, loops:2, Concurrency:OFF	cast(Column#58, decimal(20,0) BINARY)->Column#75	1016 Bytes	N/A
+    └─CTEFullScan_60	1.00	30	root	CTE:group_by_area	time:46.6ms, loops:2	data:CTE_0	0 Bytes	0 Bytes
+CTE_0	1.00	30	root		time:46.6ms, loops:2	Non-Recursive CTE	1.98 KB	0 Bytes
+└─Sort_17(Seed Part)	1.00	30	root		time:46.6ms, loops:2	Column#56:desc	1.23 KB	0 Bytes
+  └─Projection_19	1.00	30	root		time:46.5ms, loops:2, Concurrency:OFF	gharchive_dev.github_users.country_code, Column#56	1016 Bytes	N/A
+    └─HashAgg_20	1.00	30	root		time:46.5ms, loops:2	group by:gharchive_dev.github_users.country_code, funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#56, funcs:firstrow(gharchive_dev.github_users.country_code)->gharchive_dev.github_users.country_code	85.1 KB	0 Bytes
+      └─IndexJoin_25	0.03	6846	root		time:43.6ms, loops:8, inner:{total:140.4ms, concurrency:15, task:8, construct:15.1ms, fetch:124.8ms, build:428.2µs}, probe:6.18ms	inner join, inner:IndexReader_24, outer key:gharchive_dev.github_events.actor_login, inner key:gharchive_dev.github_users.login, equal cond:eq(gharchive_dev.github_events.actor_login, gharchive_dev.github_users.login)	2.25 MB	N/A
+        ├─IndexReader_45(Build)	0.03	12537	root	partition:issues_event	time:8.25ms, loops:20, cop_task: {num: 7, max: 2.03ms, min: 1.04ms, avg: 1.26ms, p95: 2.03ms, max_proc_keys: 480, p95_proc_keys: 480, rpc_num: 7, rpc_time: 8.7ms, copr_cache_hit_ratio: 0.86, distsql_concurrency: 15}	index:IndexRangeScan_44	458.9 KB	N/A
+        │ └─IndexRangeScan_44	0.03	12537	cop[tikv]	table:ge, index:index_github_events_on_repo_id_type_action_month_actor_login(repo_id, type, action, event_month, actor_login)	tikv_task:{proc max:8ms, min:0s, avg: 4ms, p80:4ms, p95:8ms, iters:39, tasks:7}, scan_detail: {total_process_keys: 480, total_process_keys_size: 77938, total_keys: 481, get_snapshot_time: 89.4µs, rocksdb: {key_skipped_count: 480, block: {cache_hit_count: 14}}}	range:[41986369 "IssuesEvent" "opened",41986369 "IssuesEvent" "opened"], keep order:false	N/A	N/A
+        └─IndexReader_24(Probe)	1.00	828	root		time:120.1ms, loops:16, cop_task: {num: 556, max: 17.6ms, min: 424.7µs, avg: 2.05ms, p95: 5.76ms, max_proc_keys: 21, p95_proc_keys: 9, tot_proc: 156ms, tot_wait: 36ms, rpc_num: 556, rpc_time: 1.13s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	index:Selection_23	481 Bytes	N/A
+          └─Selection_23	1.00	828	cop[tikv]		tikv_task:{proc max:8ms, min:0s, avg: 467.6µs, p80:0s, p95:4ms, iters:556, tasks:556}, scan_detail: {total_process_keys: 1842, total_process_keys_size: 201412, total_keys: 3844, get_snapshot_time: 5.28ms, rocksdb: {delete_skipped_count: 73, key_skipped_count: 1937, block: {cache_hit_count: 17887, read_count: 236, read_byte: 2.50 MB, read_time: 141.3ms}}}	ne(gharchive_dev.github_users.country_code, ""), ne(gharchive_dev.github_users.country_code, "N/A"), ne(gharchive_dev.github_users.country_code, "UND"), not(isnull(gharchive_dev.github_users.country_code))	N/A	N/A
+            └─IndexRangeScan_22	15.21	1842	cop[tikv]	table:gu, index:index_gu_on_login_is_bot_organization_country_code(login, is_bot, organization_formatted, country_code)	tikv_task:{proc max:8ms, min:0s, avg: 467.6µs, p80:0s, p95:4ms, iters:556, tasks:556}	range: decided by [eq(gharchive_dev.github_users.login, gharchive_dev.github_events.actor_login)], keep order:false	N/A	N/A

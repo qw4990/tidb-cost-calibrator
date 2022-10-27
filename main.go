@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/qw4990/tidb-cost-calibrator/ossinsight"
 
 	"github.com/qw4990/tidb-cost-calibrator/costeval"
 	"github.com/qw4990/tidb-cost-calibrator/regression"
@@ -78,6 +79,30 @@ func newRegressionDetectCmd() *cobra.Command {
 	return cmd
 }
 
+func newOSSInsightRegressionCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "oss-insight-regression",
+		Short: "oss-insight-regression",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ossinsight.Regression()
+			return nil
+		},
+	}
+	return cmd
+}
+
+func newOSSInsightBenchmarkCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "oss-insight-bench",
+		Short: "oss-insight-bench",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ossinsight.Benchmark()
+			return nil
+		},
+	}
+	return cmd
+}
+
 func init() {
 	cobra.OnInitialize()
 	costEvalCmd := newCostEvalCmd()
@@ -92,6 +117,8 @@ func init() {
 	rootCmd.AddCommand(newCostCaliCmd())
 	rootCmd.AddCommand(newCostRegressionCmd())
 	rootCmd.AddCommand(newRegressionDetectCmd())
+	rootCmd.AddCommand(newOSSInsightRegressionCmd())
+	rootCmd.AddCommand(newOSSInsightBenchmarkCmd())
 }
 
 func main() {

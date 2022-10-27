@@ -1,0 +1,18 @@
+analyze-stars-history, ENGINE=ap, TIME=1.063277583s
+
+
+Projection_54	0.82	87	root		time:839.3ms, loops:2, Concurrency:OFF	Column#34, gharchive_dev.github_events.repo_id, Column#40	9.40 KB	N/A
+└─Sort_56	0.82	87	root		time:839.3ms, loops:2	Column#34	10.1 KB	0 Bytes
+  └─Selection_21	0.82	87	root		time:839.2ms, loops:2	eq(Column#38, 1)	98.4 KB	N/A
+    └─Window_23	1.03	35636	root		time:838.2ms, loops:37	count(gharchive_dev.github_events.actor_login)->Column#40 over(order by Column#39 range between unbounded preceding and current row)	N/A	N/A
+      └─Sort_49	1.03	35636	root		time:815.4ms, loops:36	Column#39	2.70 MB	0 Bytes
+        └─TableReader_48	1.03	35636	root	partition:watch_event	time:756.3ms, loops:44, cop_task: {num: 26, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_47	N/A	N/A
+          └─ExchangeSender_47	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:754.1ms, min:749.7ms, avg: 752.6ms, p80:754.1ms, p95:754.1ms, iters:24, tasks:3, threads:24}	ExchangeType: PassThrough	N/A	N/A
+            └─Projection_25	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:750.1ms, min:749.7ms, avg: 749.9ms, p80:750.1ms, p95:750.1ms, iters:24, tasks:3, threads:24}	Column#34, gharchive_dev.github_events.repo_id, gharchive_dev.github_events.actor_login, Column#38, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#39, stream_count: 8	N/A	N/A
+              └─Window_46	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:750.1ms, min:749.7ms, avg: 749.9ms, p80:750.1ms, p95:750.1ms, iters:24, tasks:3, threads:24}	row_number()->Column#38 over(partition by Column#37 rows between current row and current row), stream_count: 8	N/A	N/A
+                └─Sort_33	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:750.1ms, min:749.7ms, avg: 749.9ms, p80:750.1ms, p95:750.1ms, iters:24, tasks:3, threads:24}	Column#37, stream_count: 8	N/A	N/A
+                  └─ExchangeReceiver_32	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:750.1ms, min:749.7ms, avg: 749.9ms, p80:750.1ms, p95:750.1ms, iters:24, tasks:3, threads:24}	stream_count: 8	N/A	N/A
+                    └─ExchangeSender_31	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:679.8ms, min:0s, avg: 226.6ms, p80:679.8ms, p95:679.8ms, iters:5450, tasks:3, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: Column#37, collate: utf8mb4_general_ci], stream_count: 8	N/A	N/A
+                      └─Projection_28	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:679.8ms, min:0s, avg: 226.6ms, p80:679.8ms, p95:679.8ms, iters:5450, tasks:3, threads:48}	date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#34, gharchive_dev.github_events.repo_id, gharchive_dev.github_events.actor_login, gharchive_dev.github_events.created_at, date_format(gharchive_dev.github_events.created_at, %Y-%m-01)->Column#37	N/A	N/A
+                        └─Selection_30	1.03	35636	mpp[tiflash]		tiflash_task:{proc max:679.8ms, min:0s, avg: 226.6ms, p80:679.8ms, p95:679.8ms, iters:5450, tasks:3, threads:48}	eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "WatchEvent")	N/A	N/A
+                          └─TableFullScan_29	5255720312.00	334359777	mpp[tiflash]	table:github_events	tiflash_task:{proc max:611.8ms, min:0s, avg: 203.9ms, p80:611.8ms, p95:611.8ms, iters:5727, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A

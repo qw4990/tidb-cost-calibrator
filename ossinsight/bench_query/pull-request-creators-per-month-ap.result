@@ -1,0 +1,16 @@
+pull-request-creators-per-month, ENGINE=ap, TIME=4.771932042s
+
+
+CTEFullScan_28	1.00	87	root	CTE:repo_month_group	time:4.52s, loops:2	data:CTE_1	9.28 KB	0 Bytes
+CTE_1	1.00	87	root		time:4.52s, loops:2	Non-Recursive CTE	9.28 KB	0 Bytes
+└─Sort_21(Seed Part)	1.00	87	root		time:4.52s, loops:2	gharchive_dev.github_events.event_month, Column#42	5.32 KB	0 Bytes
+  └─Projection_23	1.00	87	root		time:4.52s, loops:2, Concurrency:OFF	gharchive_dev.github_events.event_month, Column#42, Column#44	4.64 KB	N/A
+    └─HashAgg_24	1.00	87	root		time:4.52s, loops:2	group by:Column#42, gharchive_dev.github_events.event_month, funcs:count(distinct gharchive_dev.github_events.actor_login)->Column#44, funcs:firstrow(gharchive_dev.github_events.event_month)->gharchive_dev.github_events.event_month, funcs:firstrow(Column#42)->Column#42	312 KB	0 Bytes
+      └─CTEFullScan_25	0.08	24643	root	CTE:prs_with_latest_repo_name	time:4.51s, loops:26	data:CTE_0	2.95 MB	0 Bytes
+CTE_0	0.08	24643	root		time:4.51s, loops:26	Non-Recursive CTE	2.95 MB	0 Bytes
+└─Projection_14(Seed Part)	0.08	24643	root		time:4.51s, loops:26, Concurrency:OFF	gharchive_dev.github_events.event_month, gharchive_dev.github_events.repo_id, Column#35, gharchive_dev.github_events.actor_login	1.50 MB	N/A
+  └─Window_16	0.08	24643	root		time:4.51s, loops:26	first_value(gharchive_dev.github_events.repo_name)->Column#35 over(partition by gharchive_dev.github_events.repo_id order by gharchive_dev.github_events.created_at desc range between unbounded preceding and current row)	N/A	N/A
+    └─Sort_20	0.08	24643	root		time:4.51s, loops:26	gharchive_dev.github_events.repo_id, gharchive_dev.github_events.created_at:desc	3.22 MB	0 Bytes
+      └─TableReader_19	0.08	24643	root	partition:pull_request_event	time:4.47s, loops:25, cop_task: {num: 1326, max: 105.2ms, min: 20.4ms, avg: 49.9ms, p95: 60.6ms, rpc_num: 1326, rpc_time: 1m6.2s, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_18	7.98 KB	N/A
+        └─Selection_18	0.08	24643	cop[tiflash]		tiflash_task:{proc max:104.7ms, min:21.1ms, avg: 48.6ms, p80:53.4ms, p95:58.7ms, iters:6374, tasks:1326, threads:1326}	eq(gharchive_dev.github_events.action, "opened"), eq(gharchive_dev.github_events.repo_id, 41986369), eq(gharchive_dev.github_events.type, "PullRequestEvent")	N/A	N/A
+          └─TableFullScan_17	5255711329.00	421380620	cop[tiflash]	table:github_events	tiflash_task:{proc max:100.7ms, min:17.3ms, avg: 42.3ms, p80:46.3ms, p95:54ms, iters:7174, tasks:1326, threads:1326}	keep order:false	N/A	N/A

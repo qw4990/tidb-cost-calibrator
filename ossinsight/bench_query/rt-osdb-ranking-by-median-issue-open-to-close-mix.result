@@ -1,0 +1,27 @@
+rt-osdb-ranking-by-median-issue-open-to-close, ENGINE=mix, TIME=1.368673583s
+
+
+Sort_76	93249.79	14	root		time:1.15s, loops:2	Column#46	2.13 KB	0 Bytes
+└─Projection_78	93249.79	14	root		time:1.15s, loops:2, Concurrency:15	gharchive_dev.osdb_repos.group_name, Column#46	71.8 KB	N/A
+  └─Selection_79	93249.79	14	root		time:1.15s, loops:2	eq(Column#47, intdiv(Column#48, 2))	2.77 KB	N/A
+    └─CTEFullScan_80	116562.23	14	root	CTE:trank	time:1.15s, loops:3	data:CTE_1	5.53 KB	0 Bytes
+CTE_1	116562.23	14	root		time:1.15s, loops:3	Non-Recursive CTE	5.53 KB	0 Bytes
+└─Selection_67(Seed Part)	116562.23	14	root		time:1.15s, loops:2	eq(Column#43, intdiv(Column#44, 2))	87.5 KB	N/A
+  └─Window_68	145702.79	88926	root		time:1.14s, loops:89	count(1)->Column#44 over(partition by gharchive_dev.osdb_repos.group_name)	N/A	N/A
+    └─Window_69	145702.79	88926	root		time:1.13s, loops:88	row_number()->Column#43 over(partition by gharchive_dev.osdb_repos.group_name order by Column#40 rows between current row and current row)	N/A	N/A
+      └─Sort_74	145702.79	88926	root		time:1.12s, loops:88	gharchive_dev.osdb_repos.group_name, Column#40	6.13 MB	0 Bytes
+        └─Selection_72	145702.79	88926	root		time:892.4ms, loops:88	gt(Column#40, 0.1)	59.8 KB	N/A
+          └─CTEFullScan_73	182128.49	98054	root	CTE:tdiff	time:880.1ms, loops:171	data:CTE_0	11.1 MB	0 Bytes
+CTE_0	182128.49	98054	root		time:880.1ms, loops:171	Non-Recursive CTE	11.1 MB	0 Bytes
+└─TableReader_65(Seed Part)	182128.49	98054	root	partition:issues_event	time:878.2ms, loops:170, cop_task: {num: 113, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_64	N/A	N/A
+  └─ExchangeSender_64	182128.49	98054	mpp[tiflash]		tiflash_task:{proc max:875.6ms, min:785.9ms, avg: 834.7ms, p80:875.6ms, p95:875.6ms, iters:2923, tasks:3, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─Projection_26	182128.49	98054	mpp[tiflash]		tiflash_task:{proc max:875.6ms, min:785.9ms, avg: 834.7ms, p80:875.6ms, p95:875.6ms, iters:2923, tasks:3, threads:48}	gharchive_dev.osdb_repos.group_name, div(cast(timestampdiff(HOUR, gharchive_dev.github_events.pr_or_issue_created_at, gharchive_dev.github_events.created_at), decimal(20,0) BINARY), 24)->Column#38	N/A	N/A
+      └─Projection_63	182128.49	98054	mpp[tiflash]		tiflash_task:{proc max:871.6ms, min:781.9ms, avg: 830.7ms, p80:871.6ms, p95:871.6ms, iters:2923, tasks:3, threads:48}	gharchive_dev.github_events.created_at, gharchive_dev.github_events.pr_or_issue_created_at, gharchive_dev.osdb_repos.group_name	N/A	N/A
+        └─HashJoin_60	182128.49	98054	mpp[tiflash]		tiflash_task:{proc max:871.6ms, min:781.9ms, avg: 830.7ms, p80:871.6ms, p95:871.6ms, iters:2923, tasks:3, threads:48}	inner join, equal:[eq(Column#50, Column#49)]	N/A	N/A
+          ├─ExchangeReceiver_36(Build)	10000.00	69	mpp[tiflash]		tiflash_task:{proc max:19.6ms, min:17.9ms, avg: 18.7ms, p80:19.6ms, p95:19.6ms, iters:3, tasks:3, threads:48}		N/A	N/A
+          │ └─ExchangeSender_35	10000.00	23	mpp[tiflash]		tiflash_task:{proc max:21ms, min:0s, avg: 7ms, p80:21ms, p95:21ms, iters:1, tasks:3, threads:1}	ExchangeType: Broadcast	N/A	N/A
+          │   └─Projection_33	10000.00	23	mpp[tiflash]		tiflash_task:{proc max:21ms, min:0s, avg: 7ms, p80:21ms, p95:21ms, iters:1, tasks:3, threads:1}	gharchive_dev.osdb_repos.group_name, cast(gharchive_dev.osdb_repos.id, double BINARY)->Column#50	N/A	N/A
+          │     └─TableFullScan_34	10000.00	23	mpp[tiflash]	table:db	tiflash_task:{proc max:21ms, min:0s, avg: 7ms, p80:21ms, p95:21ms, iters:1, tasks:3, threads:1}	keep order:false, stats:pseudo	N/A	N/A
+          └─Projection_37(Probe)	6091601.89	58591051	mpp[tiflash]		tiflash_task:{proc max:855.6ms, min:769.9ms, avg: 817.4ms, p80:855.6ms, p95:855.6ms, iters:2923, tasks:3, threads:48}	gharchive_dev.github_events.created_at, gharchive_dev.github_events.pr_or_issue_created_at, cast(gharchive_dev.github_events.repo_id, double BINARY)->Column#49	N/A	N/A
+            └─Selection_39	6091601.89	58591051	mpp[tiflash]		tiflash_task:{proc max:851.6ms, min:765.9ms, avg: 814.7ms, p80:851.6ms, p95:851.6ms, iters:2923, tasks:3, threads:48}	eq(gharchive_dev.github_events.action, "closed"), eq(gharchive_dev.github_events.type, "IssuesEvent"), not(in(gharchive_dev.github_events.creator_user_login, "cockroach-teamcity", "elasticmachine")), not(like(gharchive_dev.github_events.creator_user_login, "%bot%", 92))	N/A	N/A
+              └─TableFullScan_38	5255720312.00	159910411	mpp[tiflash]	table:ge	tiflash_task:{proc max:543.6ms, min:393.9ms, avg: 478.7ms, p80:543.6ms, p95:543.6ms, iters:2923, tasks:3, threads:48}	keep order:false, PartitionTableScan:true	N/A	N/A
