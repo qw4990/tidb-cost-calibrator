@@ -30,7 +30,7 @@ func genSYNKVScan2(n int, scale float64) utils.Queries {
 		},
 		{ // wide index scan
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b, c from t where #`,
-			[]tempitem{{"t", "b", 0, 2000000}},
+			[]tempitem{{"t", "b", 0, 1800000}},
 			"KVScan4",
 		},
 	}, n, scale)
@@ -45,7 +45,7 @@ func genSYNKVDScan2(n int, scale float64) utils.Queries {
 		},
 		{ // wide desc table scan
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a, c from t where # order by a desc`,
-			[]tempitem{{"t", "a", 0, 3500000}},
+			[]tempitem{{"t", "a", 0, 1700000}},
 			"KVDScan2",
 		},
 		{ // desc index scan
@@ -55,7 +55,7 @@ func genSYNKVDScan2(n int, scale float64) utils.Queries {
 		},
 		{ // wide desc index scan
 			`select /*+ use_index(t, bc), read_from_storage(tikv[t]) */ b, c from t where # order by b desc`,
-			[]tempitem{{"t", "b", 0, 3500000}},
+			[]tempitem{{"t", "b", 0, 1700000}},
 			"KVDScan4",
 		},
 	}, n, scale)
@@ -65,23 +65,23 @@ func genSYNKVCPU2(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and b<0`,
-			[]tempitem{{"t", "a", 0, 5000000}},
+			[]tempitem{{"t", "a", 0, 4000000}},
 			"KVCPU1",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and b>0 and sin(b)>-10 and cos(b)>-10 and d<0`,
-			[]tempitem{{"t", "a", 0, 5000000}},
+			[]tempitem{{"t", "a", 0, 2800000}},
 			"KVCPU2",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a) from t where #`,
-			[]tempitem{{"t", "a", 0, 5000000}},
+			[]tempitem{{"t", "a", 0, 4000000}},
 			"KVCPU3",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a), avg(a), sum(b), avg(b) from t where #`,
-			[]tempitem{{"t", "a", 0, 5000000}},
-			"KVCPU3",
+			[]tempitem{{"t", "a", 0, 2300000}},
+			"KVCPU4",
 		},
 	}, n, scale)
 }
@@ -90,25 +90,23 @@ func genSYNDBCPU2(n int, scale float64) utils.Queries {
 	return gen4Templates([]template{
 		{ // tan cannot be pushed down
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and tan(b)>-10`,
-			[]tempitem{{"t", "a", 0, 5000000}},
+			[]tempitem{{"t", "a", 0, 3000000}},
 			"DBCPU1",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ a from t where # and tan(b)>-10 and tan(b+1)>-10 and tan(b+2)>-10 and tan(b+3)<-10`,
-			[]tempitem{{"t", "a", 0, 5000000}},
+			[]tempitem{{"t", "a", 0, 2800000}},
 			"DBCPU2",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a) from t where # and tan(b)>-10`,
-			[]tempitem{{"t", "a", 0, 5000000}},
+			[]tempitem{{"t", "a", 0, 2500000}},
 			"DBCPU3",
 		},
 		{
 			`select /*+ use_index(t, primary), read_from_storage(tikv[t]), stream_agg() */ sum(a), avg(a), sum(b), avg(b) from t where # and tan(b)>-10`,
-			[]tempitem{{"t", "a", 0, 5000000}},
+			[]tempitem{{"t", "a", 0, 2300000}},
 			"DBCPU4",
 		},
 	}, n, scale)
 }
-
-// select /*+ use_index(t, primary), read_from_storage(tikv[t]) */ sum(a) from t where a<1000
