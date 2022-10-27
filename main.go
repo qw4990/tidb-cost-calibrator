@@ -35,7 +35,7 @@ func newCostEvalCmd() *cobra.Command {
 			if len(dbName) == 0 {
 				dbName = ceType
 			}
-			costeval.CostEval(costEvalOption, minioOption, dbName, ceType)
+			costeval.CostEval()
 			return nil
 		},
 	}
