@@ -29,7 +29,7 @@ def readurl(url):
     mybytes = fp.read()
     return mybytes.decode("utf8")
 
-name = "analyze-stars-map"
+name = "stars-top-50-company"
 sql_url = ('https://raw.githubusercontent.com/pingcap/ossinsight/main/api/queries/%s/template.sql' % name)
 param_url = ('https://raw.githubusercontent.com/pingcap/ossinsight/main/api/queries/%s/params.json' % name)
 
