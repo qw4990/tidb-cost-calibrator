@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
