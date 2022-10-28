@@ -81,7 +81,7 @@ func regression(db utils.Instance, queryDir string) {
 		utils.Must(err)
 		plan := explain(db, string(data))
 		planFile := strings.Replace(f, ".sql", "_plan.txt", 1)
-		utils.Must(os.WriteFile(planFile, plan, 0666))
+		utils.Must(os.WriteFile(planFile, []byte(plan), 0666))
 	}
 }
 

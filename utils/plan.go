@@ -106,7 +106,7 @@ func BeautifulPlan(plan [][]string) string {
 	maxLen := 0
 	for colIdx := 0; colIdx < len(plan[0]); colIdx++ {
 		for rowIdx := 0; rowIdx < len(plan); rowIdx++ {
-			lines[rowIdx] += plan[rowIdx][colIdx]
+			lines[rowIdx] += strings.TrimSpace(plan[rowIdx][colIdx])
 			if len(lines[rowIdx]) > maxLen {
 				maxLen = len(lines[rowIdx])
 			}
@@ -114,7 +114,7 @@ func BeautifulPlan(plan [][]string) string {
 
 		if colIdx < len(plan[0])-1 {
 			for rowIdx := 0; rowIdx < len(plan); rowIdx++ {
-				lines[rowIdx] += strings.Repeat(" ", maxLen-len(lines[rowIdx])) + "\t"
+				lines[rowIdx] += strings.Repeat(" ", maxLen-len(lines[rowIdx])) + "      "
 			}
 		}
 	}
