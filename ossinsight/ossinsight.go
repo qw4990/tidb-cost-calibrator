@@ -3,6 +3,8 @@ package ossinsight
 import (
 	"fmt"
 	"os"
+	"path"
+	"sort"
 	"strings"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -14,6 +16,12 @@ func initSchema(db utils.Instance, schemaDir string) {
 	db.MustExec("USE gharchive_dev")
 
 	schemaFiles := readDirFiles(schemaDir, ".sql")
+	sort.Slice(schemaFiles, func(i, j int) bool {
+		if strings.Contains(schemaFiles[i], "tiflash_replicas") {
+			return false
+		}
+		return true
+	})
 	for _, f := range schemaFiles {
 		data, err := os.ReadFile(f)
 		utils.Must(err)
@@ -47,7 +55,7 @@ func readDirFiles(dir, suffix string) []string {
 		if !strings.HasSuffix(e.Name(), suffix) {
 			continue
 		}
-		fs = append(fs, e.Name())
+		fs = append(fs, path.Join(dir, e.Name()))
 	}
 	return fs
 }
