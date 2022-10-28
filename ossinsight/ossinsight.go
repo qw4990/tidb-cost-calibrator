@@ -74,6 +74,6 @@ func Regression() {
 	}
 	ins := utils.MustConnectTo(opt)
 
-	initSchema(ins, "")
-	importStats(ins, "")
+	initSchema(ins, "ossinsight/schema.sql")
+	//importStats(ins, "")
 }
