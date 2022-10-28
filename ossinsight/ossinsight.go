@@ -10,6 +10,9 @@ import (
 
 func initSchema(db utils.Instance, schemaDir string) {
 	fmt.Println("=============================== init schema =====================================")
+	db.MustExec("CREATE DATABASE IF NOT EXISTS gharchive_dev")
+	db.MustExec("USE gharchive_dev")
+
 	schemaFiles := readDirFiles(schemaDir, ".sql")
 	for _, f := range schemaFiles {
 		data, err := os.ReadFile(f)
