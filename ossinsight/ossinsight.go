@@ -9,6 +9,7 @@ import (
 )
 
 func initSchema(db utils.Instance, schemaFile string) {
+	fmt.Println("=============================== init schema =====================================")
 	data, err := os.ReadFile(schemaFile)
 	if err != nil {
 		panic(err)
@@ -19,8 +20,11 @@ func initSchema(db utils.Instance, schemaFile string) {
 		if len(sql) == 0 {
 			continue
 		}
+		fmt.Println(sql)
+		fmt.Println("------------------------------------------------------------------------")
 		db.MustExec(sql)
 	}
+	fmt.Println("=============================== init schema end =====================================")
 }
 
 func importStats(db utils.Instance, statsFile string) {
