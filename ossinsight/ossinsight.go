@@ -31,21 +31,21 @@ func importStats(db utils.Instance, statsFile string) {
 	db.MustExec(fmt.Sprintf("load stats '%v'", statsFile))
 }
 
-func readQueryFiles(queryDir string) []string {
-	entries, err := os.ReadDir(queryDir)
+func readDirFiles(dir, suffix string) []string {
+	entries, err := os.ReadDir(dir)
 	utils.Must(err)
 
-	var queryFiles []string
+	var fs []string
 	for _, e := range entries {
 		if e.IsDir() {
 			continue
 		}
-		if !strings.HasSuffix(e.Name(), ".sql") {
+		if !strings.HasSuffix(e.Name(), suffix) {
 			continue
 		}
-		queryFiles = append(queryFiles, e.Name())
+		fs = append(fs, e.Name())
 	}
-	return queryFiles
+	return fs
 }
 
 func explain(db utils.Instance, query string) (plan []string) {
@@ -58,7 +58,7 @@ func explain(db utils.Instance, query string) (plan []string) {
 }
 
 func regression(db utils.Instance, queryDir string) {
-	queryFiles := readQueryFiles(queryDir)
+	queryFiles := readDirFiles(queryDir, ".sql")
 	for _, f := range queryFiles {
 		data, err := os.ReadFile(f)
 		utils.Must(err)
@@ -78,6 +78,6 @@ func Regression() {
 	}
 	ins := utils.MustConnectTo(opt)
 
-	initSchema(ins, "ossinsight/schema.sql")
-	//importStats(ins, "")
+	//initSchema(ins, "ossinsight/schema.sql")
+	importStats(ins, "ossinsight/stats")
 }
