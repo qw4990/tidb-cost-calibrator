@@ -75,6 +75,7 @@ func explain(db utils.Instance, query string) string {
 
 func regression(db utils.Instance, queryDir string) {
 	db.MustExec("USE gharchive_dev")
+	db.MustExec("SET tidb_cost_model_version=2")
 	queryFiles := readDirFiles(queryDir, ".sql")
 	for _, f := range queryFiles {
 		data, err := os.ReadFile(f)

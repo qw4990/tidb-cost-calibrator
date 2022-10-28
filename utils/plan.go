@@ -106,7 +106,7 @@ func BeautifulPlan(plan [][]string) string {
 	maxLen := 0
 	for colIdx := 0; colIdx < len(plan[0]); colIdx++ {
 		for rowIdx := 0; rowIdx < len(plan); rowIdx++ {
-			lines[rowIdx] += strings.TrimSpace(plan[rowIdx][colIdx])
+			lines[rowIdx] += plan[rowIdx][colIdx]
 			if len(lines[rowIdx]) > maxLen {
 				maxLen = len(lines[rowIdx])
 			}
