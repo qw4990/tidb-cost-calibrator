@@ -8,18 +8,13 @@ import (
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
-func initSchema(db utils.Instance, schemaFile string) {
+func initSchema(db utils.Instance, schemaDir string) {
 	fmt.Println("=============================== init schema =====================================")
-	data, err := os.ReadFile(schemaFile)
-	if err != nil {
-		panic(err)
-	}
-	sqls := strings.Split(string(data), ";")
-	for _, sql := range sqls {
-		sql = strings.TrimSpace(sql)
-		if len(sql) == 0 {
-			continue
-		}
+	schemaFiles := readDirFiles(schemaDir, ".sql")
+	for _, f := range schemaFiles {
+		data, err := os.ReadFile(f)
+		utils.Must(err)
+		sql := string(data)
 		fmt.Println(sql)
 		fmt.Println("------------------------------------------------------------------------")
 		db.MustExec(sql)
@@ -78,6 +73,6 @@ func Regression() {
 	}
 	ins := utils.MustConnectTo(opt)
 
-	//initSchema(ins, "ossinsight/schema.sql")
-	importStats(ins, "ossinsight/stats")
+	initSchema(ins, "ossinsight/schema")
+	//importStats(ins, "ossinsight/stats")
 }
