@@ -2,3 +2,4 @@ tidb-cost-calibrator
 vendor
 data
 .idea
+ossinsight/stats/*.json
