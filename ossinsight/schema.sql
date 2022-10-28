@@ -1,5 +1,5 @@
-CREATE DATABASE IF NO EXISTS gharchive_dev;
-    
+CREATE DATABASE IF NOT EXISTS gharchive_dev;
+
 USE gharchive_dev;
 
 CREATE TABLE `github_events` (
@@ -102,3 +102,73 @@ CREATE TABLE `users` (
                          KEY `idx_company_name` (`company_name`),
                          KEY `users_cmp_idx` (`company`)
 );
+
+CREATE TABLE `github_repos` (
+                                `repo_id` int(11) NOT NULL,
+                                `repo_name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                `owner_id` int(11) DEFAULT NULL,
+                                `owner_login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                `owner_is_org` tinyint(1) DEFAULT NULL,
+                                `primary_language` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                `license` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                `size` bigint(20) DEFAULT NULL,
+                                `stars` int(11) DEFAULT NULL,
+                                `forks` int(11) DEFAULT NULL,
+                                `parent_repo_id` int(11) DEFAULT NULL,
+                                `is_fork` tinyint(1) NOT NULL DEFAULT '0',
+                                `is_archived` tinyint(1) NOT NULL DEFAULT '0',
+                                `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+                                `latest_released_at` timestamp NULL DEFAULT NULL,
+                                `pushed_at` timestamp NULL DEFAULT NULL,
+                                `created_at` timestamp NULL DEFAULT NULL,
+                                `updated_at` timestamp NULL DEFAULT NULL,
+                                `refreshed_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+                                PRIMARY KEY (`repo_id`) /*T![clustered_index] CLUSTERED */,
+                                KEY `index_owner_on_github_repos` (`owner_login`),
+                                KEY `index_fullname_on_github_repos` (`repo_name`)
+);
+
+
+CREATE TABLE `blacklist_repos` (
+    `name` varchar(255) DEFAULT NULL
+);
+
+CREATE TABLE `blacklist_users` (
+                                   `login` varchar(255) NOT NULL,
+                                   UNIQUE KEY `blacklist_users_login_uindex` (`login`),
+                                   PRIMARY KEY (`login`) /*T![clustered_index] NONCLUSTERED */
+);
+
+CREATE TABLE `collection_items` (
+                                    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                                    `collection_id` bigint(20) DEFAULT NULL,
+                                    `repo_name` varchar(255) NOT NULL,
+                                    `repo_id` bigint(20) NOT NULL,
+                                    PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */,
+                                    KEY `index_collection_items_on_collection_id` (`collection_id`)
+);
+
+CREATE TABLE `collections` (
+                               `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                               `name` varchar(255) NOT NULL,
+                               `public` tinyint(1) DEFAULT '1',
+                               PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */,
+                               UNIQUE KEY `index_collections_on_name` (`name`)
+);
+
+ALTER TABLE db_repos SET TIFLASH REPLICA 1;
+ALTER TABLE cn_orgs SET TIFLASH REPLICA 1;
+ALTER TABLE cn_repos SET TIFLASH REPLICA 1;
+ALTER TABLE users SET TIFLASH REPLICA 1;
+ALTER TABLE gh SET TIFLASH REPLICA 1;
+ALTER TABLE nocode_repos SET TIFLASH REPLICA 1;
+ALTER TABLE web_framework_repos SET TIFLASH REPLICA 1;
+ALTER TABLE programming_language_repos SET TIFLASH REPLICA 1;
+ALTER TABLE static_site_generator_repos SET TIFLASH REPLICA 1;
+ALTER TABLE js_framework_repos SET TIFLASH REPLICA 1;
+ALTER TABLE css_framework_repos SET TIFLASH REPLICA 1;
+ALTER TABLE github_events SET TIFLASH REPLICA 1;
+ALTER TABLE blacklist_users SET TIFLASH REPLICA 1;
+ALTER TABLE github_repos SET TIFLASH REPLICA 1;
+ALTER TABLE csdn_events SET TIFLASH REPLICA 1;
+ALTER TABLE trending_repos SET TIFLASH REPLICA 1;
