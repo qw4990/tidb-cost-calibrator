@@ -71,13 +71,16 @@ func readDirFiles(dir, suffix string) []string {
 func explain(db utils.Instance, query string) (plan []string) {
 	rows := db.MustQuery("explain " + query)
 	for rows.Next() {
-		utils.Must(rows.Scan())
-		plan = append(plan, "")
+		//| id                    | estRows  | task      | access object | operator info                  |
+		var id, estRows, task, accObj, opInfo string
+		utils.Must(rows.Scan(&id, &estRows, &task, &accObj, &opInfo))
+		plan = append(plan, strings.Join([]string{id, estRows, task, accObj, opInfo}, "\t\t"))
 	}
 	return
 }
 
 func regression(db utils.Instance, queryDir string) {
+	db.MustExec("USE gharchive_dev")
 	queryFiles := readDirFiles(queryDir, ".sql")
 	for _, f := range queryFiles {
 		data, err := os.ReadFile(f)
@@ -99,5 +102,6 @@ func Regression() {
 	ins := utils.MustConnectTo(opt)
 
 	//initSchema(ins, "ossinsight/schema")
-	importStats(ins, "ossinsight/stats")
+	//importStats(ins, "ossinsight/stats")
+	regression(ins, "ossinsight/query")
 }
