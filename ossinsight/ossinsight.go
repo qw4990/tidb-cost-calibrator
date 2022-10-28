@@ -17,10 +17,16 @@ func initSchema(db utils.Instance, schemaDir string) {
 	for _, f := range schemaFiles {
 		data, err := os.ReadFile(f)
 		utils.Must(err)
-		sql := string(data)
-		fmt.Println(sql)
-		fmt.Println("------------------------------------------------------------------------")
-		db.MustExec(sql)
+		sqls := strings.Split(string(data), ";") // multiple SQLs
+		for _, sql := range sqls {
+			sql = strings.TrimSpace(sql)
+			if sql == "" {
+				continue
+			}
+			fmt.Println(sql)
+			fmt.Println("------------------------------------------------------------------------")
+			db.MustExec(sql)
+		}
 	}
 	fmt.Println("=============================== init schema end =====================================")
 }
