@@ -17,7 +17,7 @@ type ExplainAnalyzeResult struct {
 	RawPlan         []string
 }
 
-func ParseExplainAnalyzeResultsWithRows(rs *sql.Rows) *ExplainAnalyzeResult {
+func ParseExplainAnalyze(rs *sql.Rows) *ExplainAnalyzeResult {
 	//+------------------------+----------+-----------+---------+-----------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------+---------+------+
 	//| id                     | estRows  | estCost   | actRows | task      | access object | execution info                                                                                                                                                                                                                                              | operator info                                   | memory  | disk |
 	//+------------------------+----------+-----------+---------+-----------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------+---------+------+
@@ -90,4 +90,33 @@ func parseOperatorName(str string) (name, nameWithID string) {
 		}
 	}
 	return str[begin:end0], str[begin:end1]
+}
+
+func ParseExplain(rs *sql.Rows) (results [][]string) {
+	for rs.Next() {
+		var id, estRows, task, accObj, op string
+		Must(rs.Scan(&id, &estRows, &task, &accObj, &op))
+		results = append(results, []string{id, estRows, task, accObj, op})
+	}
+	return
+}
+
+func BeautifulPlan(plan [][]string) string {
+	lines := make([]string, len(plan))
+	maxLen := 0
+	for colIdx := 0; colIdx < len(plan[0]); colIdx++ {
+		for rowIdx := 0; rowIdx < len(plan); rowIdx++ {
+			lines[rowIdx] += plan[rowIdx][colIdx]
+			if len(lines[rowIdx]) > maxLen {
+				maxLen = len(lines[rowIdx])
+			}
+		}
+
+		if colIdx < len(plan[0])-1 {
+			for rowIdx := 0; rowIdx < len(plan); rowIdx++ {
+				lines[rowIdx] += strings.Repeat(" ", maxLen-len(lines[rowIdx])) + "\t"
+			}
+		}
+	}
+	return strings.Join(lines, "\n")
 }

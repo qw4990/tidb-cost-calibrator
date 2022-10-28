@@ -68,15 +68,9 @@ func readDirFiles(dir, suffix string) []string {
 	return fs
 }
 
-func explain(db utils.Instance, query string) (plan []string) {
+func explain(db utils.Instance, query string) string {
 	rows := db.MustQuery("explain " + query)
-	for rows.Next() {
-		//| id                    | estRows  | task      | access object | operator info                  |
-		var id, estRows, task, accObj, opInfo string
-		utils.Must(rows.Scan(&id, &estRows, &task, &accObj, &opInfo))
-		plan = append(plan, strings.Join([]string{id, estRows, task, accObj, opInfo}, "\t\t"))
-	}
-	return
+	return utils.BeautifulPlan(utils.ParseExplain(rows))
 }
 
 func regression(db utils.Instance, queryDir string) {
@@ -87,7 +81,7 @@ func regression(db utils.Instance, queryDir string) {
 		utils.Must(err)
 		plan := explain(db, string(data))
 		planFile := strings.Replace(f, ".sql", "_plan.txt", 1)
-		utils.Must(os.WriteFile(planFile, []byte(strings.Join(plan, "\n")), 0666))
+		utils.Must(os.WriteFile(planFile, plan, 0666))
 	}
 }
 

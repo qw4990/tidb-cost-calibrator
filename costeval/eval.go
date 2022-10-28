@@ -152,7 +152,7 @@ func runEvalQueries(ins utils.Instance, opt *evalOpt, qs utils.Queries) utils.Re
 		var plan []string
 		for k := 0; k < opt.repeatTimes; k++ {
 			rs := ins.MustQuery(q.SQL)
-			r := utils.ParseExplainAnalyzeResultsWithRows(rs)
+			r := utils.ParseExplainAnalyze(rs)
 			if k == 0 {
 				cost = r.PlanCost
 				plan = r.RawPlan
