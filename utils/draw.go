@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
+	"math/rand"
 	"sort"
 	"strings"
 
@@ -186,6 +187,10 @@ func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 	sort.Strings(labels)
 	styles := make(map[string]draw.GlyphStyle)
 	colorCnt := make(map[string]int)
+	var ops []string
+	for op := range shapes {
+		ops = append(ops, op)
+	}
 	for _, l := range labels {
 		ok := false
 		for op, shape := range shapes {
@@ -203,7 +208,16 @@ func genGlyphStyleForLabel(labels []string) map[string]draw.GlyphStyle {
 			}
 		}
 		if !ok {
-			panic(fmt.Sprintf("cannot get style for %v", l))
+			op := ops[rand.Int()%len(ops)]
+			cnt := colorCnt[op]
+			currentColor := colors[op][(cnt % len(colors[strings.ToLower(op)]))]
+			colorCnt[op] = cnt + 1
+			styles[l] = draw.GlyphStyle{
+				Radius: 4,
+				Shape:  shapes[op],
+				Color:  currentColor,
+			}
+			//panic(fmt.Sprintf("cannot get style for %v", l))
 		}
 	}
 	return styles

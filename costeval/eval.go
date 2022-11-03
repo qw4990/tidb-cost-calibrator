@@ -72,6 +72,8 @@ func costEval(ins utils.Instance, opt *evalOpt, minioOption utils.MinioOption) {
 			qs = genSYNQueries2(opt.numPerQuery, opt.scaleFactor)
 		case "tpch_clustered":
 			qs = genTPCHQueries2(opt.numPerQuery, opt.scaleFactor)
+		case "tpch_standard":
+			qs = genTPCHQueries(opt.numPerQuery)
 		default:
 			panic(fmt.Sprintf("unknown DB/Workload %v", opt.ceType))
 		}
