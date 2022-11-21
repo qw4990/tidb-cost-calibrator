@@ -59,7 +59,6 @@ WITH stars AS (
         r.repo_id,
         r.repo_name,
         r.primary_language,
-        r.description,
         s.total AS stars_inc,
         IFNULL(f.total, 0) AS forks_inc,
         -- Calculate the composite score for the repository.
@@ -151,7 +150,6 @@ SELECT
     tr.repo_id,
     tr.repo_name,
     tr.primary_language AS language,
-    tr.description,
     tr.stars_inc AS stars,
     tr.forks_inc AS forks,
     pr.total AS pull_requests,
