@@ -128,7 +128,7 @@ func Regression() {
 func Benchmark() {
 	bench, explainAnalyze, analyzeResult := true, false, false
 	benchQueryDir := "/Users/zhangyuanjia/Workspace/go/src/github.com/qw4990/tidb-cost-calibrator/ossinsight/bench_query"
-	engines := []string{"mix", "ap", "tp"}
+	engines := []string{"mix", "ap"}
 
 	if bench {
 		opt := utils.Option{}
@@ -139,7 +139,7 @@ func Benchmark() {
 		ins.SetLogThreshold(0)
 
 		queryFiles := readDirFiles(benchQueryDir, ".sql")
-		whiteKeys := []string{"trending-repos-past-24-hours-All"}
+		whiteKeys := []string{"trending-repos-past-3-months-All"}
 		blackKeys := []string{"collection"}
 		queryFiles = filter(queryFiles, whiteKeys, blackKeys)
 
@@ -276,7 +276,7 @@ func benchmark(queryFile string, ins utils.Instance, engines []string, explainAn
 		if explainAnalyze {
 			q = "explain analyze " + string(data)
 		} else {
-			q = "explain " + string(data)
+			q = "explain format=verbose " + string(data)
 		}
 
 		begin := time.Now()
@@ -303,10 +303,10 @@ func benchmark(queryFile string, ins utils.Instance, engines []string, explainAn
 					utils.Must(rs.Scan(&id, &est, &act, &task, &obj, &exe, &op, &mem, &disk))
 					plan = fmt.Sprintf("%v\n%v", plan, strings.Join([]string{id, est, act, task, obj, exe, op, mem, disk}, "\t"))
 				} else {
-					//| id | estRows | task | access object | operator info |
-					var id, est, task, obj, op string
-					utils.Must(rs.Scan(&id, &est, &task, &obj, &op))
-					plan = fmt.Sprintf("%v\n%v", plan, strings.Join([]string{id, est, task, obj, op}, "\t"))
+					//| id | estRows | cost | task | access object | operator info |
+					var id, est, cost, task, obj, op string
+					utils.Must(rs.Scan(&id, &est, &cost, &task, &obj, &op))
+					plan = fmt.Sprintf("%v\n%v", plan, strings.Join([]string{id, est, cost, task, obj, op}, "\t"))
 
 				}
 			}
