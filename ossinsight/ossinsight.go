@@ -126,7 +126,7 @@ func Regression() {
 
 // Benchmark executes all selected OSSInsight queries and collects their execution times.
 func Benchmark() {
-	bench, analyze := false, true
+	bench, explainAnalyze, analyzeResult := true, false, false
 	benchQueryDir := "/Users/zhangyuanjia/Workspace/go/src/github.com/qw4990/tidb-cost-calibrator/ossinsight/bench_query"
 	engines := []string{"mix", "ap", "tp"}
 
@@ -148,11 +148,11 @@ func Benchmark() {
 		ins.MustExec("set tidb_stats_load_sync_wait=9999")
 		ins.MustExec("set max_execution_time=180000")
 		for _, queryFile := range queryFiles {
-			benchmark(queryFile, ins, engines)
+			benchmark(queryFile, ins, engines, explainAnalyze)
 		}
 	}
 
-	if analyze {
+	if analyzeResult {
 		benchanalyze(benchQueryDir, engines)
 	}
 }
@@ -247,7 +247,7 @@ func parseResultFile(rf string) (caseName string, execTime time.Duration, failRe
 	return
 }
 
-func benchmark(queryFile string, ins utils.Instance, engines []string) {
+func benchmark(queryFile string, ins utils.Instance, engines []string, explainAnalyze bool) {
 	_, fileName := filepath.Split(queryFile)
 	caseName := strings.Split(fileName, ".")[0]
 
@@ -272,7 +272,12 @@ func benchmark(queryFile string, ins utils.Instance, engines []string) {
 
 		data, err := os.ReadFile(queryFile)
 		utils.Must(err)
-		q := "explain analyze " + string(data)
+		var q string
+		if explainAnalyze {
+			q = "explain analyze " + string(data)
+		} else {
+			q = "explain " + string(data)
+		}
 
 		begin := time.Now()
 		rs, err := ins.Query(q)
@@ -292,10 +297,18 @@ func benchmark(queryFile string, ins utils.Instance, engines []string) {
 			fmt.Println(plan)
 		} else {
 			for rs.Next() {
-				//| id | estRows | actRows | task | access object | execution info | operator info | memory | disk |
-				var id, est, act, task, obj, exe, op, mem, disk string
-				utils.Must(rs.Scan(&id, &est, &act, &task, &obj, &exe, &op, &mem, &disk))
-				plan = fmt.Sprintf("%v\n%v", plan, strings.Join([]string{id, est, act, task, obj, exe, op, mem, disk}, "\t"))
+				if explainAnalyze {
+					//| id | estRows | actRows | task | access object | execution info | operator info | memory | disk |
+					var id, est, act, task, obj, exe, op, mem, disk string
+					utils.Must(rs.Scan(&id, &est, &act, &task, &obj, &exe, &op, &mem, &disk))
+					plan = fmt.Sprintf("%v\n%v", plan, strings.Join([]string{id, est, act, task, obj, exe, op, mem, disk}, "\t"))
+				} else {
+					//| id | estRows | task | access object | operator info |
+					var id, est, task, obj, op string
+					utils.Must(rs.Scan(&id, &est, &task, &obj, &op))
+					plan = fmt.Sprintf("%v\n%v", plan, strings.Join([]string{id, est, task, obj, op}, "\t"))
+
+				}
 			}
 			utils.Must(rs.Close())
 		}
