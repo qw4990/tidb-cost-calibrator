@@ -2,8 +2,9 @@ package regression
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
@@ -18,22 +19,25 @@ func RegDetect() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	qs := getTPCHQueries("regression/tpch/queries")
+	qs := getQueries("regression/tpch/queries")
 	ins.MustExec("use tpch")
+	delete(qs, 15) // skip q15
 	compare(qs, ins, false, "tikv")
 }
 
-func getTPCHQueries(dir string) []string {
-	var qs []string
-	qs = append(qs, "")
-	for i := 1; i <= 22; i++ {
-		fpath := path.Join(dir, fmt.Sprintf("%v.sql", i))
-		content, err := ioutil.ReadFile(fpath)
+func getQueries(dir string) map[int]string {
+	q := make(map[int]string)
+	for _, f := range utils.ReadDirFiles(dir, ".sql") {
+		// f: q23.sql
+		base := strings.Split(f, ".")[0]
+		numStr := base[1:]
+		num, err := strconv.Atoi(numStr)
 		utils.Must(err)
-		qs = append(qs, cleanQuery(string(content)))
+		content, err := os.ReadFile(path.Join(dir, f))
+		utils.Must(err)
+		q[num] = cleanQuery(string(content))
 	}
-	qs[15] = "" // skip q15
-	return qs
+	return q
 }
 
 func cleanQuery(q string) string {
@@ -86,7 +90,7 @@ func printPlan(q Plan) {
 	}
 }
 
-func compare(queries []string, db utils.Instance, analyze bool, engines string) {
+func compare(qs map[int]string, db utils.Instance, analyze bool, engines string) {
 	switch engines {
 	case "tikv":
 		engines = "tidb,tikv"
@@ -98,37 +102,28 @@ func compare(queries []string, db utils.Instance, analyze bool, engines string) 
 		panic(engines)
 	}
 
-	vPlans := make([][]Plan, 3)
-	vPlans[1] = append(vPlans[1], nil)
-	vPlans[2] = append(vPlans[2], nil)
+	vPlans := make([]map[int]Plan, 0, 3)
+	vPlans = append(vPlans, nil, make(map[int]Plan), make(map[int]Plan))
 	for _, costVer := range []int{1, 2} {
 		db.MustExec(fmt.Sprintf("set @@tidb_isolation_read_engines='%v'", engines))
 		db.MustExec(fmt.Sprintf("set @@tidb_cost_model_version=%v", costVer))
 
-		for i := 1; i < len(queries); i++ {
-			if queries[i] == "" { // skip
-				vPlans[costVer] = append(vPlans[costVer], nil)
-				continue
-			}
-			fmt.Printf("get plan for q%v on model%v\n", i, costVer)
-			vPlans[costVer] = append(vPlans[costVer], getPlan(queries[i], db))
+		for no, q := range qs {
+			fmt.Printf("get plan for q%v on model%v\n", no, costVer)
+			vPlans[costVer][no] = getPlan(q, db)
 		}
 	}
 
-	for i := 1; i < len(queries); i++ {
-		fmt.Printf("q%v ============================================================= \n", i)
-		if vPlans[1][i] == nil {
-			fmt.Printf("SKIP: q%v\n", i)
-			continue
-		}
-		if same := cmpPlan(vPlans[1][i], vPlans[2][i]); same {
+	for no := range qs {
+		fmt.Printf("q%v ============================================================= \n", no)
+		if same := cmpPlan(vPlans[1][no], vPlans[2][no]); same {
 			//fmt.Println("SAME: ", queries[i])
 			//printPlan(vPlans[1][i])
 		} else {
-			fmt.Printf("DIFF: q%v\n", i)
-			printPlan(vPlans[1][i])
+			fmt.Printf("DIFF: q%v\n", no)
+			printPlan(vPlans[1][no])
 			fmt.Println("-------------------------------------")
-			printPlan(vPlans[2][i])
+			printPlan(vPlans[2][no])
 			fmt.Println("\n\n\n")
 		}
 	}
