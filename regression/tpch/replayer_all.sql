@@ -1,0 +1,9 @@
+plan replayer dump explain select 1 from 
+ (select 1 from orders limit 1) t1, 
+ (select 1 from lineitem limit 1) t2,
+ (select 1 from customer limit 1) t3,
+ (select 1 from nation limit 1) t4,
+ (select 1 from part limit 1) t5,
+ (select 1 from partsupp limit 1) t6,
+ (select 1 from region limit 1) t7,
+ (select 1 from supplier limit 1) t8;
