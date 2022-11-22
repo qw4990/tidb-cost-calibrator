@@ -105,7 +105,7 @@ func planStr(q Plan) string {
 	var buf bytes.Buffer
 	for _, row := range q {
 		line := strings.Join(row, "\t")
-		buf.WriteString(line)
+		buf.WriteString(line + "\n")
 	}
 	return buf.String()
 }
@@ -143,9 +143,10 @@ func compare(qs map[int]string, db utils.Instance, analyze bool, engines, result
 		} else {
 			result.WriteString(fmt.Sprintf("DIFF: q%v\n", no))
 			result.WriteString(planStr(vPlans[1][no]))
-			result.WriteString("--------------------------------------------------------------------------")
+			result.WriteString("--------------------------------------------------------------------------\n")
 			result.WriteString(planStr(vPlans[2][no]))
 			result.WriteString("\n\n\n")
 		}
 	}
+	utils.Must(os.WriteFile(resultFile, result.Bytes(), 0666))
 }
