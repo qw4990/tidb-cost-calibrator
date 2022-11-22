@@ -20,7 +20,7 @@ func RegDetect() {
 	ins := utils.MustConnectTo(opt)
 	qs := getTPCHQueries("regression/tpch/queries")
 	ins.MustExec("use tpch")
-	compare(qs, ins, false, "tidb,tikv")
+	compare(qs, ins, false, "tikv")
 }
 
 func getTPCHQueries(dir string) []string {
@@ -87,6 +87,17 @@ func printPlan(q Plan) {
 }
 
 func compare(queries []string, db utils.Instance, analyze bool, engines string) {
+	switch engines {
+	case "tikv":
+		engines = "tidb,tikv"
+	case "tiflash":
+		engines = "tidb,tiflash"
+	case "hybrid":
+		engines = "tidb,tikv,tiflash"
+	default:
+		panic(engines)
+	}
+
 	vPlans := make([][]Plan, 3)
 	vPlans[1] = append(vPlans[1], nil)
 	vPlans[2] = append(vPlans[2], nil)
