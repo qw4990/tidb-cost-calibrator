@@ -1,4 +1,5 @@
 tidb-cost-calibrator
+*.result
 *.yml
 *.toml
 vendor
