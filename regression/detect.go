@@ -20,18 +20,20 @@ func RegDetect() {
 	}
 	ins := utils.MustConnectTo(opt)
 	var qs map[int]string
-	workload := "tpch"
+	workload, engine := "tpcds", "tikv"
 	switch workload {
 	case "tpch":
 		qs = getQueries("regression/tpch/queries")
 		ins.MustExec("use tpch")
 		delete(qs, 15) // skip q15
 	case "tpcds":
+		qs = getQueries("regression/tpcds/queries")
+		ins.MustExec("use tpcds50")
 	default:
 		panic(workload)
 	}
 
-	compare(qs, ins, false, "tikv")
+	compare(qs, ins, false, engine)
 }
 
 func getQueries(dir string) map[int]string {
