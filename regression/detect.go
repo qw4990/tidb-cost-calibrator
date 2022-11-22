@@ -21,7 +21,7 @@ func RegDetect() {
 	}
 	ins := utils.MustConnectTo(opt)
 	var qs map[int]string
-	workload, engine := "tpcds", "tikv"
+	workload, engine := "tpch", "tikv"
 	switch workload {
 	case "tpch":
 		qs = getQueries("regression/tpch/queries")
@@ -41,10 +41,12 @@ func RegDetect() {
 func getQueries(dir string) map[int]string {
 	q := make(map[int]string)
 	for _, f := range utils.ReadDirFiles(dir, ".sql") {
-		// f: q23.sql or 23.sql
+		// f: q23.sql or 23.sql or query_23.sql
 		base := strings.Split(path.Base(f), ".")[0]
 		var numStr string
-		if base[0] == 'q' {
+		if strings.HasPrefix(base, "query_") {
+			numStr = base[len("query_"):]
+		} else if base[0] == 'q' {
 			numStr = base[1:]
 		} else {
 			numStr = base
