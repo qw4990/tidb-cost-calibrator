@@ -3,7 +3,6 @@ package ossinsight
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -18,7 +17,7 @@ func initSchema(db utils.Instance, schemaDir string) {
 	db.MustExec("CREATE DATABASE IF NOT EXISTS gharchive_dev")
 	db.MustExec("USE gharchive_dev")
 
-	schemaFiles := readDirFiles(schemaDir, ".sql")
+	schemaFiles := utils.ReadDirFiles(schemaDir, ".sql")
 	sort.Slice(schemaFiles, func(i, j int) bool {
 		if strings.Contains(schemaFiles[i], "tiflash_replicas") {
 			return false
@@ -44,30 +43,13 @@ func initSchema(db utils.Instance, schemaDir string) {
 
 func importStats(db utils.Instance, statsDir string) {
 	fmt.Println("=============================== import stats =====================================")
-	statsFiles := readDirFiles(statsDir, ".json")
+	statsFiles := utils.ReadDirFiles(statsDir, ".json")
 	for _, f := range statsFiles {
 		fmt.Println(f)
 		mysql.RegisterLocalFile(f)
 		db.MustExec(fmt.Sprintf("load stats '%v'", f))
 	}
 	fmt.Println("=============================== import stats end =====================================")
-}
-
-func readDirFiles(dir, suffix string) []string {
-	entries, err := os.ReadDir(dir)
-	utils.Must(err)
-
-	var fs []string
-	for _, e := range entries {
-		if e.IsDir() {
-			continue
-		}
-		if !strings.HasSuffix(e.Name(), suffix) {
-			continue
-		}
-		fs = append(fs, path.Join(dir, e.Name()))
-	}
-	return fs
 }
 
 func explain(db utils.Instance, query string) string {
@@ -78,7 +60,7 @@ func explain(db utils.Instance, query string) string {
 func regression(db utils.Instance, queryDir string) {
 	db.MustExec("USE gharchive_dev")
 	db.MustExec("SET tidb_cost_model_version=2")
-	queryFiles := readDirFiles(queryDir, ".sql")
+	queryFiles := utils.ReadDirFiles(queryDir, ".sql")
 	for _, f := range queryFiles {
 		data, err := os.ReadFile(f)
 		utils.Must(err)
@@ -138,7 +120,7 @@ func Benchmark() {
 		}()
 		ins.SetLogThreshold(0)
 
-		queryFiles := readDirFiles(benchQueryDir, ".sql")
+		queryFiles := utils.ReadDirFiles(benchQueryDir, ".sql")
 		whiteKeys := []string{"trending-repos-past-3-months-All"}
 		blackKeys := []string{"collection"}
 		queryFiles = filter(queryFiles, whiteKeys, blackKeys)
@@ -162,7 +144,7 @@ func benchanalyze(dir string, engines []string) {
 	caseNames := make(map[string]struct{})
 	for _, engine := range engines {
 		result[engine] = make(map[string]time.Duration)
-		resultFile := readDirFiles(dir, fmt.Sprintf("-%v.result", engine))
+		resultFile := utils.ReadDirFiles(dir, fmt.Sprintf("-%v.result", engine))
 		for _, rf := range resultFile {
 			caseName, execTime, failReason := parseResultFile(rf)
 			if failReason != "" {

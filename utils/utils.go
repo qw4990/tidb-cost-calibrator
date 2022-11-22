@@ -7,6 +7,8 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
+	"path"
+	"strings"
 )
 
 type Query struct {
@@ -80,4 +82,21 @@ func MustReadOneLine(ins Instance, q string, ret ...interface{}) {
 	if err := rs.Scan(ret...); err != nil {
 		panic(err)
 	}
+}
+
+func ReadDirFiles(dir, suffix string) []string {
+	entries, err := os.ReadDir(dir)
+	Must(err)
+
+	var fs []string
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		if !strings.HasSuffix(e.Name(), suffix) {
+			continue
+		}
+		fs = append(fs, path.Join(dir, e.Name()))
+	}
+	return fs
 }
