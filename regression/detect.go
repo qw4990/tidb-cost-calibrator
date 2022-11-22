@@ -19,9 +19,18 @@ func RegDetect() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	qs := getQueries("regression/tpch/queries")
-	ins.MustExec("use tpch")
-	delete(qs, 15) // skip q15
+	var qs map[int]string
+	workload := "tpch"
+	switch workload {
+	case "tpch":
+		qs = getQueries("regression/tpch/queries")
+		ins.MustExec("use tpch")
+		delete(qs, 15) // skip q15
+	case "tpcds":
+	default:
+		panic(workload)
+	}
+
 	compare(qs, ins, false, "tikv")
 }
 
