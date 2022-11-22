@@ -28,12 +28,17 @@ func RegDetect() {
 func getQueries(dir string) map[int]string {
 	q := make(map[int]string)
 	for _, f := range utils.ReadDirFiles(dir, ".sql") {
-		// f: q23.sql
-		base := strings.Split(f, ".")[0]
-		numStr := base[1:]
+		// f: q23.sql or 23.sql
+		base := strings.Split(path.Base(f), ".")[0]
+		var numStr string
+		if base[0] == 'q' {
+			numStr = base[1:]
+		} else {
+			numStr = base
+		}
 		num, err := strconv.Atoi(numStr)
 		utils.Must(err)
-		content, err := os.ReadFile(path.Join(dir, f))
+		content, err := os.ReadFile(f)
 		utils.Must(err)
 		q[num] = cleanQuery(string(content))
 	}
