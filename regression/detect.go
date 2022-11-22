@@ -1,6 +1,7 @@
 package regression
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path"
@@ -33,7 +34,8 @@ func RegDetect() {
 		panic(workload)
 	}
 
-	compare(qs, ins, false, engine)
+	resultFile := fmt.Sprintf("reg-detect-%v-%v.result", workload, engine)
+	compare(qs, ins, false, engine, resultFile)
 }
 
 func getQueries(dir string) map[int]string {
@@ -99,14 +101,16 @@ func cmpPlan(q1, q2 Plan) (same bool) {
 	return true
 }
 
-func printPlan(q Plan) {
+func planStr(q Plan) string {
+	var buf bytes.Buffer
 	for _, row := range q {
 		line := strings.Join(row, "\t")
-		fmt.Println(line)
+		buf.WriteString(line)
 	}
+	return buf.String()
 }
 
-func compare(qs map[int]string, db utils.Instance, analyze bool, engines string) {
+func compare(qs map[int]string, db utils.Instance, analyze bool, engines, resultFile string) {
 	switch engines {
 	case "tikv":
 		engines = "tidb,tikv"
@@ -130,17 +134,18 @@ func compare(qs map[int]string, db utils.Instance, analyze bool, engines string)
 		}
 	}
 
+	var result bytes.Buffer
 	for no := range qs {
 		fmt.Printf("q%v ============================================================= \n", no)
 		if same := cmpPlan(vPlans[1][no], vPlans[2][no]); same {
 			//fmt.Println("SAME: ", queries[i])
 			//printPlan(vPlans[1][i])
 		} else {
-			fmt.Printf("DIFF: q%v\n", no)
-			printPlan(vPlans[1][no])
-			fmt.Println("-------------------------------------")
-			printPlan(vPlans[2][no])
-			fmt.Println("\n\n\n")
+			result.WriteString(fmt.Sprintf("DIFF: q%v\n", no))
+			result.WriteString(planStr(vPlans[1][no]))
+			result.WriteString("--------------------------------------------------------------------------")
+			result.WriteString(planStr(vPlans[2][no]))
+			result.WriteString("\n\n\n")
 		}
 	}
 }
