@@ -11,16 +11,16 @@ import (
 
 func RegDetect() {
 	opt := utils.Option{
-		Addr:     "172.16.5.173",
+		Addr:     "127.0.0.1",
 		Port:     4000,
 		User:     "root",
 		Password: "",
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
-	qs := getTPCHQueries("regression/workloads/tpch")
+	qs := getTPCHQueries("regression/tpch/queries")
 	ins.MustExec("use tpch")
-	compare(qs, ins, true, "tidb,tikv,tiflash")
+	compare(qs, ins, false, "tidb,tikv")
 }
 
 func getTPCHQueries(dir string) []string {
