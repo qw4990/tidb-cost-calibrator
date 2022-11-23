@@ -1,15 +1,41 @@
-SAME+
-Projection_63	1129836.99	3996890068.06	root		tpch.partsupp.ps_partkey, Column#35
-└─Sort_64	1129836.99	3996664552.59	root		Column#35:desc
-  └─Selection_66	1129836.99	2852169742.78	root		gt(Column#35, NULL)
-    └─HashAgg_67	1412296.24	2781696160.44	root		group by:Column#61, funcs:sum(Column#59)->Column#35, funcs:firstrow(Column#60)->tpch.partsupp.ps_partkey
-      └─Projection_94	1412296.24	2708229075.00	root		mul(tpch.partsupp.ps_supplycost, cast(tpch.partsupp.ps_availqty, decimal(20,0) BINARY))->Column#59, tpch.partsupp.ps_partkey, tpch.partsupp.ps_partkey
-        └─HashJoin_71	1412296.24	2693852464.20	root		inner join, equal:[eq(tpch.supplier.s_suppkey, tpch.partsupp.ps_suppkey)]
-          ├─HashJoin_84(Build)	17605.12	25042665.76	root		inner join, equal:[eq(tpch.nation.n_nationkey, tpch.supplier.s_nationkey)]
-          │ ├─TableReader_89(Build)	1.00	577.93	root		data:Selection_88
-          │ │ └─Selection_88	1.00	8553.77	cop[tikv]		eq(tpch.nation.n_name, "MOZAMBIQUE")
-          │ │   └─TableFullScan_87	25.00	7306.27	cop[tikv]	table:nation	keep order:false
-          │ └─TableReader_86(Probe)	500000.00	15061982.23	root		data:TableFullScan_85
-          │   └─TableFullScan_85	500000.00	162569733.38	cop[tikv]	table:supplier	keep order:false
-          └─TableReader_91(Probe)	40000000.00	1868624639.27	root		data:TableFullScan_90
-            └─TableFullScan_90	40000000.00	12822969589.01	cop[tikv]	table:partsupp	keep order:false
+DIFF
+Projection_63	1129836.99	3996467226.56	root		tpch.partsupp.ps_partkey, Column#35
+└─Sort_64	1129836.99	3996241711.10	root		Column#35:desc
+  └─Selection_66	1129836.99	2851746901.29	root		gt(Column#35, 396581532.431024000000)
+    └─HashAgg_67	1412296.24	2781273318.95	root		group by:Column#61, funcs:sum(Column#59)->Column#35, funcs:firstrow(Column#60)->tpch.partsupp.ps_partkey
+      └─Projection_92	1412296.24	2708229075.00	root		mul(tpch.partsupp.ps_supplycost, cast(tpch.partsupp.ps_availqty, decimal(20,0) BINARY))->Column#59, tpch.partsupp.ps_partkey, tpch.partsupp.ps_partkey
+        └─HashJoin_69	1412296.24	2693852464.20	root		inner join, equal:[eq(tpch.partsupp.ps_suppkey, tpch.supplier.s_suppkey)]
+          ├─HashJoin_84(Build)	17605.12	25042665.76	root		inner join, equal:[eq(tpch.supplier.s_nationkey, tpch.nation.n_nationkey)]
+          │ ├─TableReader_90(Build)	1.00	577.93	root		data:Selection_89
+          │ │ └─Selection_89	1.00	8553.77	cop[tikv]		eq(tpch.nation.n_name, "MOZAMBIQUE")
+          │ │   └─TableFullScan_88	25.00	7306.27	cop[tikv]	table:nation	keep order:false
+          │ └─TableReader_87(Probe)	500000.00	15061982.23	root		data:TableFullScan_86
+          │   └─TableFullScan_86	500000.00	162569733.38	cop[tikv]	table:supplier	keep order:false
+          └─TableReader_72(Probe)	40000000.00	1868624639.27	root		data:TableFullScan_71
+            └─TableFullScan_71	40000000.00	12822969589.01	cop[tikv]	table:partsupp	keep order:false
+
+
+
+Projection_103	1129836.99	1624144825.43	root		tpch.partsupp.ps_partkey, Column#35
+└─Sort_105	1129836.99	1623919309.97	root		Column#35:desc
+  └─TableReader_187	1129836.99	479424500.15	root		data:ExchangeSender_186
+    └─ExchangeSender_186	1129836.99	7072056716.03	mpp[tiflash]		ExchangeType: PassThrough
+      └─Selection_108	1129836.99	7072056716.03	mpp[tiflash]		gt(Column#35, 396581532.431024000000)
+        └─Projection_182	1412296.24	7068667205.06	mpp[tiflash]		Column#35, tpch.partsupp.ps_partkey
+          └─HashAgg_183	1412296.24	7068653647.01	mpp[tiflash]		group by:tpch.partsupp.ps_partkey, funcs:sum(Column#65)->Column#35, funcs:firstrow(tpch.partsupp.ps_partkey)->tpch.partsupp.ps_partkey
+            └─ExchangeReceiver_185	1412296.24	7063901552.63	mpp[tiflash]		
+              └─ExchangeSender_184	1412296.24	6996111333.14	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.partsupp.ps_partkey, collate: N/A]
+                └─HashAgg_180	1412296.24	6996111333.14	mpp[tiflash]		group by:Column#68, funcs:sum(Column#67)->Column#65
+                  └─Projection_190	1412296.24	7006272804.58	mpp[tiflash]		mul(tpch.partsupp.ps_supplycost, cast(tpch.partsupp.ps_availqty, decimal(20,0) BINARY))->Column#67, tpch.partsupp.ps_partkey
+                    └─HashJoin_169	1412296.24	6992037140.95	mpp[tiflash]		inner join, equal:[eq(tpch.partsupp.ps_suppkey, tpch.supplier.s_suppkey)]
+                      ├─ExchangeReceiver_130(Build)	17605.12	31808139.26	mpp[tiflash]		
+                      │ └─ExchangeSender_129	17605.12	30945488.38	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.supplier.s_suppkey, collate: N/A]
+                      │   └─HashJoin_123	17605.12	30945488.38	mpp[tiflash]		inner join, equal:[eq(tpch.supplier.s_nationkey, tpch.nation.n_nationkey)]
+                      │     ├─ExchangeReceiver_128(Build)	1.00	565486.30	mpp[tiflash]		
+                      │     │ └─ExchangeSender_127	1.00	565399.09	mpp[tiflash]		ExchangeType: Broadcast
+                      │     │   └─Selection_126	1.00	565399.09	mpp[tiflash]		eq(tpch.nation.n_name, "MOZAMBIQUE")
+                      │     │     └─TableFullScan_125	25.00	565339.09	mpp[tiflash]	table:nation	keep order:false
+                      │     └─TableFullScan_124(Probe)	500000.00	29580000.00	mpp[tiflash]	table:supplier	keep order:false
+                      └─ExchangeReceiver_122(Probe)	40000000.00	6896186455.98	mpp[tiflash]		
+                        └─ExchangeSender_121	40000000.00	3056186455.98	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.partsupp.ps_suppkey, collate: N/A]
+                          └─TableFullScan_120	40000000.00	3056186455.98	mpp[tiflash]	table:partsupp	keep order:false

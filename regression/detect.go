@@ -20,6 +20,7 @@ func RegDetect() {
 		Label:    "",
 	}
 	ins := utils.MustConnectTo(opt)
+	ins.SetLogThreshold(0)
 	var qs map[int]string
 	workload := "tpch"
 	switch workload {
@@ -56,9 +57,10 @@ func RegDetect() {
 			p2 := plans[1][no]
 			same := cmpPlan(p1, p2)
 			if same {
-				utils.Must(os.WriteFile(resultFile, []byte("SAME+\n"+planStr(p1)), 0666))
+				utils.Must(os.WriteFile(resultFile, []byte("SAME\n"+planStr(p1)), 0666))
 			} else {
-				utils.Must(os.WriteFile(resultFile, []byte("DIFF+\n"+planStr(p1)+"\n\n\n"+planStr(p2)), 0666))
+				utils.Must(os.WriteFile(resultFile, []byte("DIFF\n"+planStr(p1)+"\n\n\n"+planStr(p2)), 0666))
+				fmt.Printf("DIFF q%v\n", no)
 			}
 		}
 	}
@@ -68,6 +70,7 @@ func getPlans(qs map[int]string, db utils.Instance, analyze bool, setting string
 	plans := make(map[int]Plan)
 	db.MustExec(setting)
 	for no, q := range qs {
+		fmt.Printf(">>> get q%v plan", no)
 		plans[no] = getPlan(q, db)
 	}
 	return plans

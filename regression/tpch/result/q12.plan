@@ -1,12 +1,32 @@
-SAME+
-Sort_10	1.00	17701398069.95	root		tpch.lineitem.l_shipmode
-└─Projection_12	1.00	17701398051.95	root		tpch.lineitem.l_shipmode, Column#27, Column#28
-  └─HashAgg_13	1.00	17701398051.65	root		group by:Column#40, funcs:sum(Column#37)->Column#27, funcs:sum(Column#38)->Column#28, funcs:firstrow(Column#39)->tpch.lineitem.l_shipmode
-    └─Projection_54	10485035.23	17388522479.81	root		cast(case(or(eq(tpch.orders.o_orderpriority, 1-URGENT), eq(tpch.orders.o_orderpriority, 2-HIGH)), 1, 0), decimal(20,0) BINARY)->Column#37, cast(case(and(ne(tpch.orders.o_orderpriority, 1-URGENT), ne(tpch.orders.o_orderpriority, 2-HIGH)), 1, 0), decimal(20,0) BINARY)->Column#38, tpch.lineitem.l_shipmode, tpch.lineitem.l_shipmode
-      └─Projection_14	10485035.23	17177148363.58	root		tpch.orders.o_orderpriority, tpch.lineitem.l_shipmode
-        └─HashJoin_40	10485035.23	17175055550.55	root		inner join, equal:[eq(tpch.lineitem.l_orderkey, tpch.orders.o_orderkey)]
-          ├─TableReader_50(Build)	10332404.43	12309713578.10	root		data:Selection_49
-          │ └─Selection_49	10332404.43	181581889513.57	cop[tikv]		ge(tpch.lineitem.l_receiptdate, 1997-01-01 00:00:00.000000), in(tpch.lineitem.l_shipmode, "RAIL", "FOB"), lt(tpch.lineitem.l_commitdate, tpch.lineitem.l_receiptdate), lt(tpch.lineitem.l_receiptdate, 1998-01-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, tpch.lineitem.l_commitdate)
-          │   └─TableFullScan_48	300005811.00	106730439669.07	cop[tikv]	table:lineitem	keep order:false
-          └─TableReader_52(Probe)	75000000.00	2182429921.28	root		data:TableFullScan_51
-            └─TableFullScan_51	75000000.00	23775958819.24	cop[tikv]	table:orders	keep order:false
+DIFF
+Sort_9	1.00	17699305256.92	root		tpch.lineitem.l_shipmode
+└─Projection_11	1.00	17699305238.92	root		tpch.lineitem.l_shipmode, Column#27, Column#28
+  └─HashAgg_12	1.00	17699305238.62	root		group by:Column#40, funcs:sum(Column#37)->Column#27, funcs:sum(Column#38)->Column#28, funcs:firstrow(Column#39)->tpch.lineitem.l_shipmode
+    └─Projection_52	10485035.23	17386429666.78	root		cast(case(or(eq(tpch.orders.o_orderpriority, 1-URGENT), eq(tpch.orders.o_orderpriority, 2-HIGH)), 1, 0), decimal(20,0) BINARY)->Column#37, cast(case(and(ne(tpch.orders.o_orderpriority, 1-URGENT), ne(tpch.orders.o_orderpriority, 2-HIGH)), 1, 0), decimal(20,0) BINARY)->Column#38, tpch.lineitem.l_shipmode, tpch.lineitem.l_shipmode
+      └─HashJoin_37	10485035.23	17175055550.55	root		inner join, equal:[eq(tpch.orders.o_orderkey, tpch.lineitem.l_orderkey)]
+        ├─TableReader_50(Build)	10332404.43	12309713578.10	root		data:Selection_49
+        │ └─Selection_49	10332404.43	181581889513.57	cop[tikv]		ge(tpch.lineitem.l_receiptdate, 1997-01-01 00:00:00.000000), in(tpch.lineitem.l_shipmode, "RAIL", "FOB"), lt(tpch.lineitem.l_commitdate, tpch.lineitem.l_receiptdate), lt(tpch.lineitem.l_receiptdate, 1998-01-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, tpch.lineitem.l_commitdate)
+        │   └─TableFullScan_48	300005811.00	106730439669.07	cop[tikv]	table:lineitem	keep order:false
+        └─TableReader_47(Probe)	75000000.00	2182429921.28	root		data:TableFullScan_46
+          └─TableFullScan_46	75000000.00	23775958819.24	cop[tikv]	table:orders	keep order:false
+
+
+
+Sort_9	1.00	2183477871.33	root		tpch.lineitem.l_shipmode
+└─TableReader_99	1.00	2183477853.33	root		data:ExchangeSender_98
+  └─ExchangeSender_98	1.00	32752167601.89	mpp[tiflash]		ExchangeType: PassThrough
+    └─Projection_12	1.00	32752167601.89	mpp[tiflash]		tpch.lineitem.l_shipmode, Column#27, Column#28
+      └─Projection_94	1.00	32752167601.87	mpp[tiflash]		Column#27, Column#28, tpch.lineitem.l_shipmode
+        └─HashAgg_95	1.00	32752167601.86	mpp[tiflash]		group by:tpch.lineitem.l_shipmode, funcs:sum(Column#43)->Column#27, funcs:sum(Column#44)->Column#28, funcs:firstrow(tpch.lineitem.l_shipmode)->tpch.lineitem.l_shipmode
+          └─ExchangeReceiver_97	1.00	32752167597.59	mpp[tiflash]		
+            └─ExchangeSender_96	1.00	32752167507.59	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_shipmode, collate: N/A]
+              └─HashAgg_92	1.00	32752167507.59	mpp[tiflash]		group by:Column#48, funcs:sum(Column#46)->Column#43, funcs:sum(Column#47)->Column#44
+                └─Projection_102	10485035.23	32942313619.63	mpp[tiflash]		cast(case(or(eq(tpch.orders.o_orderpriority, 1-URGENT), eq(tpch.orders.o_orderpriority, 2-HIGH)), 1, 0), decimal(20,0) BINARY)->Column#46, cast(case(and(ne(tpch.orders.o_orderpriority, 1-URGENT), ne(tpch.orders.o_orderpriority, 2-HIGH)), 1, 0), decimal(20,0) BINARY)->Column#47, tpch.lineitem.l_shipmode
+                  └─HashJoin_81	10485035.23	32731985909.92	mpp[tiflash]		inner join, equal:[eq(tpch.orders.o_orderkey, tpch.lineitem.l_orderkey)]
+                    ├─ExchangeReceiver_53(Build)	10332404.43	26043151848.64	mpp[tiflash]		
+                    │ └─ExchangeSender_52	10332404.43	25269461404.72	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_orderkey, collate: N/A]
+                    │   └─Selection_51	10332404.43	25269461404.72	mpp[tiflash]		ge(tpch.lineitem.l_receiptdate, 1997-01-01 00:00:00.000000), in(tpch.lineitem.l_shipmode, "RAIL", "FOB"), lt(tpch.lineitem.l_commitdate, tpch.lineitem.l_receiptdate), lt(tpch.lineitem.l_receiptdate, 1998-01-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, tpch.lineitem.l_commitdate)
+                    │     └─TableFullScan_50	300005811.00	21669391672.72	mpp[tiflash]	table:lineitem	keep order:false
+                    └─ExchangeReceiver_49(Probe)	75000000.00	6539407373.46	mpp[tiflash]		
+                      └─ExchangeSender_48	75000000.00	4276657373.46	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.orders.o_orderkey, collate: N/A]
+                        └─TableFullScan_47	75000000.00	4276657373.46	mpp[tiflash]	table:orders	keep order:false

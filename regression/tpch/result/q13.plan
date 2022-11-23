@@ -1,11 +1,32 @@
-SAME+
-Sort_9	7500000.00	16313256745.99	root		Column#19:desc, Column#18:desc
-└─Projection_11	7500000.00	7741963403.52	root		Column#18, Column#19
-  └─HashAgg_12	7500000.00	7740466403.52	root		group by:Column#18, funcs:count(1)->Column#19, funcs:firstrow(Column#18)->Column#18
-    └─HashAgg_13	7500000.00	7285817903.52	root		group by:tpch.customer.c_custkey, funcs:count(tpch.orders.o_orderkey)->Column#18
-      └─HashJoin_16	60000000.00	5331329903.52	root		left outer join, equal:[eq(tpch.customer.c_custkey, tpch.orders.o_custkey)]
+DIFF
+Sort_9	7500000.00	16854793045.99	root		Column#19:desc, Column#18:desc
+└─Projection_11	7500000.00	8283499703.52	root		Column#18, Column#19
+  └─HashAgg_12	7500000.00	8282002703.52	root		group by:Column#18, funcs:count(1)->Column#19, funcs:firstrow(Column#18)->Column#18
+    └─HashAgg_13	7500000.00	7827354203.52	root		group by:tpch.customer.c_custkey, funcs:count(tpch.orders.o_orderkey)->Column#18
+      └─HashJoin_16	67500000.00	5647567703.52	root		left outer join, equal:[eq(tpch.customer.c_custkey, tpch.orders.o_custkey)]
         ├─TableReader_18(Build)	7500000.00	197110909.39	root		data:TableFullScan_17
         │ └─TableFullScan_17	7500000.00	2481463640.92	cop[tikv]	table:customer	keep order:false
-        └─TableReader_21(Probe)	60000000.00	3164118994.12	root		data:Selection_20
-          └─Selection_20	60000000.00	27477248911.81	cop[tikv]		not(like(tpch.orders.o_comment, "%pending%deposits%", 92))
+        └─TableReader_21(Probe)	67500000.00	3330656794.12	root		data:Selection_20
+          └─Selection_20	67500000.00	27477248911.81	cop[tikv]		not(like(tpch.orders.o_comment, "%pending%deposits%", 92))
             └─TableFullScan_19	75000000.00	23734748911.81	cop[tikv]	table:orders	keep order:false
+
+
+
+Sort_9	7500000.00	9402221972.63	root		Column#19:desc, Column#18:desc
+└─TableReader_104	7500000.00	830928630.15	root		data:ExchangeSender_103
+  └─ExchangeSender_103	7500000.00	12199929452.24	mpp[tiflash]		ExchangeType: PassThrough
+    └─Projection_12	7500000.00	12199929452.24	mpp[tiflash]		Column#18, Column#19
+      └─Projection_98	7500000.00	12199857452.24	mpp[tiflash]		Column#19, Column#18
+        └─HashAgg_96	7500000.00	12199785452.24	mpp[tiflash]		group by:Column#18, funcs:count(1)->Column#19, funcs:firstrow(Column#18)->Column#18
+          └─ExchangeReceiver_70	7500000.00	12176949452.24	mpp[tiflash]		
+            └─ExchangeSender_69	7500000.00	12116949452.24	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: Column#18, collate: N/A]
+              └─Projection_68	7500000.00	12116949452.24	mpp[tiflash]		Column#18
+                └─HashAgg_66	7500000.00	12116913452.24	mpp[tiflash]		group by:tpch.customer.c_custkey, funcs:count(tpch.orders.o_orderkey)->Column#18
+                  └─HashJoin_51	67500000.00	12011589452.24	mpp[tiflash]		left outer join, equal:[eq(tpch.customer.c_custkey, tpch.orders.o_custkey)]
+                    ├─ExchangeReceiver_34(Build)	7500000.00	468464000.00	mpp[tiflash]		
+                    │ └─ExchangeSender_33	7500000.00	348464000.00	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.customer.c_custkey, collate: N/A]
+                    │   └─TableFullScan_32	7500000.00	348464000.00	mpp[tiflash]	table:customer	keep order:false
+                    └─ExchangeReceiver_38(Probe)	67500000.00	11421125452.24	mpp[tiflash]		
+                      └─ExchangeSender_37	67500000.00	5743700452.24	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.orders.o_custkey, collate: N/A]
+                        └─Selection_36	67500000.00	5743700452.24	mpp[tiflash]		not(like(tpch.orders.o_comment, "%pending%deposits%", 92))
+                          └─TableFullScan_35	75000000.00	5563700452.24	mpp[tiflash]	table:orders	keep order:false

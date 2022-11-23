@@ -1,27 +1,70 @@
-SAME+
-Projection_26	100.00	36850704978.89	root		tpch.supplier.s_name, Column#72
-└─TopN_29	100.00	36850704958.93	root		Column#72:desc, tpch.supplier.s_name, offset:0, count:100
-  └─HashAgg_34	11267.28	36846968876.42	root		group by:tpch.supplier.s_name, funcs:count(1)->Column#72, funcs:firstrow(tpch.supplier.s_name)->tpch.supplier.s_name
-    └─IndexHashJoin_42	6879295.25	36571421088.69	root		anti semi join, inner:IndexLookUp_39, outer key:tpch.lineitem.l_orderkey, inner key:tpch.lineitem.l_orderkey, equal cond:eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey), other cond:ne(tpch.lineitem.l_suppkey, tpch.lineitem.l_suppkey)
-      ├─IndexHashJoin_83(Build)	8599119.06	29331823874.41	root		semi join, inner:IndexLookUp_80, outer key:tpch.lineitem.l_orderkey, inner key:tpch.lineitem.l_orderkey, equal cond:eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey), other cond:ne(tpch.lineitem.l_suppkey, tpch.lineitem.l_suppkey), ne(tpch.lineitem.l_suppkey, tpch.supplier.s_suppkey)
-      │ ├─HashJoin_105(Build)	10748898.83	20988991022.39	root		inner join, equal:[eq(tpch.lineitem.l_orderkey, tpch.orders.o_orderkey)]
-      │ │ ├─HashJoin_107(Build)	10592426.97	17008212568.48	root		inner join, equal:[eq(tpch.supplier.s_suppkey, tpch.lineitem.l_suppkey)]
-      │ │ │ ├─HashJoin_120(Build)	17605.12	27965044.11	root		inner join, equal:[eq(tpch.nation.n_nationkey, tpch.supplier.s_nationkey)]
-      │ │ │ │ ├─TableReader_125(Build)	1.00	577.93	root		data:Selection_124
-      │ │ │ │ │ └─Selection_124	1.00	8553.77	cop[tikv]		eq(tpch.nation.n_name, "EGYPT")
-      │ │ │ │ │   └─TableFullScan_123	25.00	7306.27	cop[tikv]	table:nation	keep order:false
-      │ │ │ │ └─TableReader_122(Probe)	500000.00	17984360.57	root		data:TableFullScan_121
-      │ │ │ │   └─TableFullScan_121	500000.00	161360408.62	cop[tikv]	table:supplier	keep order:false
-      │ │ │ └─TableReader_128(Probe)	240004648.80	12187881549.55	root		data:Selection_127
-      │ │ │   └─Selection_127	240004648.80	121991445051.41	cop[tikv]		gt(tpch.lineitem.l_receiptdate, tpch.lineitem.l_commitdate)
-      │ │ │     └─TableFullScan_126	300005811.00	107021155082.51	cop[tikv]	table:l1	keep order:false
-      │ │ └─TableReader_131(Probe)	36663826.55	2088038480.58	root		data:Selection_130
-      │ │   └─Selection_130	36663826.55	27690858380.51	cop[tikv]		eq(tpch.orders.o_orderstatus, "F")
-      │ │     └─TableFullScan_129	75000000.00	23948358380.51	cop[tikv]	table:orders	keep order:false
-      │ └─IndexLookUp_80(Probe)	43631573.54	7944.53	root		
-      │   ├─IndexRangeScan_78(Build)	43631573.54	922.68	cop[tikv]	table:l2, index:PRIMARY(L_ORDERKEY, L_LINENUMBER)	range: decided by [eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey)], keep order:false
-      │   └─TableRowIDScan_79(Probe)	43631573.54	1448.03	cop[tikv]	table:l2	keep order:false
-      └─IndexLookUp_39(Probe)	34905258.83	9938.40	root		
-        ├─IndexRangeScan_36(Build)	43631573.54	1153.35	cop[tikv]	table:l3, index:PRIMARY(L_ORDERKEY, L_LINENUMBER)	range: decided by [eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey)], keep order:false
-        └─Selection_38(Probe)	34905258.83	2063.23	cop[tikv]		gt(tpch.lineitem.l_receiptdate, tpch.lineitem.l_commitdate)
-          └─TableRowIDScan_37	43631573.54	1810.03	cop[tikv]	table:l3	keep order:false
+DIFF
+Projection_33	100.00	102400967206.27	root		tpch.supplier.s_name, Column#72
+└─TopN_36	100.00	102400967186.31	root		Column#72:desc, tpch.supplier.s_name, offset:0, count:100
+  └─HashAgg_41	11267.28	102397231103.79	root		group by:tpch.supplier.s_name, funcs:count(1)->Column#72, funcs:firstrow(tpch.supplier.s_name)->tpch.supplier.s_name
+    └─HashJoin_57	6879295.25	102121683316.07	root		anti semi join, equal:[eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey)], other cond:ne(tpch.lineitem.l_suppkey, tpch.lineitem.l_suppkey)
+      ├─TableReader_143(Build)	240004648.80	12187881549.55	root		data:Selection_142
+      │ └─Selection_142	240004648.80	121991445051.41	cop[tikv]		gt(tpch.lineitem.l_receiptdate, tpch.lineitem.l_commitdate)
+      │   └─TableFullScan_141	300005811.00	107021155082.51	cop[tikv]	table:l3	keep order:false
+      └─HashJoin_97(Probe)	8599119.06	62737639895.13	root		semi join, equal:[eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey)], other cond:ne(tpch.lineitem.l_suppkey, tpch.lineitem.l_suppkey), ne(tpch.lineitem.l_suppkey, tpch.supplier.s_suppkey)
+        ├─TableReader_140(Build)	300005811.00	9669192763.50	root		data:TableFullScan_139
+        │ └─TableFullScan_139	300005811.00	107021155082.51	cop[tikv]	table:l2	keep order:false
+        └─Projection_98(Probe)	10748898.83	20993281982.80	root		tpch.supplier.s_suppkey, tpch.supplier.s_name, tpch.lineitem.l_orderkey, tpch.lineitem.l_suppkey
+          └─HashJoin_112	10748898.83	20988991022.39	root		inner join, equal:[eq(tpch.lineitem.l_orderkey, tpch.orders.o_orderkey)]
+            ├─HashJoin_113(Build)	10592426.97	17008212568.48	root		inner join, equal:[eq(tpch.lineitem.l_suppkey, tpch.supplier.s_suppkey)]
+            │ ├─HashJoin_129(Build)	17605.12	27965044.11	root		inner join, equal:[eq(tpch.supplier.s_nationkey, tpch.nation.n_nationkey)]
+            │ │ ├─TableReader_135(Build)	1.00	577.93	root		data:Selection_134
+            │ │ │ └─Selection_134	1.00	8553.77	cop[tikv]		eq(tpch.nation.n_name, "EGYPT")
+            │ │ │   └─TableFullScan_133	25.00	7306.27	cop[tikv]	table:nation	keep order:false
+            │ │ └─TableReader_132(Probe)	500000.00	17984360.57	root		data:TableFullScan_131
+            │ │   └─TableFullScan_131	500000.00	161360408.62	cop[tikv]	table:supplier	keep order:false
+            │ └─TableReader_117(Probe)	240004648.80	12187881549.55	root		data:Selection_116
+            │   └─Selection_116	240004648.80	121991445051.41	cop[tikv]		gt(tpch.lineitem.l_receiptdate, tpch.lineitem.l_commitdate)
+            │     └─TableFullScan_115	300005811.00	107021155082.51	cop[tikv]	table:l1	keep order:false
+            └─TableReader_138(Probe)	36663826.55	2088038480.58	root		data:Selection_137
+              └─Selection_137	36663826.55	27690858380.51	cop[tikv]		eq(tpch.orders.o_orderstatus, "F")
+                └─TableFullScan_136	75000000.00	23948358380.51	cop[tikv]	table:orders	keep order:false
+
+
+
+Projection_33	100.00	7268098020.23	root		tpch.supplier.s_name, Column#72
+└─TopN_37	100.00	7268098000.27	root		Column#72:desc, tpch.supplier.s_name, offset:0, count:100
+  └─TableReader_245	100.00	7268064187.43	root		data:ExchangeSender_244
+    └─ExchangeSender_244	100.00	109020955551.48	mpp[tiflash]		ExchangeType: PassThrough
+      └─TopN_243	100.00	109020955551.48	mpp[tiflash]		Column#72:desc, tpch.supplier.s_name, offset:0, count:100
+        └─Projection_239	11267.28	109020775726.88	mpp[tiflash]		Column#72, tpch.supplier.s_name
+          └─HashAgg_240	11267.28	109020775618.72	mpp[tiflash]		group by:tpch.supplier.s_name, funcs:sum(Column#92)->Column#72, funcs:firstrow(tpch.supplier.s_name)->tpch.supplier.s_name
+            └─ExchangeReceiver_242	11267.28	109020739396.67	mpp[tiflash]		
+              └─ExchangeSender_241	11267.28	109020367576.54	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.supplier.s_name, collate: N/A]
+                └─HashAgg_237	11267.28	109020367576.54	mpp[tiflash]		group by:tpch.supplier.s_name, funcs:count(1)->Column#92
+                  └─HashJoin_226	6879295.25	109010413835.97	mpp[tiflash]		anti semi join, equal:[eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey)], other cond:ne(tpch.lineitem.l_suppkey, tpch.lineitem.l_suppkey)
+                    ├─ExchangeReceiver_99(Build)	240004648.80	36961411915.20	mpp[tiflash]		
+                    │ └─ExchangeSender_98	240004648.80	21601114392.00	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_orderkey, collate: N/A]
+                    │   └─Projection_246	240004648.80	21649019319.90	mpp[tiflash]		tpch.lineitem.l_orderkey, tpch.lineitem.l_suppkey
+                    │     └─Selection_97	240004648.80	21601114392.00	mpp[tiflash]		gt(tpch.lineitem.l_receiptdate, tpch.lineitem.l_commitdate)
+                    │       └─TableFullScan_96	300005811.00	20881100445.60	mpp[tiflash]	table:l3	keep order:false
+                    └─HashJoin_64(Probe)	8599119.06	71395230933.47	mpp[tiflash]		semi join, equal:[eq(tpch.lineitem.l_orderkey, tpch.lineitem.l_orderkey)], other cond:ne(tpch.lineitem.l_suppkey, tpch.lineitem.l_suppkey), ne(tpch.lineitem.l_suppkey, tpch.supplier.s_suppkey)
+                      ├─ExchangeReceiver_93(Build)	300005811.00	27001102990.00	mpp[tiflash]		
+                      │ └─ExchangeSender_92	300005811.00	17400917038.00	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_orderkey, collate: N/A]
+                      │   └─TableFullScan_91	300005811.00	17400917038.00	mpp[tiflash]	table:l2	keep order:false
+                      └─Projection_66(Probe)	10748898.83	43736917308.55	mpp[tiflash]		tpch.supplier.s_suppkey, tpch.supplier.s_name, tpch.lineitem.l_orderkey, tpch.lineitem.l_suppkey
+                        └─HashJoin_68	10748898.83	43736710929.69	mpp[tiflash]		inner join, equal:[eq(tpch.lineitem.l_orderkey, tpch.orders.o_orderkey)]
+                          ├─ExchangeReceiver_83(Build)	10592426.97	38505098400.32	mpp[tiflash]		
+                          │ └─ExchangeSender_82	10592426.97	37382301141.96	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_orderkey, collate: N/A]
+                          │   └─HashJoin_69	10592426.97	37382301141.96	mpp[tiflash]		inner join, equal:[eq(tpch.lineitem.l_suppkey, tpch.supplier.s_suppkey)]
+                          │     ├─ExchangeReceiver_81(Build)	17605.12	36831907.51	mpp[tiflash]		
+                          │     │ └─ExchangeSender_80	17605.12	35529128.63	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.supplier.s_suppkey, collate: N/A]
+                          │     │   └─HashJoin_74	17605.12	35529128.63	mpp[tiflash]		inner join, equal:[eq(tpch.supplier.s_nationkey, tpch.nation.n_nationkey)]
+                          │     │     ├─ExchangeReceiver_79(Build)	1.00	565486.30	mpp[tiflash]		
+                          │     │     │ └─ExchangeSender_78	1.00	565399.09	mpp[tiflash]		ExchangeType: Broadcast
+                          │     │     │   └─Selection_77	1.00	565399.09	mpp[tiflash]		eq(tpch.nation.n_name, "EGYPT")
+                          │     │     │     └─TableFullScan_76	25.00	565339.09	mpp[tiflash]	table:nation	keep order:false
+                          │     │     └─TableFullScan_75(Probe)	500000.00	34163640.24	mpp[tiflash]	table:supplier	keep order:false
+                          │     └─ExchangeReceiver_73(Probe)	240004648.80	36961411915.20	mpp[tiflash]		
+                          │       └─ExchangeSender_72	240004648.80	21601114392.00	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_suppkey, collate: N/A]
+                          │         └─Selection_71	240004648.80	21601114392.00	mpp[tiflash]		gt(tpch.lineitem.l_receiptdate, tpch.lineitem.l_commitdate)
+                          │           └─TableFullScan_70	300005811.00	20881100445.60	mpp[tiflash]	table:l1	keep order:false
+                          └─ExchangeReceiver_87(Probe)	36663826.55	5137289236.10	mpp[tiflash]		
+                            └─ExchangeSender_86	36663826.55	4220693572.42	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.orders.o_orderkey, collate: N/A]
+                              └─Selection_85	36663826.55	4220693572.42	mpp[tiflash]		eq(tpch.orders.o_orderstatus, "F")
+                                └─TableFullScan_84	75000000.00	4040693572.42	mpp[tiflash]	table:orders	keep order:false

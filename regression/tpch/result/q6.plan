@@ -1,6 +1,16 @@
-SAME+
+DIFF
 HashAgg_13	1.00	12132415903.98	root		funcs:sum(Column#19)->Column#18
 └─TableReader_14	1.00	12132415872.44	root		data:HashAgg_6
   └─HashAgg_6	1.00	181986237928.18	cop[tikv]		funcs:sum(mul(tpch.lineitem.l_extendedprice, tpch.lineitem.l_discount))->Column#19
     └─Selection_12	5693035.55	181872604927.01	cop[tikv]		ge(tpch.lineitem.l_discount, 0.05), ge(tpch.lineitem.l_shipdate, 1994-01-01 00:00:00.000000), le(tpch.lineitem.l_discount, 0.07), lt(tpch.lineitem.l_quantity, 24), lt(tpch.lineitem.l_shipdate, 1995-01-01 00:00:00.000000)
       └─TableFullScan_11	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false
+
+
+
+HashAgg_27	1.00	1939145885.04	root		funcs:sum(Column#20)->Column#18
+└─TableReader_29	1.00	1939145853.50	root		data:ExchangeSender_28
+  └─ExchangeSender_28	1.00	29087187714.48	mpp[tiflash]		ExchangeType: PassThrough
+    └─HashAgg_10	1.00	29087187714.48	mpp[tiflash]		funcs:sum(Column#23)->Column#20
+      └─Projection_46	5693035.55	29138538894.26	mpp[tiflash]		mul(tpch.lineitem.l_extendedprice, tpch.lineitem.l_discount)->Column#23
+        └─Selection_26	5693035.55	29081722399.47	mpp[tiflash]		ge(tpch.lineitem.l_discount, 0.05), ge(tpch.lineitem.l_shipdate, 1994-01-01 00:00:00.000000), le(tpch.lineitem.l_discount, 0.07), lt(tpch.lineitem.l_quantity, 24), lt(tpch.lineitem.l_shipdate, 1995-01-01 00:00:00.000000)
+          └─TableFullScan_25	300005811.00	25481652667.47	mpp[tiflash]	table:lineitem	keep order:false

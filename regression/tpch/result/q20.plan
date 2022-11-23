@@ -1,23 +1,57 @@
-SAME+
-Sort_30	17605.12	12664741968.27	root		tpch.supplier.s_name
-└─HashJoin_35	17605.12	12652130114.49	root		inner join, equal:[eq(tpch.supplier.s_suppkey, tpch.partsupp.ps_suppkey)]
-  ├─HashJoin_48(Build)	17605.12	31710897.31	root		inner join, equal:[eq(tpch.nation.n_nationkey, tpch.supplier.s_nationkey)]
-  │ ├─TableReader_53(Build)	1.00	577.93	root		data:Selection_52
-  │ │ └─Selection_52	1.00	8553.77	cop[tikv]		eq(tpch.nation.n_name, "ALGERIA")
-  │ │   └─TableFullScan_51	25.00	7306.27	cop[tikv]	table:nation	keep order:false
-  │ └─TableReader_50(Probe)	500000.00	21730213.77	root		data:TableFullScan_49
-  │   └─TableFullScan_49	500000.00	159534206.62	cop[tikv]	table:supplier	keep order:false
-  └─HashAgg_54(Probe)	250933.67	12613410639.53	root		group by:tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey
-    └─Selection_55	250933.67	12600783707.55	root		gt(cast(tpch.partsupp.ps_availqty, decimal(20,0) BINARY), mul(0.5, Column#44))
-      └─HashAgg_56	313667.08	12585131720.02	root		group by:tpch.partsupp.ps_partkey, tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_availqty)->tpch.partsupp.ps_availqty, funcs:sum(tpch.lineitem.l_quantity)->Column#44
-        └─HashJoin_59	9442707.95	12007723796.77	root		left outer join, equal:[eq(tpch.partsupp.ps_partkey, tpch.lineitem.l_partkey) eq(tpch.partsupp.ps_suppkey, tpch.lineitem.l_suppkey)]
-          ├─IndexHashJoin_67(Build)	313667.08	310842554.19	root		inner join, inner:IndexLookUp_64, outer key:tpch.part.p_partkey, inner key:tpch.partsupp.ps_partkey, equal cond:eq(tpch.part.p_partkey, tpch.partsupp.ps_partkey)
+DIFF
+Sort_30	17605.12	13282040119.11	root		tpch.supplier.s_name
+└─HashJoin_34	17605.12	13269431779.32	root		inner join, equal:[eq(tpch.supplier.s_suppkey, tpch.partsupp.ps_suppkey)]
+  ├─HashJoin_46(Build)	17605.12	31710897.31	root		inner join, equal:[eq(tpch.supplier.s_nationkey, tpch.nation.n_nationkey)]
+  │ ├─TableReader_52(Build)	1.00	577.93	root		data:Selection_51
+  │ │ └─Selection_51	1.00	8553.77	cop[tikv]		eq(tpch.nation.n_name, "ALGERIA")
+  │ │   └─TableFullScan_50	25.00	7306.27	cop[tikv]	table:nation	keep order:false
+  │ └─TableReader_49(Probe)	500000.00	21730213.77	root		data:TableFullScan_48
+  │   └─TableFullScan_48	500000.00	159534206.62	cop[tikv]	table:supplier	keep order:false
+  └─HashAgg_53(Probe)	250933.67	13230712304.36	root		group by:tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey
+    └─Selection_54	250933.67	13218085372.38	root		gt(cast(tpch.partsupp.ps_availqty, decimal(20,0) BINARY), mul(0.5, Column#44))
+      └─HashAgg_55	313667.08	13202433384.85	root		group by:tpch.partsupp.ps_partkey, tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_availqty)->tpch.partsupp.ps_availqty, funcs:sum(tpch.lineitem.l_quantity)->Column#44
+        └─HashJoin_58	8498437.15	12681756873.24	root		left outer join, equal:[eq(tpch.partsupp.ps_partkey, tpch.lineitem.l_partkey) eq(tpch.partsupp.ps_suppkey, tpch.lineitem.l_suppkey)]
+          ├─IndexHashJoin_76(Build)	313667.08	984969542.59	root		inner join, inner:IndexLookUp_73, outer key:tpch.part.p_partkey, inner key:tpch.partsupp.ps_partkey, equal cond:eq(tpch.part.p_partkey, tpch.partsupp.ps_partkey)
           │ ├─TableReader_96(Build)	78146.77	250439862.64	root		data:Selection_95
           │ │ └─Selection_95	78146.77	3740298618.37	cop[tikv]		like(tpch.part.p_name, "green%", 92)
           │ │   └─TableFullScan_94	10000000.00	3241298618.37	cop[tikv]	table:part	keep order:false
-          │ └─IndexLookUp_64(Probe)	313667.08	7855.57	root		
-          │   ├─IndexRangeScan_62(Build)	313667.08	912.37	cop[tikv]	table:partsupp, index:PRIMARY(PS_PARTKEY, PS_SUPPKEY)	range: decided by [eq(tpch.partsupp.ps_partkey, tpch.part.p_partkey)], keep order:false
-          │   └─TableRowIDScan_63(Probe)	313667.08	1286.73	cop[tikv]	table:partsupp	keep order:false
-          └─TableReader_101(Probe)	45538373.33	10284906868.45	root		data:Selection_100
-            └─Selection_100	45538373.33	136961735020.31	cop[tikv]		ge(tpch.lineitem.l_shipdate, 1993-01-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, 1994-01-01 00:00:00.000000)
-              └─TableFullScan_99	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false
+          │ └─IndexLookUp_73(Probe)	313667.08	7855.57	root		
+          │   ├─IndexRangeScan_71(Build)	313667.08	912.37	cop[tikv]	table:partsupp, index:PRIMARY(PS_PARTKEY, PS_SUPPKEY)	range: decided by [eq(tpch.partsupp.ps_partkey, tpch.part.p_partkey)], keep order:false
+          │   └─TableRowIDScan_72(Probe)	313667.08	1286.73	cop[tikv]	table:partsupp	keep order:false
+          └─TableReader_99(Probe)	45538373.33	10284906868.45	root		data:Selection_98
+            └─Selection_98	45538373.33	136961735020.31	cop[tikv]		ge(tpch.lineitem.l_shipdate, 1993-01-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, 1994-01-01 00:00:00.000000)
+              └─TableFullScan_97	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false
+
+
+
+Sort_30	17605.12	2165253838.99	root		tpch.supplier.s_name
+└─TableReader_236	17605.12	2152649013.18	root		data:ExchangeSender_235
+  └─ExchangeSender_235	17605.12	32287372590.60	mpp[tiflash]		ExchangeType: PassThrough
+    └─Projection_33	17605.12	32287372590.60	mpp[tiflash]		tpch.supplier.s_name, tpch.supplier.s_address
+      └─HashJoin_234	17605.12	32287372421.59	mpp[tiflash]		inner join, equal:[eq(tpch.supplier.s_suppkey, tpch.partsupp.ps_suppkey)]
+        ├─ExchangeReceiver_44(Build)	17605.12	41124080.29	mpp[tiflash]		
+        │ └─ExchangeSender_43	17605.12	39187517.09	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.supplier.s_suppkey, collate: N/A]
+        │   └─HashJoin_37	17605.12	39187517.09	mpp[tiflash]		inner join, equal:[eq(tpch.supplier.s_nationkey, tpch.nation.n_nationkey)]
+        │     ├─ExchangeReceiver_42(Build)	1.00	565486.30	mpp[tiflash]		
+        │     │ └─ExchangeSender_41	1.00	565399.09	mpp[tiflash]		ExchangeType: Broadcast
+        │     │   └─Selection_40	1.00	565399.09	mpp[tiflash]		eq(tpch.nation.n_name, "ALGERIA")
+        │     │     └─TableFullScan_39	25.00	565339.09	mpp[tiflash]	table:nation	keep order:false
+        │     └─TableFullScan_38(Probe)	500000.00	37822028.71	mpp[tiflash]	table:supplier	keep order:false
+        └─Projection_93(Probe)	250933.67	32245786403.19	mpp[tiflash]		tpch.partsupp.ps_suppkey
+          └─HashAgg_45	250933.67	32245785198.71	mpp[tiflash]		group by:tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey
+            └─Selection_49	250933.67	32245161678.73	mpp[tiflash]		gt(cast(tpch.partsupp.ps_availqty, decimal(20,0) BINARY), mul(0.5, Column#44))
+              └─Projection_76	313667.08	32244408877.73	mpp[tiflash]		tpch.partsupp.ps_suppkey, tpch.partsupp.ps_availqty, Column#44
+                └─HashAgg_51	313667.08	32244404360.92	mpp[tiflash]		group by:tpch.partsupp.ps_partkey, tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_availqty)->tpch.partsupp.ps_availqty, funcs:sum(tpch.lineitem.l_quantity)->Column#44
+                  └─HashJoin_53	8498437.15	32219219942.75	mpp[tiflash]		left outer join, equal:[eq(tpch.partsupp.ps_partkey, tpch.lineitem.l_partkey) eq(tpch.partsupp.ps_suppkey, tpch.lineitem.l_suppkey)]
+                    ├─ExchangeReceiver_62(Build)	313667.08	3380193994.41	mpp[tiflash]		
+                    │ └─ExchangeSender_61	313667.08	3356668963.05	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.partsupp.ps_suppkey, collate: N/A]
+                    │   └─HashJoin_55	313667.08	3356668963.05	mpp[tiflash]		inner join, equal:[eq(tpch.partsupp.ps_partkey, tpch.part.p_partkey)]
+                    │     ├─ExchangeReceiver_60(Build)	78146.77	700404872.40	mpp[tiflash]		
+                    │     │ └─ExchangeSender_59	78146.77	688056901.82	mpp[tiflash]		ExchangeType: Broadcast
+                    │     │   └─Selection_58	78146.77	688056901.82	mpp[tiflash]		like(tpch.part.p_name, "green%", 92)
+                    │     │     └─TableFullScan_57	10000000.00	664056901.82	mpp[tiflash]	table:part	keep order:false
+                    │     └─TableFullScan_56(Probe)	40000000.00	2592070455.98	mpp[tiflash]	table:partsupp	keep order:false
+                    └─ExchangeReceiver_66(Probe)	45538373.33	28728588967.48	mpp[tiflash]		
+                      └─ExchangeSender_65	45538373.33	24356905127.48	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_suppkey, collate: N/A]
+                        └─Selection_64	45538373.33	24356905127.48	mpp[tiflash]		ge(tpch.lineitem.l_shipdate, 1993-01-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, 1994-01-01 00:00:00.000000)
+                          └─TableFullScan_63	300005811.00	22916877234.68	mpp[tiflash]	table:lineitem	keep order:false

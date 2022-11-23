@@ -1,4 +1,4 @@
-SAME+
+DIFF
 Projection_8	1.00	10396792042.64	root		div(mul(100.00, Column#27), Column#28)->Column#29
 └─HashAgg_9	1.00	10396792032.66	root		funcs:sum(Column#31)->Column#27, funcs:sum(Column#32)->Column#28
   └─Projection_38	3927314.84	10357597417.36	root		case(like(tpch.part.p_type, PROMO%, 92), mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount)), 0)->Column#31, mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount))->Column#32
@@ -8,3 +8,20 @@ Projection_8	1.00	10396792042.64	root		div(mul(100.00, Column#27), Column#28)->C
       │   └─TableFullScan_22	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false
       └─TableReader_26(Probe)	10000000.00	325781452.85	root		data:TableFullScan_25
         └─TableFullScan_25	10000000.00	3256389792.74	cop[tikv]	table:part	keep order:false
+
+
+
+Projection_8	1.00	1824869041.85	root		div(mul(100.00, Column#27), Column#28)->Column#29
+└─HashAgg_48	1.00	1824869031.87	root		funcs:sum(Column#31)->Column#27, funcs:sum(Column#32)->Column#28
+  └─TableReader_50	1.00	1824868988.75	root		data:ExchangeSender_49
+    └─ExchangeSender_49	1.00	27373034655.32	mpp[tiflash]		ExchangeType: PassThrough
+      └─HashAgg_13	1.00	27373034655.32	mpp[tiflash]		funcs:sum(Column#35)->Column#31, funcs:sum(Column#36)->Column#32
+        └─Projection_69	3927314.84	27445768524.91	mpp[tiflash]		case(like(tpch.part.p_type, PROMO%, 92), mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount)), 0)->Column#35, mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount))->Column#36
+          └─HashJoin_47	3927314.84	27367379320.67	mpp[tiflash]		inner join, equal:[eq(tpch.lineitem.l_partkey, tpch.part.p_partkey)]
+            ├─ExchangeReceiver_31(Build)	3913792.31	26302277161.82	mpp[tiflash]		
+            │ └─ExchangeSender_30	3913792.31	25801311746.00	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.lineitem.l_partkey, collate: N/A]
+            │   └─Selection_29	3913792.31	25801311746.00	mpp[tiflash]		ge(tpch.lineitem.l_shipdate, 1996-12-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, 1997-01-01 00:00:00.000000)
+            │     └─TableFullScan_28	300005811.00	24361283853.20	mpp[tiflash]	table:lineitem	keep order:false
+            └─ExchangeReceiver_34(Probe)	10000000.00	1034490667.55	mpp[tiflash]		
+              └─ExchangeSender_33	10000000.00	622790667.55	mpp[tiflash]		ExchangeType: HashPartition, Hash Cols: [name: tpch.part.p_partkey, collate: N/A]
+                └─TableFullScan_32	10000000.00	622790667.55	mpp[tiflash]	table:part	keep order:false
