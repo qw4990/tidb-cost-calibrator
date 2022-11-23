@@ -21,7 +21,7 @@ func RegDetect() {
 	}
 	ins := utils.MustConnectTo(opt)
 	var qs map[int]string
-	workload, engine := "tpch", "tikv"
+	workload := "tpch"
 	switch workload {
 	case "tpch":
 		qs = getQueries("regression/tpch/queries")
@@ -34,8 +34,43 @@ func RegDetect() {
 		panic(workload)
 	}
 
-	resultFile := fmt.Sprintf("reg-detect-%v-%v.result", workload, engine)
-	compare(qs, ins, false, engine, resultFile)
+	resultFileDir := fmt.Sprintf("regression/%v/result")
+	settings := []string{
+		"set @@tidb_cost_model_version=2;set @@tidb_isolation_read_engines='tidb,tiflash'",
+		"set @@tidb_cost_model_version=2;set @@tidb_isolation_read_engines='tidb,tikv,tiflash'",
+	}
+	plans := make([]map[int]Plan, len(settings))
+	for i, setting := range settings {
+		plans[i] = getPlans(qs, ins, false, setting)
+	}
+
+	for no := range plans[0] {
+		resultFile := path.Join(resultFileDir, fmt.Sprintf("q%v.plan", no))
+		if len(settings) == 1 {
+			// just print Plans
+			p := plans[0][no]
+			utils.Must(os.WriteFile(resultFile, []byte(planStr(p)), 0666))
+		} else if len(settings) == 2 {
+			// compare Plans
+			p1 := plans[0][no]
+			p2 := plans[1][no]
+			same := cmpPlan(p1, p2)
+			if same {
+				utils.Must(os.WriteFile(resultFile, []byte("SAME+\n"+planStr(p1)), 0666))
+			} else {
+				utils.Must(os.WriteFile(resultFile, []byte("DIFF+\n"+planStr(p1)+"\n\n\n"+planStr(p2)), 0666))
+			}
+		}
+	}
+}
+
+func getPlans(qs map[int]string, db utils.Instance, analyze bool, setting string) map[int]Plan {
+	plans := make(map[int]Plan)
+	db.MustExec(setting)
+	for no, q := range qs {
+		plans[no] = getPlan(q, db)
+	}
+	return plans
 }
 
 func getQueries(dir string) map[int]string {
@@ -110,45 +145,4 @@ func planStr(q Plan) string {
 		buf.WriteString(line + "\n")
 	}
 	return buf.String()
-}
-
-func compare(qs map[int]string, db utils.Instance, analyze bool, engines, resultFile string) {
-	switch engines {
-	case "tikv":
-		engines = "tidb,tikv"
-	case "tiflash":
-		engines = "tidb,tiflash"
-	case "hybrid":
-		engines = "tidb,tikv,tiflash"
-	default:
-		panic(engines)
-	}
-
-	vPlans := make([]map[int]Plan, 0, 3)
-	vPlans = append(vPlans, nil, make(map[int]Plan), make(map[int]Plan))
-	for _, costVer := range []int{1, 2} {
-		db.MustExec(fmt.Sprintf("set @@tidb_isolation_read_engines='%v'", engines))
-		db.MustExec(fmt.Sprintf("set @@tidb_cost_model_version=%v", costVer))
-
-		for no, q := range qs {
-			fmt.Printf("get plan for q%v on model%v\n", no, costVer)
-			vPlans[costVer][no] = getPlan(q, db)
-		}
-	}
-
-	var result bytes.Buffer
-	for no := range qs {
-		fmt.Printf("q%v ============================================================= \n", no)
-		if same := cmpPlan(vPlans[1][no], vPlans[2][no]); same {
-			//fmt.Println("SAME: ", queries[i])
-			//printPlan(vPlans[1][i])
-		} else {
-			result.WriteString(fmt.Sprintf("DIFF: q%v\n", no))
-			result.WriteString(planStr(vPlans[1][no]))
-			result.WriteString("--------------------------------------------------------------------------\n")
-			result.WriteString(planStr(vPlans[2][no]))
-			result.WriteString("\n\n\n")
-		}
-	}
-	utils.Must(os.WriteFile(resultFile, result.Bytes(), 0666))
 }
