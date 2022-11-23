@@ -34,10 +34,10 @@ func RegDetect() {
 		panic(workload)
 	}
 
-	resultFileDir := fmt.Sprintf("regression/%v/result")
+	resultFileDir := fmt.Sprintf("regression/%v/result", workload)
 	settings := []string{
-		"set @@tidb_cost_model_version=2;set @@tidb_isolation_read_engines='tidb,tiflash'",
-		"set @@tidb_cost_model_version=2;set @@tidb_isolation_read_engines='tidb,tikv,tiflash'",
+		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv'",
+		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
 	}
 	plans := make([]map[int]Plan, len(settings))
 	for i, setting := range settings {

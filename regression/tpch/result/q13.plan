@@ -1,0 +1,11 @@
+SAME+
+Sort_9	7500000.00	16313256745.99	root		Column#19:desc, Column#18:desc
+└─Projection_11	7500000.00	7741963403.52	root		Column#18, Column#19
+  └─HashAgg_12	7500000.00	7740466403.52	root		group by:Column#18, funcs:count(1)->Column#19, funcs:firstrow(Column#18)->Column#18
+    └─HashAgg_13	7500000.00	7285817903.52	root		group by:tpch.customer.c_custkey, funcs:count(tpch.orders.o_orderkey)->Column#18
+      └─HashJoin_16	60000000.00	5331329903.52	root		left outer join, equal:[eq(tpch.customer.c_custkey, tpch.orders.o_custkey)]
+        ├─TableReader_18(Build)	7500000.00	197110909.39	root		data:TableFullScan_17
+        │ └─TableFullScan_17	7500000.00	2481463640.92	cop[tikv]	table:customer	keep order:false
+        └─TableReader_21(Probe)	60000000.00	3164118994.12	root		data:Selection_20
+          └─Selection_20	60000000.00	27477248911.81	cop[tikv]		not(like(tpch.orders.o_comment, "%pending%deposits%", 92))
+            └─TableFullScan_19	75000000.00	23734748911.81	cop[tikv]	table:orders	keep order:false

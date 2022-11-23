@@ -1,0 +1,18 @@
+SAME+
+Projection_25	100.00	109527123695.92	root		tpch.customer.c_name, tpch.customer.c_custkey, tpch.orders.o_orderkey, tpch.orders.o_orderdate, tpch.orders.o_totalprice, Column#54
+└─TopN_28	100.00	109527123636.04	root		tpch.orders.o_totalprice:desc, tpch.orders.o_orderdate, offset:0, count:100
+  └─HashAgg_33	60000000.00	89635415623.85	root		group by:tpch.customer.c_custkey, tpch.customer.c_name, tpch.orders.o_orderdate, tpch.orders.o_orderkey, tpch.orders.o_totalprice, funcs:sum(tpch.lineitem.l_quantity)->Column#54, funcs:firstrow(tpch.customer.c_custkey)->tpch.customer.c_custkey, funcs:firstrow(tpch.customer.c_name)->tpch.customer.c_name, funcs:firstrow(tpch.orders.o_orderkey)->tpch.orders.o_orderkey, funcs:firstrow(tpch.orders.o_totalprice)->tpch.orders.o_totalprice, funcs:firstrow(tpch.orders.o_orderdate)->tpch.orders.o_orderdate
+    └─HashJoin_49	243550009.54	56298097281.33	root		inner join, equal:[eq(tpch.orders.o_orderkey, tpch.lineitem.l_orderkey)]
+      ├─HashJoin_73(Build)	60000000.00	31050339438.95	root		inner join, equal:[eq(tpch.orders.o_orderkey, tpch.lineitem.l_orderkey)]
+      │ ├─Selection_90(Build)	59126579.20	17042848448.41	root		gt(Column#52, 314)
+      │ │ └─HashAgg_97	73908224.00	13354828070.81	root		group by:tpch.lineitem.l_orderkey, funcs:sum(Column#66)->Column#52, funcs:firstrow(tpch.lineitem.l_orderkey)->tpch.lineitem.l_orderkey
+      │ │   └─TableReader_98	73908224.00	8779923786.86	root		data:HashAgg_91
+      │ │     └─HashAgg_91	73908224.00	117650381584.91	cop[tikv]		group by:tpch.lineitem.l_orderkey, funcs:sum(tpch.lineitem.l_quantity)->Column#66
+      │ │       └─TableFullScan_96	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false
+      │ └─HashJoin_85(Probe)	75000000.00	6042043226.06	root		inner join, equal:[eq(tpch.customer.c_custkey, tpch.orders.o_custkey)]
+      │   ├─TableReader_89(Build)	7500000.00	241061000.69	root		data:TableFullScan_88
+      │   │ └─TableFullScan_88	7500000.00	2465040010.38	cop[tikv]	table:customer	keep order:false
+      │   └─TableReader_87(Probe)	75000000.00	3497357225.37	root		data:TableFullScan_86
+      │     └─TableFullScan_86	75000000.00	23948358380.51	cop[tikv]	table:orders	keep order:false
+      └─TableReader_102(Probe)	300005811.00	12203641854.82	root		data:TableFullScan_101
+        └─TableFullScan_101	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false

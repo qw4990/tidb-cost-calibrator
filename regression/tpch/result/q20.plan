@@ -1,0 +1,23 @@
+SAME+
+Sort_30	17605.12	12664741968.27	root		tpch.supplier.s_name
+└─HashJoin_35	17605.12	12652130114.49	root		inner join, equal:[eq(tpch.supplier.s_suppkey, tpch.partsupp.ps_suppkey)]
+  ├─HashJoin_48(Build)	17605.12	31710897.31	root		inner join, equal:[eq(tpch.nation.n_nationkey, tpch.supplier.s_nationkey)]
+  │ ├─TableReader_53(Build)	1.00	577.93	root		data:Selection_52
+  │ │ └─Selection_52	1.00	8553.77	cop[tikv]		eq(tpch.nation.n_name, "ALGERIA")
+  │ │   └─TableFullScan_51	25.00	7306.27	cop[tikv]	table:nation	keep order:false
+  │ └─TableReader_50(Probe)	500000.00	21730213.77	root		data:TableFullScan_49
+  │   └─TableFullScan_49	500000.00	159534206.62	cop[tikv]	table:supplier	keep order:false
+  └─HashAgg_54(Probe)	250933.67	12613410639.53	root		group by:tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey
+    └─Selection_55	250933.67	12600783707.55	root		gt(cast(tpch.partsupp.ps_availqty, decimal(20,0) BINARY), mul(0.5, Column#44))
+      └─HashAgg_56	313667.08	12585131720.02	root		group by:tpch.partsupp.ps_partkey, tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_suppkey)->tpch.partsupp.ps_suppkey, funcs:firstrow(tpch.partsupp.ps_availqty)->tpch.partsupp.ps_availqty, funcs:sum(tpch.lineitem.l_quantity)->Column#44
+        └─HashJoin_59	9442707.95	12007723796.77	root		left outer join, equal:[eq(tpch.partsupp.ps_partkey, tpch.lineitem.l_partkey) eq(tpch.partsupp.ps_suppkey, tpch.lineitem.l_suppkey)]
+          ├─IndexHashJoin_67(Build)	313667.08	310842554.19	root		inner join, inner:IndexLookUp_64, outer key:tpch.part.p_partkey, inner key:tpch.partsupp.ps_partkey, equal cond:eq(tpch.part.p_partkey, tpch.partsupp.ps_partkey)
+          │ ├─TableReader_96(Build)	78146.77	250439862.64	root		data:Selection_95
+          │ │ └─Selection_95	78146.77	3740298618.37	cop[tikv]		like(tpch.part.p_name, "green%", 92)
+          │ │   └─TableFullScan_94	10000000.00	3241298618.37	cop[tikv]	table:part	keep order:false
+          │ └─IndexLookUp_64(Probe)	313667.08	7855.57	root		
+          │   ├─IndexRangeScan_62(Build)	313667.08	912.37	cop[tikv]	table:partsupp, index:PRIMARY(PS_PARTKEY, PS_SUPPKEY)	range: decided by [eq(tpch.partsupp.ps_partkey, tpch.part.p_partkey)], keep order:false
+          │   └─TableRowIDScan_63(Probe)	313667.08	1286.73	cop[tikv]	table:partsupp	keep order:false
+          └─TableReader_101(Probe)	45538373.33	10284906868.45	root		data:Selection_100
+            └─Selection_100	45538373.33	136961735020.31	cop[tikv]		ge(tpch.lineitem.l_shipdate, 1993-01-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, 1994-01-01 00:00:00.000000)
+              └─TableFullScan_99	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false

@@ -1,0 +1,20 @@
+SAME+
+Projection_18	20.00	10952096868.40	root		tpch.customer.c_custkey, tpch.customer.c_name, Column#39, tpch.customer.c_acctbal, tpch.nation.n_name, tpch.customer.c_address, tpch.customer.c_phone, tpch.customer.c_comment
+└─TopN_21	20.00	10952096852.43	root		Column#39:desc, offset:0, count:20
+  └─HashAgg_26	2965740.00	10312491820.53	root		group by:Column#53, Column#54, Column#55, Column#56, Column#57, Column#58, Column#59, funcs:sum(Column#45)->Column#39, funcs:firstrow(Column#46)->tpch.customer.c_custkey, funcs:firstrow(Column#47)->tpch.customer.c_name, funcs:firstrow(Column#48)->tpch.customer.c_address, funcs:firstrow(Column#49)->tpch.customer.c_phone, funcs:firstrow(Column#50)->tpch.customer.c_acctbal, funcs:firstrow(Column#51)->tpch.customer.c_comment, funcs:firstrow(Column#52)->tpch.nation.n_name
+    └─Projection_73	12038433.42	8250764120.54	root		mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount))->Column#45, tpch.customer.c_custkey, tpch.customer.c_name, tpch.customer.c_address, tpch.customer.c_phone, tpch.customer.c_acctbal, tpch.customer.c_comment, tpch.nation.n_name, tpch.customer.c_custkey, tpch.customer.c_name, tpch.customer.c_acctbal, tpch.customer.c_phone, tpch.nation.n_name, tpch.customer.c_address, tpch.customer.c_comment
+      └─Projection_27	12038433.42	8113800455.82	root		tpch.customer.c_custkey, tpch.customer.c_name, tpch.customer.c_address, tpch.customer.c_phone, tpch.customer.c_acctbal, tpch.customer.c_comment, tpch.lineitem.l_extendedprice, tpch.lineitem.l_discount, tpch.nation.n_name
+        └─IndexHashJoin_35	12038433.42	8102987534.92	root		inner join, inner:IndexLookUp_32, outer key:tpch.orders.o_orderkey, inner key:tpch.lineitem.l_orderkey, equal cond:eq(tpch.orders.o_orderkey, tpch.lineitem.l_orderkey)
+          ├─HashJoin_45(Build)	2965740.00	3369280214.18	root		inner join, equal:[eq(tpch.customer.c_custkey, tpch.orders.o_custkey)]
+          │ ├─TableReader_64(Build)	2965740.00	2133139082.65	root		data:Selection_63
+          │ │ └─Selection_63	2965740.00	31433358380.51	cop[tikv]		ge(tpch.orders.o_orderdate, 1993-08-01 00:00:00.000000), lt(tpch.orders.o_orderdate, 1993-11-01 00:00:00.000000)
+          │ │   └─TableFullScan_62	75000000.00	23948358380.51	cop[tikv]	table:orders	keep order:false
+          │ └─HashJoin_57(Probe)	7469120.00	762605540.34	root		inner join, equal:[eq(tpch.nation.n_nationkey, tpch.customer.c_nationkey)]
+          │   ├─TableReader_61(Build)	25.00	678.95	root		data:TableFullScan_60
+          │   │ └─TableFullScan_60	25.00	7306.27	cop[tikv]	table:nation	keep order:false
+          │   └─TableReader_59(Probe)	7500000.00	612902221.04	root		data:TableFullScan_58
+          │     └─TableFullScan_58	7500000.00	2424309315.59	cop[tikv]	table:customer	keep order:false
+          └─IndexLookUp_32(Probe)	12038433.42	32337.31	root		
+            ├─IndexRangeScan_29(Build)	48877304.61	3746.18	cop[tikv]	table:lineitem, index:PRIMARY(L_ORDERKEY, L_LINENUMBER)	range: decided by [eq(tpch.lineitem.l_orderkey, tpch.orders.o_orderkey)], keep order:false
+            └─Selection_31(Probe)	12038433.42	6701.53	cop[tikv]		eq(tpch.lineitem.l_returnflag, "R")
+              └─TableRowIDScan_30	48877304.61	5879.14	cop[tikv]	table:lineitem	keep order:false

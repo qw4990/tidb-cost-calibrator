@@ -1,0 +1,6 @@
+SAME+
+HashAgg_13	1.00	12132415903.98	root		funcs:sum(Column#19)->Column#18
+└─TableReader_14	1.00	12132415872.44	root		data:HashAgg_6
+  └─HashAgg_6	1.00	181986237928.18	cop[tikv]		funcs:sum(mul(tpch.lineitem.l_extendedprice, tpch.lineitem.l_discount))->Column#19
+    └─Selection_12	5693035.55	181872604927.01	cop[tikv]		ge(tpch.lineitem.l_discount, 0.05), ge(tpch.lineitem.l_shipdate, 1994-01-01 00:00:00.000000), le(tpch.lineitem.l_discount, 0.07), lt(tpch.lineitem.l_quantity, 24), lt(tpch.lineitem.l_shipdate, 1995-01-01 00:00:00.000000)
+      └─TableFullScan_11	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false

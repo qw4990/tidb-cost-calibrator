@@ -1,0 +1,14 @@
+SAME+
+Projection_17	1.00	31232935055.94	root		div(Column#46, 7.0)->Column#47
+└─HashAgg_18	1.00	31232935045.96	root		funcs:sum(tpch.lineitem.l_extendedprice)->Column#46
+  └─HashJoin_22	303983.68	31226837182.54	root		inner join, equal:[eq(tpch.part.p_partkey, tpch.lineitem.l_partkey)], other cond:lt(tpch.lineitem.l_quantity, mul(0.2, Column#44))
+    ├─HashJoin_35(Build)	303983.68	22278134921.23	root		inner join, equal:[eq(tpch.part.p_partkey, tpch.lineitem.l_partkey)]
+    │ ├─TableReader_40(Build)	10097.70	283608244.82	root		data:Selection_39
+    │ │ └─Selection_39	10097.70	4252392239.10	cop[tikv]		eq(tpch.part.p_brand, "Brand#44"), eq(tpch.part.p_container, "WRAP PKG")
+    │ │   └─TableFullScan_38	10000000.00	3254392239.10	cop[tikv]	table:part	keep order:false
+    │ └─TableReader_37(Probe)	300005811.00	16005315491.82	root		data:TableFullScan_36
+    │   └─TableFullScan_36	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false
+    └─HashAgg_45(Probe)	9965568.00	8714101839.88	root		group by:tpch.lineitem.l_partkey, funcs:avg(Column#50, Column#51)->Column#44, funcs:firstrow(tpch.lineitem.l_partkey)->tpch.lineitem.l_partkey
+      └─TableReader_46	9965568.00	8097235173.79	root		data:HashAgg_41
+        └─HashAgg_41	9965568.00	119248563247.17	cop[tikv]		group by:tpch.lineitem.l_partkey, funcs:count(tpch.lineitem.l_quantity)->Column#50, funcs:sum(tpch.lineitem.l_quantity)->Column#51
+          └─TableFullScan_44	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false

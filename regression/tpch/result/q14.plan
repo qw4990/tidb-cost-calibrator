@@ -1,0 +1,10 @@
+SAME+
+Projection_8	1.00	10396792042.64	root		div(mul(100.00, Column#27), Column#28)->Column#29
+└─HashAgg_9	1.00	10396792032.66	root		funcs:sum(Column#31)->Column#27, funcs:sum(Column#32)->Column#28
+  └─Projection_38	3927314.84	10357597417.36	root		case(like(tpch.part.p_type, PROMO%, 92), mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount)), 0)->Column#31, mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount))->Column#32
+    └─HashJoin_21	3927314.84	10279208213.13	root		inner join, equal:[eq(tpch.lineitem.l_partkey, tpch.part.p_partkey)]
+      ├─TableReader_24(Build)	3913792.31	9263037204.46	root		data:Selection_23
+      │ └─Selection_23	3913792.31	136961735020.31	cop[tikv]		ge(tpch.lineitem.l_shipdate, 1996-12-01 00:00:00.000000), lt(tpch.lineitem.l_shipdate, 1997-01-01 00:00:00.000000)
+      │   └─TableFullScan_22	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false
+      └─TableReader_26(Probe)	10000000.00	325781452.85	root		data:TableFullScan_25
+        └─TableFullScan_25	10000000.00	3256389792.74	cop[tikv]	table:part	keep order:false

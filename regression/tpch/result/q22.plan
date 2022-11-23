@@ -1,0 +1,11 @@
+SAME+
+Sort_37	1.00	9853372015.84	root		Column#31
+└─Projection_39	1.00	9853372003.24	root		Column#31, Column#32, Column#33
+  └─HashAgg_40	1.00	9853372002.94	root		group by:Column#37, funcs:count(1)->Column#32, funcs:sum(Column#35)->Column#33, funcs:firstrow(Column#36)->Column#31
+    └─Projection_48	0.00	9853371940.64	root		tpch.customer.c_acctbal, substring(tpch.customer.c_phone, 1, 2)->Column#36, substring(tpch.customer.c_phone, 1, 2)->Column#37
+      └─HashJoin_41	0.00	9853371920.58	root		anti semi join, equal:[eq(tpch.customer.c_custkey, tpch.orders.o_custkey)]
+        ├─TableReader_46(Build)	75000000.00	1913357225.37	root		data:TableFullScan_45
+        │ └─TableFullScan_45	75000000.00	23948358380.51	cop[tikv]	table:orders	keep order:false
+        └─TableReader_44(Probe)	0.00	215014675.26	root		data:Selection_43
+          └─Selection_43	0.00	3225219796.19	cop[tikv]		gt(tpch.customer.c_acctbal, NULL), in(substring(tpch.customer.c_phone, 1, 2), "20", "40", "22", "30", "39", "42", "21")
+            └─TableFullScan_42	7500000.00	2476719796.19	cop[tikv]	table:customer	keep order:false

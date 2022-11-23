@@ -1,0 +1,25 @@
+SAME+
+Sort_24	5.00	30037038674.12	root		Column#49:desc
+└─Projection_26	5.00	30037038029.80	root		tpch.nation.n_name, Column#49
+  └─HashAgg_27	5.00	30037038028.80	root		group by:Column#52, funcs:sum(Column#50)->Column#49, funcs:firstrow(Column#51)->tpch.nation.n_name
+    └─Projection_85	11384573.89	29697319954.24	root		mul(tpch.lineitem.l_extendedprice, minus(1, tpch.lineitem.l_discount))->Column#50, tpch.nation.n_name, tpch.nation.n_name
+      └─Projection_28	11384573.89	29581429545.88	root		tpch.lineitem.l_extendedprice, tpch.lineitem.l_discount, tpch.nation.n_name
+        └─HashJoin_37	11384573.89	29578021004.46	root		inner join, equal:[eq(tpch.orders.o_custkey, tpch.customer.c_custkey) eq(tpch.supplier.s_nationkey, tpch.customer.c_nationkey)]
+          ├─TableReader_83(Build)	7500000.00	228790909.39	root		data:TableFullScan_82
+          │ └─TableFullScan_82	7500000.00	2481463640.92	cop[tikv]	table:customer	keep order:false
+          └─HashJoin_51(Probe)	11384573.89	27837625952.83	root		inner join, equal:[eq(tpch.lineitem.l_orderkey, tpch.orders.o_orderkey)]
+            ├─TableReader_81(Build)	11384573.89	2239822545.69	root		data:Selection_80
+            │ └─Selection_80	11384573.89	31433358380.51	cop[tikv]		ge(tpch.orders.o_orderdate, 1994-01-01 00:00:00.000000), lt(tpch.orders.o_orderdate, 1995-01-01 00:00:00.000000)
+            │   └─TableFullScan_79	75000000.00	23948358380.51	cop[tikv]	table:orders	keep order:false
+            └─HashJoin_54(Probe)	52962134.83	23295206812.52	root		inner join, equal:[eq(tpch.supplier.s_suppkey, tpch.lineitem.l_suppkey)]
+              ├─HashJoin_56(Build)	88025.60	25044022.68	root		inner join, equal:[eq(tpch.nation.n_nationkey, tpch.supplier.s_nationkey)]
+              │ ├─HashJoin_69(Build)	5.00	1508.46	root		inner join, equal:[eq(tpch.region.r_regionkey, tpch.nation.n_regionkey)]
+              │ │ ├─TableReader_74(Build)	1.00	119.34	root		data:Selection_73
+              │ │ │ └─Selection_73	1.00	1675.92	cop[tikv]		eq(tpch.region.r_name, "MIDDLE EAST")
+              │ │ │   └─TableFullScan_72	5.00	1426.42	cop[tikv]	table:region	keep order:false
+              │ │ └─TableReader_71(Probe)	25.00	784.55	root		data:TableFullScan_70
+              │ │   └─TableFullScan_70	25.00	7306.27	cop[tikv]	table:nation	keep order:false
+              │ └─TableReader_76(Probe)	500000.00	15061982.23	root		data:TableFullScan_75
+              │   └─TableFullScan_75	500000.00	162569733.38	cop[tikv]	table:supplier	keep order:false
+              └─TableReader_78(Probe)	300005811.00	17272540037.48	root		data:TableFullScan_77
+                └─TableFullScan_77	300005811.00	107021155082.51	cop[tikv]	table:lineitem	keep order:false

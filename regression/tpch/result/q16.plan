@@ -1,0 +1,15 @@
+SAME+
+Sort_14	14.83	1460999885.49	root		Column#23:desc, tpch.part.p_brand, tpch.part.p_type, tpch.part.p_size
+└─Projection_16	14.83	1460996856.44	root		tpch.part.p_brand, tpch.part.p_type, tpch.part.p_size, Column#23
+  └─HashAgg_17	14.83	1460996850.52	root		group by:tpch.part.p_brand, tpch.part.p_size, tpch.part.p_type, funcs:count(distinct tpch.partsupp.ps_suppkey)->Column#23, funcs:firstrow(tpch.part.p_brand)->tpch.part.p_brand, funcs:firstrow(tpch.part.p_type)->tpch.part.p_type, funcs:firstrow(tpch.part.p_size)->tpch.part.p_size
+    └─HashJoin_29	3964045.25	1143320020.64	root		anti semi join, equal:[eq(tpch.partsupp.ps_suppkey, tpch.supplier.s_suppkey)]
+      ├─TableReader_68(Build)	400000.00	21094471.31	root		data:Selection_67
+      │ └─Selection_67	400000.00	186576589.62	cop[tikv]		like(tpch.supplier.s_comment, "%Customer%Complaints%", 92)
+      │   └─TableFullScan_66	500000.00	161626589.62	cop[tikv]	table:supplier	keep order:false
+      └─Projection_30(Probe)	4955056.56	976845020.38	root		tpch.partsupp.ps_suppkey, tpch.part.p_brand, tpch.part.p_type, tpch.part.p_size
+        └─IndexHashJoin_36	4955056.56	974866961.80	root		inner join, inner:IndexReader_33, outer key:tpch.part.p_partkey, inner key:tpch.partsupp.ps_partkey, equal cond:eq(tpch.part.p_partkey, tpch.partsupp.ps_partkey)
+          ├─TableReader_61(Build)	1234498.83	339389641.28	root		data:Selection_60
+          │ └─Selection_60	1234498.83	4743752928.86	cop[tikv]		in(tpch.part.p_size, 48, 19, 12, 4, 41, 7, 21, 39), ne(tpch.part.p_brand, "Brand#34"), not(like(tpch.part.p_type, "LARGE BRUSHED%", 92))
+          │   └─TableFullScan_59	10000000.00	3246752928.86	cop[tikv]	table:part	keep order:false
+          └─IndexReader_33(Probe)	4955056.56	88.36	root		index:IndexRangeScan_32
+            └─IndexRangeScan_32	4955056.56	816.81	cop[tikv]	table:partsupp, index:PRIMARY(PS_PARTKEY, PS_SUPPKEY)	range: decided by [eq(tpch.partsupp.ps_partkey, tpch.part.p_partkey)], keep order:false
