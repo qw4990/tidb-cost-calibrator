@@ -136,7 +136,9 @@ func cmpPlan(q1, q2 Plan) (same bool) {
 		return false
 	}
 	for i := range q1 {
-		if q1[i][0] != q2[i][0] {
+		op1 := strings.Split(q1[i][0], "_")[0]
+		op2 := strings.Split(q2[i][0], "_")[0]
+		if op1 != op2 {
 			return false
 		}
 	}
