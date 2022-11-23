@@ -35,7 +35,8 @@ func RegDetect() {
 		panic(workload)
 	}
 
-	resultFileDir := fmt.Sprintf("regression/%v/result", workload)
+	resultFileDir := fmt.Sprintf("regression/%v/result/", workload)
+	utils.CleanDir(resultFileDir)
 	settings := []string{
 		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
 		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",

@@ -100,3 +100,13 @@ func ReadDirFiles(dir, suffix string) []string {
 	}
 	return fs
 }
+
+func CleanDir(dir string) {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return
+	}
+	for _, e := range entries {
+		os.RemoveAll(e.Name())
+	}
+}
