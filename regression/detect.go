@@ -22,7 +22,7 @@ func RegDetect() {
 	ins := utils.MustConnectTo(opt)
 	ins.SetLogThreshold(0)
 	var qs map[int]string
-	workload := "tpch"
+	workload := "tpcds"
 	switch workload {
 	case "tpch":
 		qs = getQueries("regression/tpch/queries")
@@ -61,7 +61,14 @@ func RegDetect() {
 				utils.Must(os.WriteFile(resultFile, []byte("SAME\n"+planStr(p1)), 0666))
 			} else {
 				resultFile := path.Join(resultFileDir, fmt.Sprintf("q%v_d.plan", no))
-				utils.Must(os.WriteFile(resultFile, []byte("DIFF\n"+planStr(p1)+"\n\n\n"+planStr(p2)), 0666))
+				var result bytes.Buffer
+				result.WriteString("DIFF\n")
+				result.WriteString(">> " + settings[0] + "\n")
+				result.WriteString(planStr(p1))
+				result.WriteString("\n\n\n")
+				result.WriteString(">> " + settings[1] + "\n")
+				result.WriteString(planStr(p2))
+				utils.Must(os.WriteFile(resultFile, result.Bytes(), 0666))
 				fmt.Printf("DIFF q%v\n", no)
 			}
 		}
@@ -72,7 +79,7 @@ func getPlans(qs map[int]string, db utils.Instance, analyze bool, setting string
 	plans := make(map[int]Plan)
 	db.MustExec(setting)
 	for no, q := range qs {
-		fmt.Printf(">>> get q%v plan", no)
+		fmt.Printf(">>> get q%v plan\n", no)
 		plans[no] = getPlan(q, db)
 	}
 	return plans
