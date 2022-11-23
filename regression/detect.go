@@ -37,7 +37,7 @@ func RegDetect() {
 
 	resultFileDir := fmt.Sprintf("regression/%v/result", workload)
 	settings := []string{
-		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv'",
+		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
 		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
 	}
 	plans := make([]map[int]Plan, len(settings))
@@ -46,10 +46,10 @@ func RegDetect() {
 	}
 
 	for no := range plans[0] {
-		resultFile := path.Join(resultFileDir, fmt.Sprintf("q%v.plan", no))
 		if len(settings) == 1 {
 			// just print Plans
 			p := plans[0][no]
+			resultFile := path.Join(resultFileDir, fmt.Sprintf("q%v.plan", no))
 			utils.Must(os.WriteFile(resultFile, []byte(planStr(p)), 0666))
 		} else if len(settings) == 2 {
 			// compare Plans
@@ -57,8 +57,10 @@ func RegDetect() {
 			p2 := plans[1][no]
 			same := cmpPlan(p1, p2)
 			if same {
+				resultFile := path.Join(resultFileDir, fmt.Sprintf("q%v.plan", no))
 				utils.Must(os.WriteFile(resultFile, []byte("SAME\n"+planStr(p1)), 0666))
 			} else {
+				resultFile := path.Join(resultFileDir, fmt.Sprintf("q%v_d.plan", no))
 				utils.Must(os.WriteFile(resultFile, []byte("DIFF\n"+planStr(p1)+"\n\n\n"+planStr(p2)), 0666))
 				fmt.Printf("DIFF q%v\n", no)
 			}
