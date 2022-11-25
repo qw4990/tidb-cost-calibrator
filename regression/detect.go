@@ -28,10 +28,10 @@ func GetPlans() {
 
 	resultFileDir := fmt.Sprintf("regression/%v/plans/", workload)
 	settings := []string{
-		//"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
+		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
 		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
 	}
-	alias := []string{"mix"}
+	alias := []string{"ap", "mix"}
 	for k, setting := range settings {
 		ins.MustExec(setting)
 		for i, q := range qs {
