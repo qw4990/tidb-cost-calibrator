@@ -38,7 +38,7 @@ func GetPlans() {
 		//"mix",
 	}
 
-	l, r := 61, 99
+	l, r := 1, 99
 	for i, q := range qs {
 		if i < l || i > r {
 			continue
