@@ -33,7 +33,7 @@ func GetPlans() {
 	}
 	alias := []string{"ap", "mix"}
 
-	l, r := 51, 60
+	l, r := 61, 99
 	for i, q := range qs {
 		if i < l || i > r {
 			continue
