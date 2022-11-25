@@ -14,7 +14,7 @@ import (
 
 func GetPlans() {
 	opt := utils.Option{
-		Addr:     "127.0.0.1",
+		Addr:     "tidb-1-peer",
 		Port:     4000,
 		User:     "root",
 		Password: "",
@@ -32,10 +32,16 @@ func GetPlans() {
 		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
 	}
 	alias := []string{"ap", "mix"}
-	for k, setting := range settings {
-		ins.MustExec(setting)
-		for i, q := range qs {
+
+	l, r := 1, 10
+	for i, q := range qs {
+		if i < l || i > r {
+			continue
+		}
+		for k, setting := range settings {
+			ins.MustExec(setting)
 			p, t := getPlan(q, ins, true)
+			fmt.Println(">>> ", alias[k], i, t)
 
 			resultFile := path.Join(resultFileDir, fmt.Sprintf("query_%v-%v.result", i, alias[k]))
 			var result bytes.Buffer
