@@ -79,6 +79,18 @@ func newRegressionDetectCmd() *cobra.Command {
 	return cmd
 }
 
+func newGetPlansCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "get-plans",
+		Short: "Get Plans",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			regression.GetPlans()
+			return nil
+		},
+	}
+	return cmd
+}
+
 func newOSSInsightRegressionCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "oss-insight-regression",
@@ -117,6 +129,7 @@ func init() {
 	rootCmd.AddCommand(newCostCaliCmd())
 	rootCmd.AddCommand(newCostRegressionCmd())
 	rootCmd.AddCommand(newRegressionDetectCmd())
+	rootCmd.AddCommand(newGetPlansCmd())
 	rootCmd.AddCommand(newOSSInsightRegressionCmd())
 	rootCmd.AddCommand(newOSSInsightBenchmarkCmd())
 }

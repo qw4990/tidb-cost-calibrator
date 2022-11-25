@@ -7,9 +7,44 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
+
+func GetPlans() {
+	opt := utils.Option{
+		Addr:     "127.0.0.1",
+		Port:     4000,
+		User:     "root",
+		Password: "",
+		Label:    "",
+	}
+	ins := utils.MustConnectTo(opt)
+	ins.SetLogThreshold(0)
+	workload := "tpcds"
+	qs := getQueries("regression/tpcds/queries")
+	ins.MustExec("use tpcds50")
+
+	resultFileDir := fmt.Sprintf("regression/%v/plans/", workload)
+	settings := []string{
+		//"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
+		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
+	}
+	alias := []string{"mix"}
+	for k, setting := range settings {
+		ins.MustExec(setting)
+		for i, q := range qs {
+			p, t := getPlan(q, ins, true)
+
+			resultFile := path.Join(resultFileDir, fmt.Sprintf("query_%v-%v.result", i, alias[k]))
+			var result bytes.Buffer
+			result.WriteString(fmt.Sprintf("query_%v, ENGINE=%v, TIME=%v\n\n", i, alias[k], t))
+			result.WriteString(planStr(p))
+			utils.Must(os.WriteFile(resultFile, result.Bytes(), 0666))
+		}
+	}
+}
 
 func RegDetect() {
 	opt := utils.Option{
@@ -43,7 +78,8 @@ func RegDetect() {
 	}
 	plans := make([]map[int]Plan, len(settings))
 	for i, setting := range settings {
-		plans[i] = getPlans(qs, ins, false, setting)
+		ins.MustExec(setting)
+		plans[i] = getPlans(qs, ins, false)
 	}
 
 	for no := range plans[0] {
@@ -76,12 +112,11 @@ func RegDetect() {
 	}
 }
 
-func getPlans(qs map[int]string, db utils.Instance, analyze bool, setting string) map[int]Plan {
+func getPlans(qs map[int]string, db utils.Instance, analyze bool) map[int]Plan {
 	plans := make(map[int]Plan)
-	db.MustExec(setting)
 	for no, q := range qs {
 		fmt.Printf(">>> get q%v plan\n", no)
-		plans[no] = getPlan(q, db)
+		plans[no], _ = getPlan(q, db, analyze)
 	}
 	return plans
 }
@@ -127,16 +162,18 @@ func cleanQuery(q string) string {
 
 type Plan [][]string
 
-func getPlan(query string, db utils.Instance) Plan {
+func getPlan(query string, db utils.Instance, analyze bool) (Plan, time.Duration) {
 	query = "explain format=verbose " + query
+	begin := time.Now()
 	rows := db.MustQuery(query)
+	cost := time.Since(begin)
 	var p Plan
 	for rows.Next() {
 		var id, estRows, estCost, task, acc, op string
 		utils.Must(rows.Scan(&id, &estRows, &estCost, &task, &acc, &op))
 		p = append(p, []string{id, estRows, estCost, task, acc, op})
 	}
-	return p
+	return p, cost
 }
 
 func cmpPlan(q1, q2 Plan) (same bool) {
