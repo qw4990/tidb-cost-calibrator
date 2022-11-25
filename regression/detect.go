@@ -28,8 +28,8 @@ func GetPlans() {
 
 	resultFileDir := fmt.Sprintf("regression/%v/plans/", workload)
 	settings := []string{
-		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
-		"set tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
+		"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
+		"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
 	}
 	alias := []string{"ap", "mix"}
 
@@ -41,13 +41,26 @@ func GetPlans() {
 		for k, setting := range settings {
 			ins.MustExec(setting)
 			fmt.Println(">>> run ", alias[k], i)
-			p, t := getPlan(q, ins, true)
-			fmt.Println(">>> ", alias[k], i, t)
+			p, t, err := getPlan(q, ins, true)
+			fmt.Println(">>> ", alias[k], i, t, err)
 
-			resultFile := path.Join(resultFileDir, fmt.Sprintf("query_%v-%v.result", i, alias[k]))
 			var result bytes.Buffer
 			result.WriteString(fmt.Sprintf("query_%v, ENGINE=%v, TIME=%v\n\n", i, alias[k], t))
-			result.WriteString(planStr(p))
+			if err != nil {
+				if strings.Contains(err.Error(), "context canceled") ||
+					strings.Contains(err.Error(), "Query execution was interrupted") {
+					fmt.Println("timeout, wait 30s")
+					time.Sleep(time.Second * 30)
+					result.WriteString("TIMEOUT")
+				} else {
+					fmt.Println("fail ", err)
+					result.WriteString("FAIL " + err.Error())
+				}
+			} else {
+				result.WriteString(planStr(p))
+			}
+
+			resultFile := path.Join(resultFileDir, fmt.Sprintf("query_%v-%v.result", i, alias[k]))
 			utils.Must(os.WriteFile(resultFile, result.Bytes(), 0666))
 		}
 	}
@@ -123,7 +136,7 @@ func getPlans(qs map[int]string, db utils.Instance, analyze bool) map[int]Plan {
 	plans := make(map[int]Plan)
 	for no, q := range qs {
 		fmt.Printf(">>> get q%v plan\n", no)
-		plans[no], _ = getPlan(q, db, analyze)
+		plans[no], _, _ = getPlan(q, db, analyze)
 	}
 	return plans
 }
@@ -169,11 +182,11 @@ func cleanQuery(q string) string {
 
 type Plan [][]string
 
-func getPlan(query string, db utils.Instance, analyze bool) (Plan, time.Duration) {
+func getPlan(query string, db utils.Instance, analyze bool) (Plan, time.Duration, error) {
 	if !analyze {
 		query = "explain format=verbose " + query
 		begin := time.Now()
-		rows := db.MustQuery(query)
+		rows, err := db.Query(query)
 		cost := time.Since(begin)
 		var p Plan
 		for rows.Next() {
@@ -181,11 +194,11 @@ func getPlan(query string, db utils.Instance, analyze bool) (Plan, time.Duration
 			utils.Must(rows.Scan(&id, &estRows, &estCost, &task, &acc, &op))
 			p = append(p, []string{id, estRows, estCost, task, acc, op})
 		}
-		return p, cost
+		return p, cost, err
 	} else {
 		query = "explain analyze format=verbose " + query
 		begin := time.Now()
-		rows := db.MustQuery(query)
+		rows, err := db.Query(query)
 		cost := time.Since(begin)
 		var p Plan
 		for rows.Next() {
@@ -194,7 +207,7 @@ func getPlan(query string, db utils.Instance, analyze bool) (Plan, time.Duration
 			utils.Must(rows.Scan(&id, &estRows, &estCost, &actRows, &task, &acc, &exec, &op, &mem, &disk))
 			p = append(p, []string{id, estRows, estCost, actRows, task, acc, exec, op, mem, disk})
 		}
-		return p, cost
+		return p, cost, err
 	}
 }
 
