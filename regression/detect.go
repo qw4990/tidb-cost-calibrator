@@ -40,6 +40,7 @@ func GetPlans() {
 		}
 		for k, setting := range settings {
 			ins.MustExec(setting)
+			fmt.Println(">>> run ", alias[k], i)
 			p, t := getPlan(q, ins, true)
 			fmt.Println(">>> ", alias[k], i, t)
 
