@@ -169,17 +169,32 @@ func cleanQuery(q string) string {
 type Plan [][]string
 
 func getPlan(query string, db utils.Instance, analyze bool) (Plan, time.Duration) {
-	query = "explain format=verbose " + query
-	begin := time.Now()
-	rows := db.MustQuery(query)
-	cost := time.Since(begin)
-	var p Plan
-	for rows.Next() {
-		var id, estRows, estCost, task, acc, op string
-		utils.Must(rows.Scan(&id, &estRows, &estCost, &task, &acc, &op))
-		p = append(p, []string{id, estRows, estCost, task, acc, op})
+	if !analyze {
+		query = "explain format=verbose " + query
+		begin := time.Now()
+		rows := db.MustQuery(query)
+		cost := time.Since(begin)
+		var p Plan
+		for rows.Next() {
+			var id, estRows, estCost, task, acc, op string
+			utils.Must(rows.Scan(&id, &estRows, &estCost, &task, &acc, &op))
+			p = append(p, []string{id, estRows, estCost, task, acc, op})
+		}
+		return p, cost
+	} else {
+		query = "explain analyze format=verbose " + query
+		begin := time.Now()
+		rows := db.MustQuery(query)
+		cost := time.Since(begin)
+		var p Plan
+		for rows.Next() {
+			//| id | estRows | estCost | actRows | task | access object | execution info | operator info | memory  | disk |
+			var id, estRows, estCost, actRows, task, acc, exec, op, mem, disk string
+			utils.Must(rows.Scan(&id, &estRows, &estCost, &actRows, &task, &acc, &exec, &op, &mem, &disk))
+			p = append(p, []string{id, estRows, estCost, actRows, task, acc, exec, op, mem, disk})
+		}
+		return p, cost
 	}
-	return p, cost
 }
 
 func cmpPlan(q1, q2 Plan) (same bool) {
