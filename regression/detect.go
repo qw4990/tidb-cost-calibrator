@@ -201,6 +201,9 @@ func getPlan(query string, db utils.Instance, analyze bool) (Plan, time.Duration
 		rows, err := db.Query(query)
 		cost := time.Since(begin)
 		var p Plan
+		if err != nil {
+			return p, cost, err
+		}
 		for rows.Next() {
 			//| id | estRows | estCost | actRows | task | access object | execution info | operator info | memory  | disk |
 			var id, estRows, estCost, actRows, task, acc, exec, op, mem, disk string
