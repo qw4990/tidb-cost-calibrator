@@ -28,10 +28,15 @@ func GetPlans() {
 
 	resultFileDir := fmt.Sprintf("regression/%v/plans/", workload)
 	settings := []string{
-		"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
-		"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
+		"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv'",
+		//"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
+		//"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
 	}
-	alias := []string{"ap", "mix"}
+	alias := []string{
+		"tp",
+		//"ap",
+		//"mix",
+	}
 
 	l, r := 61, 99
 	for i, q := range qs {
