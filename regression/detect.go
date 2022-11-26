@@ -38,11 +38,14 @@ func GetPlans() {
 		"mix",
 	}
 
-	l, r := 1, 99
-	for i, q := range qs {
-		if i < l || i > r {
-			continue
-		}
+	//l, r := 1, 99
+	xs := []int{2, 4, 5, 11, 14, 18, 22, 23, 27, 36, 39, 59, 67, 70, 77, 80, 86}
+	for _, i := range xs {
+		q := qs[i]
+		//for i, q := range qs {
+		//	if i < l || i > r {
+		//		continue
+		//	}
 		for k, setting := range settings {
 			ins.MustExec(setting)
 			fmt.Println(">>> run ", alias[k], i)
