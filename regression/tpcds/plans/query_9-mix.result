@@ -1,0 +1,4 @@
+query_9, ENGINE=mix, TIME=9.349343999s
+
+Projection_724	1.00	63.86	1	root		time:630.2µs, loops:2, Concurrency:OFF	397.485226->Column#459, 1154.869727->Column#555, 1912.648159->Column#651, 2670.022491->Column#747, 3427.619205->Column#843	129 Bytes	N/A
+└─Point_Get_725	1.00	63.36	1	root	table:reason	time:623µs, loops:2, Get:{num_rpc:1, total_time:596.1µs}, tikv_wall_time: 348.3µs, scan_detail: {total_process_keys: 1, total_process_keys_size: 74, total_keys: 1, get_snapshot_time: 42.5µs, rocksdb: {block: {cache_hit_count: 3}}}	handle:1	N/A	N/A

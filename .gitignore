@@ -1,7 +1,6 @@
 tidb-cost-calibrator
 *.plan
 .DS_Store
-*.result
 *.yml
 *.toml
 vendor

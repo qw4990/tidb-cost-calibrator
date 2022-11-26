@@ -1,0 +1,49 @@
+query_90, ENGINE=ap, TIME=350.309877ms
+
+Projection_37	1.00	339925710.04	1	root		time:341.5ms, loops:2, Concurrency:OFF	div(cast(Column#65, decimal(15,4) BINARY), cast(Column#130, decimal(15,4) BINARY))->Column#131	3.54 KB	N/A
+└─Projection_166	1.00	339925700.26	1	root		time:341.5ms, loops:2, Concurrency:OFF	Column#65, Column#130	11.0 KB	N/A
+  └─TopN_40	1.00	339925700.06	1	root		time:341.5ms, loops:2	Column#136, offset:0, count:100	8.92 KB	N/A
+    └─Projection_167	1.00	339925008.81	1	root		time:341.5ms, loops:3, Concurrency:OFF	Column#65, Column#130, div(cast(Column#65, decimal(15,4) BINARY), cast(Column#130, decimal(15,4) BINARY))->Column#136	2.52 KB	N/A
+      └─HashJoin_43	1.00	339924998.63	1	root		time:341.4ms, loops:3, build_hash_table:{total:341.3ms, fetch:341.3ms, build:4.09µs}, probe:{concurrency:5, total:1.71s, max:341.3ms, probe:6.03µs, fetch:1.71s}	CARTESIAN inner join	1.59 KB	0 Bytes
+        ├─HashAgg_157(Build)	1.00	169962468.58	1	root		time:341.3ms, loops:2, partial_worker:{wall_time:341.307564ms, concurrency:5, task_num:1, tot_wait:1.706335672s, tot_exec:4.115µs, tot_time:1.706346709s, max:341.27486ms, p95:341.27486ms}, final_worker:{wall_time:341.334295ms, concurrency:5, task_num:1, tot_wait:1.706402898s, tot_exec:18.82µs, tot_time:1.706423441s, max:341.290159ms, p95:341.290159ms}	funcs:count(Column#135)->Column#130	18.3 KB	N/A
+        │ └─TableReader_159	1.00	169962438.32	1	root		time:341.3ms, loops:2, cop_task: {num: 2, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_158	N/A	N/A
+        │   └─ExchangeSender_158	1.00	2549436557.15	1	mpp[tiflash]		tiflash_task:{time:301.4ms, loops:1, threads:48}	ExchangeType: PassThrough	N/A	N/A
+        │     └─HashAgg_110	1.00	2549436557.15	1	mpp[tiflash]		tiflash_task:{time:301.4ms, loops:1, threads:48}	funcs:count(1)->Column#135	N/A	N/A
+        │       └─HashJoin_156	7562.45	2549429296.64	3586	mpp[tiflash]		tiflash_task:{time:296.4ms, loops:587, threads:48}	inner join, equal:[eq(tpcds50.web_sales.ws_ship_hdemo_sk, tpcds50.household_demographics.hd_demo_sk)]	N/A	N/A
+        │         ├─ExchangeReceiver_131(Build)	720.00	1084000.00	720	mpp[tiflash]		tiflash_task:{time:56.4ms, loops:1, threads:48}		N/A	N/A
+        │         │ └─ExchangeSender_130	720.00	1014880.00	720	mpp[tiflash]		tiflash_task:{time:11.1ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+        │         │   └─Selection_129	720.00	1014880.00	720	mpp[tiflash]		tiflash_task:{time:10.1ms, loops:1, threads:1}	eq(tpcds50.household_demographics.hd_dep_count, 8)	N/A	N/A
+        │         │     └─TableFullScan_128	7200.00	997600.00	7200	mpp[tiflash]	table:household_demographics	tiflash_task:{time:10.1ms, loops:1, threads:1}	keep order:false	N/A	N/A
+        │         └─HashJoin_116(Probe)	75511.32	2548222942.52	34578	mpp[tiflash]		tiflash_task:{time:295.4ms, loops:587, threads:48}	inner join, equal:[eq(tpcds50.web_sales.ws_sold_time_sk, tpcds50.time_dim.t_time_sk)]	N/A	N/A
+        │           ├─ExchangeReceiver_127(Build)	7200.00	6697120.00	7200	mpp[tiflash]		tiflash_task:{time:55.4ms, loops:1, threads:48}		N/A	N/A
+        │           │ └─ExchangeSender_126	7200.00	6005920.00	7200	mpp[tiflash]		tiflash_task:{time:14.2ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+        │           │   └─Selection_125	7200.00	6005920.00	7200	mpp[tiflash]		tiflash_task:{time:14.2ms, loops:1, threads:1}	ge(tpcds50.time_dim.t_hour, 14), le(tpcds50.time_dim.t_hour, 15)	N/A	N/A
+        │           │     └─TableFullScan_124	86400.00	5591200.00	16384	mpp[tiflash]	table:time_dim	tiflash_task:{time:14.2ms, loops:1, threads:1}	keep order:false	N/A	N/A
+        │           └─HashJoin_117(Probe)	899921.25	2540070588.52	493074	mpp[tiflash]		tiflash_task:{time:292.4ms, loops:587, threads:48}	inner join, equal:[eq(tpcds50.web_page.wp_web_page_sk, tpcds50.web_sales.ws_web_page_sk)]	N/A	N/A
+        │             ├─ExchangeReceiver_121(Build)	21.90	584227.81	11	mpp[tiflash]		tiflash_task:{time:55.4ms, loops:1, threads:48}		N/A	N/A
+        │             │ └─ExchangeSender_120	21.90	582651.01	11	mpp[tiflash]		tiflash_task:{time:10.5ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+        │             │   └─Selection_119	21.90	582651.01	11	mpp[tiflash]		tiflash_task:{time:10.5ms, loops:1, threads:1}	ge(tpcds50.web_page.wp_char_count, 5000), le(tpcds50.web_page.wp_char_count, 5200)	N/A	N/A
+        │             │     └─TableFullScan_118	876.00	578446.21	876	mpp[tiflash]	table:web_page	tiflash_task:{time:9.52ms, loops:1, threads:1}	keep order:false	N/A	N/A
+        │             └─Selection_123(Probe)	35942997.24	2481977521.33	35981293	mpp[tiflash]		tiflash_task:{time:267.4ms, loops:587, threads:48}	not(isnull(tpcds50.web_sales.ws_ship_hdemo_sk)), not(isnull(tpcds50.web_sales.ws_sold_time_sk)), not(isnull(tpcds50.web_sales.ws_web_page_sk))	N/A	N/A
+        │               └─TableFullScan_122	35996850.00	2222800201.33	35996850	mpp[tiflash]	table:web_sales	tiflash_task:{time:230.4ms, loops:587, threads:48}	keep order:false	N/A	N/A
+        └─HashAgg_99(Probe)	1.00	169962468.58	1	root		time:338.4ms, loops:2, partial_worker:{wall_time:338.405408ms, concurrency:5, task_num:1, tot_wait:1.691803274s, tot_exec:3.104µs, tot_time:1.691813017s, max:338.367432ms, p95:338.367432ms}, final_worker:{wall_time:338.410353ms, concurrency:5, task_num:1, tot_wait:1.691880356s, tot_exec:22.147µs, tot_time:1.691904935s, max:338.382695ms, p95:338.382695ms}	funcs:count(Column#134)->Column#65	16.1 KB	N/A
+          └─TableReader_101	1.00	169962438.32	1	root		time:338.3ms, loops:2, cop_task: {num: 2, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_100	N/A	N/A
+            └─ExchangeSender_100	1.00	2549436557.15	1	mpp[tiflash]		tiflash_task:{time:335.4ms, loops:1, threads:48}	ExchangeType: PassThrough	N/A	N/A
+              └─HashAgg_69	1.00	2549436557.15	1	mpp[tiflash]		tiflash_task:{time:335.4ms, loops:1, threads:48}	funcs:count(1)->Column#134	N/A	N/A
+                └─HashJoin_46	7562.45	2549429296.64	3392	mpp[tiflash]		tiflash_task:{time:332.4ms, loops:587, threads:48}	inner join, equal:[eq(tpcds50.web_sales.ws_ship_hdemo_sk, tpcds50.household_demographics.hd_demo_sk)]	N/A	N/A
+                  ├─ExchangeReceiver_62(Build)	720.00	1084000.00	720	mpp[tiflash]		tiflash_task:{time:27.4ms, loops:1, threads:48}		N/A	N/A
+                  │ └─ExchangeSender_61	720.00	1014880.00	720	mpp[tiflash]		tiflash_task:{time:10.8ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                  │   └─Selection_60	720.00	1014880.00	720	mpp[tiflash]		tiflash_task:{time:9.8ms, loops:1, threads:1}	eq(tpcds50.household_demographics.hd_dep_count, 8)	N/A	N/A
+                  │     └─TableFullScan_59	7200.00	997600.00	7200	mpp[tiflash]	table:household_demographics	tiflash_task:{time:9.8ms, loops:1, threads:1}	keep order:false	N/A	N/A
+                  └─HashJoin_47(Probe)	75511.32	2548222942.52	34622	mpp[tiflash]		tiflash_task:{time:332.4ms, loops:587, threads:48}	inner join, equal:[eq(tpcds50.web_sales.ws_sold_time_sk, tpcds50.time_dim.t_time_sk)]	N/A	N/A
+                    ├─ExchangeReceiver_58(Build)	7200.00	6697120.00	7200	mpp[tiflash]		tiflash_task:{time:28.4ms, loops:1, threads:48}		N/A	N/A
+                    │ └─ExchangeSender_57	7200.00	6005920.00	7200	mpp[tiflash]		tiflash_task:{time:11.3ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                    │   └─Selection_56	7200.00	6005920.00	7200	mpp[tiflash]		tiflash_task:{time:10.3ms, loops:1, threads:1}	ge(tpcds50.time_dim.t_hour, 6), le(tpcds50.time_dim.t_hour, 7)	N/A	N/A
+                    │     └─TableFullScan_55	86400.00	5591200.00	16384	mpp[tiflash]	table:time_dim	tiflash_task:{time:9.3ms, loops:1, threads:1}	keep order:false	N/A	N/A
+                    └─HashJoin_48(Probe)	899921.25	2540070588.52	493074	mpp[tiflash]		tiflash_task:{time:330.4ms, loops:587, threads:48}	inner join, equal:[eq(tpcds50.web_page.wp_web_page_sk, tpcds50.web_sales.ws_web_page_sk)]	N/A	N/A
+                      ├─ExchangeReceiver_52(Build)	21.90	584227.81	11	mpp[tiflash]		tiflash_task:{time:27.4ms, loops:1, threads:48}		N/A	N/A
+                      │ └─ExchangeSender_51	21.90	582651.01	11	mpp[tiflash]		tiflash_task:{time:7.79ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                      │   └─Selection_50	21.90	582651.01	11	mpp[tiflash]		tiflash_task:{time:7.79ms, loops:1, threads:1}	ge(tpcds50.web_page.wp_char_count, 5000), le(tpcds50.web_page.wp_char_count, 5200)	N/A	N/A
+                      │     └─TableFullScan_49	876.00	578446.21	876	mpp[tiflash]	table:web_page	tiflash_task:{time:7.79ms, loops:1, threads:1}	keep order:false	N/A	N/A
+                      └─Selection_54(Probe)	35942997.24	2481977521.33	35981293	mpp[tiflash]		tiflash_task:{time:288.4ms, loops:587, threads:48}	not(isnull(tpcds50.web_sales.ws_ship_hdemo_sk)), not(isnull(tpcds50.web_sales.ws_sold_time_sk)), not(isnull(tpcds50.web_sales.ws_web_page_sk))	N/A	N/A
+                        └─TableFullScan_53	35996850.00	2222800201.33	35996850	mpp[tiflash]	table:web_sales	tiflash_task:{time:281.4ms, loops:587, threads:48}	keep order:false	N/A	N/A

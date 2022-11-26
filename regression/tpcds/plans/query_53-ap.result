@@ -1,0 +1,33 @@
+query_53, ENGINE=ap, TIME=1.839241455s
+
+Projection_25	62.80	805618771.50	93	root		time:1.83s, loops:2, Concurrency:OFF	tpcds50.item.i_manufact_id, Column#104, Column#106	90.0 KB	N/A
+└─TopN_28	62.80	805618752.70	93	root		time:1.83s, loops:2	Column#106, Column#104, tpcds50.item.i_manufact_id, offset:0, count:100	90.8 KB	N/A
+  └─Selection_33	62.80	805596172.31	93	root		time:1.83s, loops:3	gt(case(gt(Column#106, 0), div(abs(minus(Column#104, Column#106)), Column#106), NULL), 0.1)	90.0 KB	N/A
+    └─Shuffle_109	78.50	805592255.08	112	root		time:1.83s, loops:8, ShuffleConcurrency:5	execution info: concurrency:5, data sources:[TableReader_103]	N/A	N/A
+      └─Window_35	78.50	805592255.08	112	root		time:9.16s, loops:10	avg(Column#104)->Column#106 over(partition by tpcds50.item.i_manufact_id)	N/A	N/A
+        └─Sort_104	78.50	805592255.08	112	root		time:9.16s, loops:10	tpcds50.item.i_manufact_id	1.96 KB	0 Bytes
+          └─ShuffleReceiver_113	78.50	0.00	112	root		time:9.16s, loops:10		N/A	N/A
+            └─TableReader_103	78.50	805566843.90	112	root		time:1.83s, loops:2, cop_task: {num: 2, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_102	N/A	N/A
+              └─ExchangeSender_102	78.50	12083494368.74	112	mpp[tiflash]		tiflash_task:{time:1.83s, loops:1, threads:48}	ExchangeType: PassThrough	N/A	N/A
+                └─Projection_98	78.50	12083494368.74	112	mpp[tiflash]		tiflash_task:{time:1.83s, loops:1, threads:48}	Column#104, tpcds50.item.i_manufact_id	N/A	N/A
+                  └─HashAgg_99	78.50	12083494367.99	112	mpp[tiflash]		tiflash_task:{time:1.83s, loops:1, threads:48}	group by:tpcds50.date_dim.d_qoy, tpcds50.item.i_manufact_id, funcs:sum(Column#110)->Column#104, funcs:firstrow(tpcds50.item.i_manufact_id)->tpcds50.item.i_manufact_id	N/A	N/A
+                    └─ExchangeReceiver_101	78.50	12083494028.11	112	mpp[tiflash]		tiflash_task:{time:1.83s, loops:42, threads:48}		N/A	N/A
+                      └─ExchangeSender_100	78.50	12083489632.02	112	mpp[tiflash]		tiflash_task:{time:1.83s, loops:256, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: tpcds50.item.i_manufact_id, collate: N/A], [name: tpcds50.date_dim.d_qoy, collate: N/A]	N/A	N/A
+                        └─HashAgg_40	78.50	12083489632.02	112	mpp[tiflash]		tiflash_task:{time:1.82s, loops:256, threads:48}	group by:tpcds50.date_dim.d_qoy, tpcds50.item.i_manufact_id, funcs:sum(tpcds50.store_sales.ss_sales_price)->Column#110	N/A	N/A
+                          └─Projection_97	2458949.19	12078744686.65	24240	mpp[tiflash]		tiflash_task:{time:1.82s, loops:2346, threads:48}	tpcds50.item.i_manufact_id, tpcds50.store_sales.ss_sales_price, tpcds50.date_dim.d_qoy	N/A	N/A
+                            └─HashJoin_85	2458949.19	12078709277.79	24240	mpp[tiflash]		tiflash_task:{time:1.82s, loops:2346, threads:48}	inner join, equal:[eq(tpcds50.store_sales.ss_sold_date_sk, tpcds50.date_dim.d_date_sk)]	N/A	N/A
+                              ├─ExchangeReceiver_61(Build)	364.00	5608110.44	365	mpp[tiflash]		tiflash_task:{time:31.6ms, loops:1, threads:48}		N/A	N/A
+                              │ └─ExchangeSender_60	364.00	5555693.99	365	mpp[tiflash]		tiflash_task:{time:9.12ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                              │   └─Selection_59	364.00	5555693.99	365	mpp[tiflash]		tiflash_task:{time:9.12ms, loops:1, threads:1}	in(tpcds50.date_dim.d_month_seq, 1212, 1213, 1214, 1215, 1216, 1217, 1218, 1219, 1220, 1221, 1222, 1223)	N/A	N/A
+                              │     └─TableFullScan_58	73049.00	5380376.39	73049	mpp[tiflash]	table:date_dim	tiflash_task:{time:8.12ms, loops:2, threads:1}	keep order:false	N/A	N/A
+                              └─HashJoin_47(Probe)	11232128.78	12055128887.68	5684892	mpp[tiflash]		tiflash_task:{time:1.8s, loops:2346, threads:48}	inner join, equal:[eq(tpcds50.store_sales.ss_item_sk, tpcds50.item.i_item_sk)]	N/A	N/A
+                                ├─ExchangeReceiver_57(Build)	4867.09	6559446.79	3240	mpp[tiflash]		tiflash_task:{time:35.6ms, loops:1, threads:48}		N/A	N/A
+                                │ └─ExchangeSender_56	4867.09	5409743.54	3240	mpp[tiflash]		tiflash_task:{time:39.7ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                                │   └─Selection_55	4867.09	5409743.54	3240	mpp[tiflash]		tiflash_task:{time:38.7ms, loops:1, threads:1}	or(and(in(tpcds50.item.i_category, "Books", "Children", "Electronics"), and(in(tpcds50.item.i_class, "personal", "portable", "reference", "self-help"), in(tpcds50.item.i_brand, "scholaramalgamalg #14", "scholaramalgamalg #7", "exportiunivamalg #9", "scholaramalgamalg #9"))), and(in(tpcds50.item.i_category, "Women", "Music", "Men"), and(in(tpcds50.item.i_class, "accessories", "classical", "fragrances", "pants"), in(tpcds50.item.i_brand, "amalgimporto #1", "edu packscholar #1", "exportiimporto #1", "importoamalg #1"))))	N/A	N/A
+                                │     └─TableFullScan_54	62000.00	5260943.54	62000	mpp[tiflash]	table:item	tiflash_task:{time:17.7ms, loops:1, threads:1}	keep order:false	N/A	N/A
+                                └─HashJoin_48(Probe)	131343280.44	11838406017.59	134289349	mpp[tiflash]		tiflash_task:{time:1.13s, loops:2346, threads:48}	inner join, equal:[eq(tpcds50.store.s_store_sk, tpcds50.store_sales.ss_store_sk)]	N/A	N/A
+                                  ├─ExchangeReceiver_51(Build)	144.00	477593.60	144	mpp[tiflash]		tiflash_task:{time:31.6ms, loops:1, threads:48}		N/A	N/A
+                                  │ └─ExchangeSender_50	144.00	470681.60	144	mpp[tiflash]		tiflash_task:{time:6.95ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+                                  │   └─TableFullScan_49	144.00	470681.60	144	mpp[tiflash]	table:store	tiflash_task:{time:6.95ms, loops:1, threads:1}	keep order:false	N/A	N/A
+                                  └─Selection_53(Probe)	131343280.44	11627778906.48	134289349	mpp[tiflash]		tiflash_task:{time:509.6ms, loops:2346, threads:48}	not(isnull(tpcds50.store_sales.ss_sold_date_sk)), not(isnull(tpcds50.store_sales.ss_store_sk))	N/A	N/A
+                                    └─TableFullScan_52	144004764.00	10936556039.28	144004764	mpp[tiflash]	table:store_sales	tiflash_task:{time:78.6ms, loops:2346, threads:48}	keep order:false	N/A	N/A

@@ -1,0 +1,24 @@
+query_96, ENGINE=mix, TIME=932.026275ms
+
+TopN_23	1.00	705890881.59	1	root		time:927.6ms, loops:2	Column#69, offset:0, count:100	388 Bytes	N/A
+└─HashAgg_123	1.00	705890390.06	1	root		time:927.5ms, loops:3, partial_worker:{wall_time:927.528258ms, concurrency:5, task_num:1, tot_wait:4.637514396s, tot_exec:2.846µs, tot_time:4.637522782s, max:927.509037ms, p95:927.509037ms}, final_worker:{wall_time:927.545083ms, concurrency:5, task_num:1, tot_wait:4.637589193s, tot_exec:23.297µs, tot_time:4.637614988s, max:927.528645ms, p95:927.528645ms}	funcs:count(Column#71)->Column#69	49.2 KB	N/A
+  └─TableReader_125	1.00	705890359.80	1	root		time:927.5ms, loops:2, cop_task: {num: 2, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_124	N/A	N/A
+    └─ExchangeSender_124	1.00	10588355379.40	1	mpp[tiflash]		tiflash_task:{time:925.7ms, loops:1, threads:48}	ExchangeType: PassThrough	N/A	N/A
+      └─HashAgg_31	1.00	10588355379.40	1	mpp[tiflash]		tiflash_task:{time:924.7ms, loops:1, threads:48}	funcs:count(1)->Column#71	N/A	N/A
+        └─HashJoin_122	201028.15	10588162391.81	37233	mpp[tiflash]		tiflash_task:{time:922.7ms, loops:2346, threads:48}	inner join, equal:[eq(tpcds50.store_sales.ss_hdemo_sk, tpcds50.household_demographics.hd_demo_sk)]	N/A	N/A
+          ├─ExchangeReceiver_63(Build)	720.00	1084000.00	720	mpp[tiflash]		tiflash_task:{time:18.7ms, loops:1, threads:48}		N/A	N/A
+          │ └─ExchangeSender_62	720.00	1014880.00	720	mpp[tiflash]		tiflash_task:{time:3.69ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+          │   └─Selection_61	720.00	1014880.00	720	mpp[tiflash]		tiflash_task:{time:3.69ms, loops:1, threads:1}	eq(tpcds50.household_demographics.hd_dep_count, 5)	N/A	N/A
+          │     └─TableFullScan_60	7200.00	997600.00	7200	mpp[tiflash]	table:household_demographics	tiflash_task:{time:3.69ms, loops:1, threads:1}	keep order:false	N/A	N/A
+          └─HashJoin_48(Probe)	1751075.32	10584275135.30	371475	mpp[tiflash]		tiflash_task:{time:919.7ms, loops:2346, threads:48}	inner join, equal:[eq(tpcds50.store_sales.ss_sold_time_sk, tpcds50.time_dim.t_time_sk)]	N/A	N/A
+            ├─ExchangeReceiver_59(Build)	1800.00	6919248.47	1800	mpp[tiflash]		tiflash_task:{time:19.7ms, loops:1, threads:48}		N/A	N/A
+            │ └─ExchangeSender_58	1800.00	6660048.47	1800	mpp[tiflash]		tiflash_task:{time:3.68ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+            │   └─Selection_57	1800.00	6660048.47	1800	mpp[tiflash]		tiflash_task:{time:3.68ms, loops:1, threads:1}	eq(tpcds50.time_dim.t_hour, 8), ge(tpcds50.time_dim.t_minute, 30)	N/A	N/A
+            │     └─TableFullScan_56	86400.00	6245328.47	8192	mpp[tiflash]	table:time_dim	tiflash_task:{time:3.68ms, loops:1, threads:1}	keep order:false	N/A	N/A
+            └─HashJoin_49(Probe)	39996526.11	10513357125.05	18436708	mpp[tiflash]		tiflash_task:{time:903.7ms, loops:2346, threads:48}	inner join, equal:[eq(tpcds50.store.s_store_sk, tpcds50.store_sales.ss_store_sk)]	N/A	N/A
+              ├─ExchangeReceiver_53(Build)	20.00	559110.45	20	mpp[tiflash]		tiflash_task:{time:19.7ms, loops:1, threads:48}		N/A	N/A
+              │ └─ExchangeSender_52	20.00	557512.65	20	mpp[tiflash]		tiflash_task:{time:3.92ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+              │   └─Selection_51	20.00	557512.65	20	mpp[tiflash]		tiflash_task:{time:3.92ms, loops:1, threads:1}	eq(tpcds50.store.s_store_name, "ese")	N/A	N/A
+              │     └─TableFullScan_50	144.00	557167.05	144	mpp[tiflash]	table:store	tiflash_task:{time:3.92ms, loops:1, threads:1}	keep order:false	N/A	N/A
+              └─Selection_55(Probe)	125436755.09	10312099165.57	132671794	mpp[tiflash]		tiflash_task:{time:805.7ms, loops:2346, threads:48}	not(isnull(tpcds50.store_sales.ss_hdemo_sk)), not(isnull(tpcds50.store_sales.ss_sold_time_sk)), not(isnull(tpcds50.store_sales.ss_store_sk))	N/A	N/A
+                └─TableFullScan_54	144004764.00	9275264864.77	144004764	mpp[tiflash]	table:store_sales	tiflash_task:{time:726.7ms, loops:2346, threads:48}	keep order:false	N/A	N/A

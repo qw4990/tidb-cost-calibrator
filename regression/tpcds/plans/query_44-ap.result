@@ -1,0 +1,44 @@
+query_44, ENGINE=ap, TIME=1.297291922s
+
+TopN_143	100.00	1446639988.01	10	root		time:551.4ms, loops:2	Column#90, offset:0, count:100	2.32 KB	N/A
+└─TableReader_307	100.00	1446605035.17	10	root		time:551.3ms, loops:3, cop_task: {num: 2, max: 0s, min: 0s, avg: 0s, p95: 0s, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_306	N/A	N/A
+  └─ExchangeSender_306	100.00	21699055727.56	10	mpp[tiflash]		tiflash_task:{time:548ms, loops:1, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    └─TopN_305	100.00	21699055727.56	10	mpp[tiflash]		tiflash_task:{time:547ms, loops:1, threads:1}	Column#90, offset:0, count:100	N/A	N/A
+      └─Projection_304	534.69	21699046751.85	10	mpp[tiflash]		tiflash_task:{time:547ms, loops:1, threads:48}	Column#90, tpcds50.item.i_product_name, tpcds50.item.i_product_name	N/A	N/A
+        └─HashJoin_301	534.69	21699046744.15	10	mpp[tiflash]		tiflash_task:{time:547ms, loops:1, threads:48}	inner join, equal:[eq(tpcds50.store_sales.ss_item_sk, tpcds50.item.i_item_sk)]	N/A	N/A
+          ├─ExchangeReceiver_201(Build)	534.69	21694506722.15	10	mpp[tiflash]		tiflash_task:{time:541ms, loops:1, threads:48}		N/A	N/A
+          │ └─ExchangeSender_200	534.69	21694248468.40	10	mpp[tiflash]		tiflash_task:{time:539.4ms, loops:1, threads:48}	ExchangeType: Broadcast	N/A	N/A
+          │   └─HashJoin_152	534.69	21694248468.40	10	mpp[tiflash]		tiflash_task:{time:539.4ms, loops:1, threads:48}	inner join, equal:[eq(Column#90, Column#182)]	N/A	N/A
+          │     ├─ExchangeReceiver_179(Build)	534.69	10849521580.87	10	mpp[tiflash]		tiflash_task:{time:461.4ms, loops:1, threads:48}		N/A	N/A
+          │     │ └─ExchangeSender_178	534.69	10849353154.51	10	mpp[tiflash]		tiflash_task:{time:457.6ms, loops:1, threads:48}	ExchangeType: Broadcast	N/A	N/A
+          │     │   └─HashJoin_153	534.69	10849353154.51	10	mpp[tiflash]		tiflash_task:{time:457.6ms, loops:1, threads:48}	inner join, equal:[eq(tpcds50.item.i_item_sk, tpcds50.store_sales.ss_item_sk)]	N/A	N/A
+          │     │     ├─ExchangeReceiver_177(Build)	534.69	10844814068.22	10	mpp[tiflash]		tiflash_task:{time:452.6ms, loops:1, threads:48}		N/A	N/A
+          │     │     │ └─ExchangeSender_176	534.69	10844724240.83	10	mpp[tiflash]		tiflash_task:{time:453.7ms, loops:1, threads:48}	ExchangeType: Broadcast	N/A	N/A
+          │     │     │   └─Selection_156	534.69	10844724240.83	10	mpp[tiflash]		tiflash_task:{time:452.7ms, loops:1, threads:48}	lt(Column#90, 11), not(isnull(Column#90))	N/A	N/A
+          │     │     │     └─Window_157	668.36	10844721032.70	25237	mpp[tiflash]		tiflash_task:{time:452.7ms, loops:1, threads:1}	rank()->Column#90 over(order by Column#49)	N/A	N/A
+          │     │     │       └─Sort_175	668.36	10844721032.70	25237	mpp[tiflash]		tiflash_task:{time:450.7ms, loops:1, threads:1}	Column#49	N/A	N/A
+          │     │     │         └─ExchangeReceiver_174	668.36	10844704375.37	25237	mpp[tiflash]		tiflash_task:{time:446.7ms, loops:1, threads:48}		N/A	N/A
+          │     │     │           └─ExchangeSender_173	668.36	10844672294.16	25237	mpp[tiflash]		tiflash_task:{time:445.3ms, loops:1, threads:48}	ExchangeType: PassThrough	N/A	N/A
+          │     │     │             └─Selection_159	668.36	10844672294.16	25237	mpp[tiflash]		tiflash_task:{time:445.3ms, loops:1, threads:48}	gt(Column#49, -739.8694647)	N/A	N/A
+          │     │     │               └─Projection_169	835.45	10844670289.08	62000	mpp[tiflash]		tiflash_task:{time:443.3ms, loops:1, threads:48}	div(Column#49, cast(case(eq(Column#230, 0), 1, Column#230), decimal(20,0) BINARY))->Column#49, tpcds50.store_sales.ss_item_sk	N/A	N/A
+          │     │     │                 └─HashAgg_170	835.45	10844669884.06	62000	mpp[tiflash]		tiflash_task:{time:426.3ms, loops:1, threads:48}	group by:tpcds50.store_sales.ss_item_sk, funcs:sum(Column#231)->Column#230, funcs:sum(Column#232)->Column#49, funcs:firstrow(tpcds50.store_sales.ss_item_sk)->tpcds50.store_sales.ss_item_sk	N/A	N/A
+          │     │     │                   └─ExchangeReceiver_172	835.45	10844666605.09	62000	mpp[tiflash]		tiflash_task:{time:414.3ms, loops:46, threads:48}		N/A	N/A
+          │     │     │                     └─ExchangeSender_171	835.45	10844619819.99	62000	mpp[tiflash]		tiflash_task:{time:410.1ms, loops:256, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: tpcds50.store_sales.ss_item_sk, collate: N/A]	N/A	N/A
+          │     │     │                       └─HashAgg_161	835.45	10844619819.99	62000	mpp[tiflash]		tiflash_task:{time:409.1ms, loops:256, threads:48}	group by:tpcds50.store_sales.ss_item_sk, funcs:count(tpcds50.store_sales.ss_net_profit)->Column#231, funcs:sum(tpcds50.store_sales.ss_net_profit)->Column#232	N/A	N/A
+          │     │     │                         └─Selection_168	1928021.22	10840907494.86	1904526	mpp[tiflash]		tiflash_task:{time:343.1ms, loops:2336, threads:48}	eq(tpcds50.store_sales.ss_store_sk, 20)	N/A	N/A
+          │     │     │                           └─TableFullScan_167	144004764.00	10495296061.26	144004274	mpp[tiflash]	table:ss1	tiflash_task:{time:300.1ms, loops:2345, threads:48}	keep order:false	N/A	N/A
+          │     │     └─TableFullScan_154(Probe)	62000.00	4438531.75	62000	mpp[tiflash]	table:i1	tiflash_task:{time:19.6ms, loops:1, threads:1}	keep order:false	N/A	N/A
+          │     └─Selection_180(Probe)	534.69	10844724240.83	10	mpp[tiflash]		tiflash_task:{time:83.4ms, loops:1, threads:48}	lt(Column#182, 11), not(isnull(Column#182))	N/A	N/A
+          │       └─Window_181	668.36	10844721032.70	25237	mpp[tiflash]		tiflash_task:{time:83.4ms, loops:1, threads:1}	rank()->Column#182 over(order by Column#141 desc)	N/A	N/A
+          │         └─Sort_199	668.36	10844721032.70	25237	mpp[tiflash]		tiflash_task:{time:81.4ms, loops:1, threads:1}	Column#141:desc	N/A	N/A
+          │           └─ExchangeReceiver_198	668.36	10844704375.37	25237	mpp[tiflash]		tiflash_task:{time:71.4ms, loops:1, threads:48}		N/A	N/A
+          │             └─ExchangeSender_197	668.36	10844672294.16	25237	mpp[tiflash]		tiflash_task:{time:526.2ms, loops:1, threads:48}	ExchangeType: PassThrough	N/A	N/A
+          │               └─Selection_183	668.36	10844672294.16	25237	mpp[tiflash]		tiflash_task:{time:526.2ms, loops:1, threads:48}	gt(Column#141, -739.8694647)	N/A	N/A
+          │                 └─Projection_193	835.45	10844670289.08	62000	mpp[tiflash]		tiflash_task:{time:524.2ms, loops:1, threads:48}	div(Column#141, cast(case(eq(Column#235, 0), 1, Column#235), decimal(20,0) BINARY))->Column#141, tpcds50.store_sales.ss_item_sk	N/A	N/A
+          │                   └─HashAgg_194	835.45	10844669884.06	62000	mpp[tiflash]		tiflash_task:{time:510.2ms, loops:1, threads:48}	group by:tpcds50.store_sales.ss_item_sk, funcs:sum(Column#236)->Column#235, funcs:sum(Column#237)->Column#141, funcs:firstrow(tpcds50.store_sales.ss_item_sk)->tpcds50.store_sales.ss_item_sk	N/A	N/A
+          │                     └─ExchangeReceiver_196	835.45	10844666605.09	62000	mpp[tiflash]		tiflash_task:{time:500.2ms, loops:47, threads:48}		N/A	N/A
+          │                       └─ExchangeSender_195	835.45	10844619819.99	62000	mpp[tiflash]		tiflash_task:{time:495.8ms, loops:256, threads:48}	ExchangeType: HashPartition, Hash Cols: [name: tpcds50.store_sales.ss_item_sk, collate: N/A]	N/A	N/A
+          │                         └─HashAgg_185	835.45	10844619819.99	62000	mpp[tiflash]		tiflash_task:{time:495.8ms, loops:256, threads:48}	group by:tpcds50.store_sales.ss_item_sk, funcs:count(tpcds50.store_sales.ss_net_profit)->Column#236, funcs:sum(tpcds50.store_sales.ss_net_profit)->Column#237	N/A	N/A
+          │                           └─Selection_192	1928021.22	10840907494.86	1904526	mpp[tiflash]		tiflash_task:{time:314.8ms, loops:2336, threads:48}	eq(tpcds50.store_sales.ss_store_sk, 20)	N/A	N/A
+          │                             └─TableFullScan_191	144004764.00	10495296061.26	144004274	mpp[tiflash]	table:ss1	tiflash_task:{time:290.8ms, loops:2345, threads:48}	keep order:false	N/A	N/A
+          └─TableFullScan_202(Probe)	62000.00	4438531.75	62000	mpp[tiflash]	table:i2	tiflash_task:{time:13ms, loops:1, threads:1}	keep order:false	N/A	N/A

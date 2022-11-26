@@ -1,0 +1,21 @@
+query_37, ENGINE=mix, TIME=367.897184ms
+
+TopN_22	2.38	414162238.20	0	root		time:363.2ms, loops:1	tpcds50.item.i_item_id, offset:0, count:100	0 Bytes	N/A
+└─HashAgg_29	2.38	414158008.08	0	root		time:363.1ms, loops:2, partial_worker:{wall_time:363.096352ms, concurrency:5, task_num:0, tot_wait:1.815364489s, tot_exec:0s, tot_time:1.815368981s, max:363.079143ms, p95:363.079143ms}, final_worker:{wall_time:363.128178ms, concurrency:5, task_num:0, tot_wait:1.8154918s, tot_exec:7.948µs, tot_time:1.815502666s, max:363.115339ms, p95:363.115339ms}	group by:tpcds50.item.i_current_price, tpcds50.item.i_item_desc, tpcds50.item.i_item_id, funcs:firstrow(tpcds50.item.i_item_id)->tpcds50.item.i_item_id, funcs:firstrow(tpcds50.item.i_item_desc)->tpcds50.item.i_item_desc, funcs:firstrow(tpcds50.item.i_current_price)->tpcds50.item.i_current_price	169.7 KB	N/A
+  └─IndexHashJoin_40	2088861.97	267604594.02	0	root		time:363.1ms, loops:1	inner join, inner:IndexReader_37, outer key:tpcds50.item.i_item_sk, inner key:tpcds50.catalog_sales.cs_item_sk, equal cond:eq(tpcds50.item.i_item_sk, tpcds50.catalog_sales.cs_item_sk)	0 Bytes	N/A
+    ├─TableReader_91(Build)	1810.41	265427881.28	0	root		time:363ms, loops:1, cop_task: {num: 1, max: 0s, proc_keys: 0, copr_cache_hit_ratio: 0.00}	data:ExchangeSender_90	N/A	N/A
+    │ └─ExchangeSender_90	1810.41	3980510119.77	0	mpp[tiflash]		tiflash_task:{time:360.1ms, loops:882, threads:48}	ExchangeType: PassThrough	N/A	N/A
+    │   └─HashJoin_75	1810.41	3980510119.77	0	mpp[tiflash]		tiflash_task:{time:360.1ms, loops:882, threads:48}	inner join, equal:[eq(tpcds50.inventory.inv_date_sk, tpcds50.date_dim.d_date_sk)]	N/A	N/A
+    │     ├─ExchangeReceiver_58(Build)	61.00	5173333.20	61	mpp[tiflash]		tiflash_task:{time:20.1ms, loops:1, threads:48}		N/A	N/A
+    │     │ └─ExchangeSender_57	61.00	5167477.20	61	mpp[tiflash]		tiflash_task:{time:2.03ms, loops:1, threads:1}	ExchangeType: Broadcast	N/A	N/A
+    │     │   └─Selection_56	61.00	5167477.20	61	mpp[tiflash]		tiflash_task:{time:2.03ms, loops:1, threads:1}	ge(tpcds50.date_dim.d_date, 2001-06-02), le(tpcds50.date_dim.d_date, 2001-08-01)	N/A	N/A
+    │     │     └─TableFullScan_55	73049.00	4816842.00	8192	mpp[tiflash]	table:date_dim	tiflash_task:{time:2.03ms, loops:1, threads:1}	keep order:false	N/A	N/A
+    │     └─HashJoin_48(Probe)	2952.61	3975331932.25	0	mpp[tiflash]		tiflash_task:{time:359.1ms, loops:882, threads:48}	inner join, equal:[eq(tpcds50.item.i_item_sk, tpcds50.inventory.inv_item_sk)]	N/A	N/A
+    │       ├─ExchangeReceiver_52(Build)	3.25	6855355.29	0	mpp[tiflash]		tiflash_task:{time:20.1ms, loops:0, threads:48}		N/A	N/A
+    │       │ └─ExchangeSender_51	3.25	6853366.21	0	mpp[tiflash]		tiflash_task:{time:14.4ms, loops:0, threads:1}	ExchangeType: Broadcast	N/A	N/A
+    │       │   └─Selection_50	3.25	6853366.21	0	mpp[tiflash]		tiflash_task:{time:14.4ms, loops:0, threads:1}	ge(tpcds50.item.i_current_price, 22), in(tpcds50.item.i_manufact_id, 678, 964, 918, 849), le(tpcds50.item.i_current_price, 52)	N/A	N/A
+    │       │     └─TableFullScan_49	62000.00	6406966.21	62000	mpp[tiflash]	table:item	tiflash_task:{time:10.4ms, loops:1, threads:1}	keep order:false	N/A	N/A
+    │       └─Selection_54(Probe)	21574411.35	3933957502.55	21556651	mpp[tiflash]		tiflash_task:{time:350.1ms, loops:882, threads:48}	ge(tpcds50.inventory.inv_quantity_on_hand, 100), le(tpcds50.inventory.inv_quantity_on_hand, 500)	N/A	N/A
+    │         └─TableFullScan_53	56638827.00	3662091132.95	56638827	mpp[tiflash]	table:inventory	tiflash_task:{time:295.1ms, loops:882, threads:48}	keep order:false	N/A	N/A
+    └─IndexReader_37(Probe)	2088861.97	20527.03	0	root			index:IndexRangeScan_36	N/A	N/A
+      └─IndexRangeScan_36	2088861.97	234800.09	0	cop[tikv]	table:catalog_sales, index:PRIMARY(cs_item_sk, cs_order_number)		range: decided by [eq(tpcds50.catalog_sales.cs_item_sk, tpcds50.item.i_item_sk)], keep order:false	N/A	N/A

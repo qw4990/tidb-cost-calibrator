@@ -1,0 +1,57 @@
+query_61, ENGINE=tp, TIME=10.652401ms
+
+Projection_59	1.00	20762577746.01	1	root		time:1.38ms, loops:2, Concurrency:OFF	Column#154, Column#289, mul(div(cast(Column#154, decimal(15,4) BINARY), cast(Column#289, decimal(15,4) BINARY)), 100)->Column#290	57.8 KB	N/A
+└─TopN_62	1.00	20762577735.84	1	root		time:1.36ms, loops:2	Column#154, Column#289, offset:0, count:100	2.81 KB	N/A
+  └─HashJoin_67	1.00	20762575804.31	1	root		time:1.35ms, loops:3, build_hash_table:{total:1.21ms, fetch:1.2ms, build:6.53µs}, probe:{concurrency:5, total:5.94ms, max:1.2ms, probe:11.1µs, fetch:5.93ms}	CARTESIAN inner join	2.62 KB	0 Bytes
+    ├─HashAgg_209(Build)	1.00	10003672182.64	1	root		time:1.19ms, loops:2, partial_worker:{wall_time:1.171823ms, concurrency:5, task_num:0, tot_wait:5.548258ms, tot_exec:0s, tot_time:5.554252ms, max:1.115458ms, p95:1.115458ms}, final_worker:{wall_time:1.177672ms, concurrency:5, task_num:0, tot_wait:5.662669ms, tot_exec:3.065µs, tot_time:5.66831ms, max:1.147167ms, p95:1.147167ms}	funcs:sum(tpcds50.store_sales.ss_ext_sales_price)->Column#289	230.7 KB	N/A
+    │ └─IndexJoin_218	0.00	10003672151.00	0	root		time:1.11ms, loops:1	inner join, inner:TableReader_214, outer key:tpcds50.customer.c_current_addr_sk, inner key:tpcds50.customer_address.ca_address_sk, equal cond:eq(tpcds50.customer.c_current_addr_sk, tpcds50.customer_address.ca_address_sk)	0 Bytes	N/A
+    │   ├─IndexJoin_231(Build)	0.00	10003671649.82	0	root		time:1.09ms, loops:1	inner join, inner:TableReader_227, outer key:tpcds50.store_sales.ss_customer_sk, inner key:tpcds50.customer.c_customer_sk, equal cond:eq(tpcds50.store_sales.ss_customer_sk, tpcds50.customer.c_customer_sk)	0 Bytes	N/A
+    │   │ ├─IndexJoin_245(Build)	0.00	10003671139.24	0	root		time:1.06ms, loops:1	inner join, inner:TableReader_241, outer key:tpcds50.store_sales.ss_item_sk, inner key:tpcds50.item.i_item_sk, equal cond:eq(tpcds50.store_sales.ss_item_sk, tpcds50.item.i_item_sk)	0 Bytes	N/A
+    │   │ │ ├─IndexJoin_286(Build)	0.00	10003670638.08	0	root		time:1.04ms, loops:1	inner join, inner:TableReader_282, outer key:tpcds50.store_sales.ss_sold_date_sk, inner key:tpcds50.date_dim.d_date_sk, equal cond:eq(tpcds50.store_sales.ss_sold_date_sk, tpcds50.date_dim.d_date_sk)	0 Bytes	N/A
+    │   │ │ │ ├─HashJoin_305(Build)	0.00	10003670138.18	0	root		time:1ms, loops:1, build_hash_table:{total:47.1µs, fetch:47.1µs, build:0s}	inner join, equal:[eq(tpcds50.store.s_store_sk, tpcds50.store_sales.ss_store_sk)]	0 Bytes	0 Bytes
+    │   │ │ │ │ ├─TableReader_311(Build)	0.00	4352.24	0	root		time:39µs, loops:1, cop_task: {num: 1, max: 549.7µs, proc_keys: 144, rpc_num: 1, rpc_time: 531.4µs, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_310	276 Bytes	N/A
+    │   │ │ │ │ │ └─Selection_310	0.00	65031.32	0	cop[tikv]		tikv_task:{time:0s, loops:3}, scan_detail: {total_process_keys: 144, total_process_keys_size: 49490, total_keys: 145, get_snapshot_time: 15.3µs, rocksdb: {key_skipped_count: 285, block: {cache_hit_count: 4}}}	eq(tpcds50.store.s_gmt_offset, -7)	N/A	N/A
+    │   │ │ │ │ │   └─TableFullScan_309	144.00	57845.72	144	cop[tikv]	table:store	tikv_task:{time:0s, loops:3}	keep order:false	N/A	N/A
+    │   │ │ │ │ └─TableReader_308(Probe)	125437959.95	7499923992.80	1024	root		time:820.4µs, loops:1, cop_task: {num: 5, max: 1.77ms, min: 655.1µs, avg: 1.01ms, p95: 1.77ms, max_proc_keys: 224, p95_proc_keys: 224, tot_proc: 1ms, rpc_num: 5, rpc_time: 4.93ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_307	211.9 KB	N/A
+    │   │ │ │ │   └─Selection_307	125437959.95	77270094730.53	1039	cop[tikv]		tikv_task:{proc max:1ms, min:1ms, avg: 1ms, p80:1ms, p95:1ms, iters:15, tasks:5}, scan_detail: {total_process_keys: 1120, total_process_keys_size: 223419, total_keys: 1125, get_snapshot_time: 77.6µs, rocksdb: {key_skipped_count: 1120, block: {cache_hit_count: 10}}}	not(isnull(tpcds50.store_sales.ss_customer_sk)), not(isnull(tpcds50.store_sales.ss_sold_date_sk)), not(isnull(tpcds50.store_sales.ss_store_sk))	N/A	N/A
+    │   │ │ │ │     └─TableFullScan_306	144004764.00	55712581559.73	1120	cop[tikv]	table:store_sales	tikv_task:{proc max:1ms, min:0s, avg: 800µs, p80:1ms, p95:1ms, iters:15, tasks:5}	keep order:false	N/A	N/A
+    │   │ │ │ └─TableReader_282(Probe)	0.00	26.87	0	root			data:Selection_281	N/A	N/A
+    │   │ │ │   └─Selection_281	0.00	403.06	0	cop[tikv]			eq(tpcds50.date_dim.d_moy, 11), eq(tpcds50.date_dim.d_year, 1999)	N/A	N/A
+    │   │ │ │     └─TableRangeScan_280	0.00	303.26	0	cop[tikv]	table:date_dim		range: decided by [tpcds50.store_sales.ss_sold_date_sk], keep order:false	N/A	N/A
+    │   │ │ └─TableReader_241(Probe)	0.00	29.38	0	root			data:Selection_240	N/A	N/A
+    │   │ │   └─Selection_240	0.00	421.57	0	cop[tikv]			eq(tpcds50.item.i_category, "Books")	N/A	N/A
+    │   │ │     └─TableRangeScan_239	0.00	371.67	0	cop[tikv]	table:item		range: decided by [tpcds50.store_sales.ss_item_sk], keep order:false	N/A	N/A
+    │   │ └─TableReader_227(Probe)	0.00	28.86	0	root			data:Selection_226	N/A	N/A
+    │   │   └─Selection_226	0.00	369.47	0	cop[tikv]			not(isnull(tpcds50.customer.c_current_addr_sk))	N/A	N/A
+    │   │     └─TableRangeScan_225	0.00	319.57	0	cop[tikv]	table:customer		range: decided by [tpcds50.store_sales.ss_customer_sk], keep order:false	N/A	N/A
+    │   └─TableReader_214(Probe)	0.00	26.66	0	root			data:Selection_213	N/A	N/A
+    │     └─Selection_213	0.00	379.28	0	cop[tikv]			eq(tpcds50.customer_address.ca_gmt_offset, -7)	N/A	N/A
+    │       └─TableRangeScan_212	0.00	329.38	0	cop[tikv]	table:customer_address		range: decided by [tpcds50.customer.c_current_addr_sk], keep order:false	N/A	N/A
+    └─HashAgg_69(Probe)	1.00	10758903553.78	1	root		time:580µs, loops:2, partial_worker:{wall_time:562.074µs, concurrency:5, task_num:0, tot_wait:2.637841ms, tot_exec:0s, tot_time:2.642423ms, max:531.072µs, p95:531.072µs}, final_worker:{wall_time:572.041µs, concurrency:5, task_num:0, tot_wait:2.713383ms, tot_exec:5.964µs, tot_time:2.721876ms, max:549.287µs, p95:549.287µs}	funcs:sum(tpcds50.store_sales.ss_ext_sales_price)->Column#154	230.7 KB	N/A
+      └─IndexJoin_78	0.00	10758903522.14	0	root		time:527µs, loops:1	inner join, inner:TableReader_74, outer key:tpcds50.customer.c_current_addr_sk, inner key:tpcds50.customer_address.ca_address_sk, equal cond:eq(tpcds50.customer.c_current_addr_sk, tpcds50.customer_address.ca_address_sk)	0 Bytes	N/A
+        ├─IndexJoin_91(Build)	0.00	10758903020.96	0	root		time:493.3µs, loops:1	inner join, inner:TableReader_87, outer key:tpcds50.store_sales.ss_customer_sk, inner key:tpcds50.customer.c_customer_sk, equal cond:eq(tpcds50.store_sales.ss_customer_sk, tpcds50.customer.c_customer_sk)	0 Bytes	N/A
+        │ ├─IndexJoin_105(Build)	0.00	10758902510.38	0	root		time:456µs, loops:1	inner join, inner:TableReader_101, outer key:tpcds50.store_sales.ss_item_sk, inner key:tpcds50.item.i_item_sk, equal cond:eq(tpcds50.store_sales.ss_item_sk, tpcds50.item.i_item_sk)	0 Bytes	N/A
+        │ │ ├─IndexJoin_156(Build)	0.00	10758902009.22	0	root		time:409.3µs, loops:1	inner join, inner:TableReader_152, outer key:tpcds50.store_sales.ss_promo_sk, inner key:tpcds50.promotion.p_promo_sk, equal cond:eq(tpcds50.store_sales.ss_promo_sk, tpcds50.promotion.p_promo_sk)	0 Bytes	N/A
+        │ │ │ ├─IndexJoin_169(Build)	0.00	10758901504.12	0	root		time:374µs, loops:1	inner join, inner:TableReader_165, outer key:tpcds50.store_sales.ss_sold_date_sk, inner key:tpcds50.date_dim.d_date_sk, equal cond:eq(tpcds50.store_sales.ss_sold_date_sk, tpcds50.date_dim.d_date_sk)	0 Bytes	N/A
+        │ │ │ │ ├─HashJoin_188(Build)	0.00	10758901004.22	0	root		time:345.3µs, loops:1, build_hash_table:{total:39.2µs, fetch:39.2µs, build:0s}	inner join, equal:[eq(tpcds50.store.s_store_sk, tpcds50.store_sales.ss_store_sk)]	0 Bytes	0 Bytes
+        │ │ │ │ │ ├─TableReader_194(Build)	0.00	4352.24	0	root		time:29µs, loops:1, cop_task: {num: 1, max: 733.3µs, proc_keys: 144, rpc_num: 1, rpc_time: 690.2µs, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_193	284 Bytes	N/A
+        │ │ │ │ │ │ └─Selection_193	0.00	65031.32	0	cop[tikv]		tikv_task:{time:1ms, loops:3}, scan_detail: {total_process_keys: 144, total_process_keys_size: 49490, total_keys: 145, get_snapshot_time: 15.8µs, rocksdb: {key_skipped_count: 285, block: {cache_hit_count: 4}}}	eq(tpcds50.store.s_gmt_offset, -7)	N/A	N/A
+        │ │ │ │ │ │   └─TableFullScan_192	144.00	57845.72	144	cop[tikv]	table:store	tikv_task:{time:1ms, loops:3}	keep order:false	N/A	N/A
+        │ │ │ │ │ └─TableReader_191(Probe)	119797427.11	8367739894.28	1030	root		time:191.7µs, loops:1, cop_task: {num: 5, max: 1.79ms, min: 1.02ms, avg: 1.35ms, p95: 1.79ms, max_proc_keys: 224, p95_proc_keys: 224, rpc_num: 5, rpc_time: 6.65ms, copr_cache_hit_ratio: 0.00, distsql_concurrency: 15}	data:Selection_190	131.6 KB	N/A
+        │ │ │ │ │   └─Selection_190	119797427.11	84451746953.93	1036	cop[tikv]		tikv_task:{proc max:1ms, min:0s, avg: 200µs, p80:1ms, p95:1ms, iters:15, tasks:5}, scan_detail: {total_process_keys: 1120, total_process_keys_size: 224319, total_keys: 1125, get_snapshot_time: 172.1µs, rocksdb: {key_skipped_count: 1120, block: {cache_hit_count: 10}}}	not(isnull(tpcds50.store_sales.ss_customer_sk)), not(isnull(tpcds50.store_sales.ss_promo_sk)), not(isnull(tpcds50.store_sales.ss_sold_date_sk)), not(isnull(tpcds50.store_sales.ss_store_sk))	N/A	N/A
+        │ │ │ │ │     └─TableFullScan_189	144004764.00	55708396059.53	1120	cop[tikv]	table:store_sales	tikv_task:{proc max:1ms, min:0s, avg: 200µs, p80:1ms, p95:1ms, iters:15, tasks:5}	keep order:false	N/A	N/A
+        │ │ │ │ └─TableReader_165(Probe)	0.00	26.87	0	root			data:Selection_164	N/A	N/A
+        │ │ │ │   └─Selection_164	0.00	403.06	0	cop[tikv]			eq(tpcds50.date_dim.d_moy, 11), eq(tpcds50.date_dim.d_year, 1999)	N/A	N/A
+        │ │ │ │     └─TableRangeScan_163	0.00	303.26	0	cop[tikv]	table:date_dim		range: decided by [tpcds50.store_sales.ss_sold_date_sk], keep order:false	N/A	N/A
+        │ │ │ └─TableReader_152(Probe)	0.00	26.02	0	root			data:Selection_151	N/A	N/A
+        │ │ │   └─Selection_151	0.00	368.44	0	cop[tikv]			or(eq(tpcds50.promotion.p_channel_dmail, "Y"), or(eq(tpcds50.promotion.p_channel_email, "Y"), eq(tpcds50.promotion.p_channel_tv, "Y")))	N/A	N/A
+        │ │ │     └─TableRangeScan_150	0.00	318.54	0	cop[tikv]	table:promotion		range: decided by [tpcds50.store_sales.ss_promo_sk], keep order:false	N/A	N/A
+        │ │ └─TableReader_101(Probe)	0.00	29.38	0	root			data:Selection_100	N/A	N/A
+        │ │   └─Selection_100	0.00	421.57	0	cop[tikv]			eq(tpcds50.item.i_category, "Books")	N/A	N/A
+        │ │     └─TableRangeScan_99	0.00	371.67	0	cop[tikv]	table:item		range: decided by [tpcds50.store_sales.ss_item_sk], keep order:false	N/A	N/A
+        │ └─TableReader_87(Probe)	0.00	28.86	0	root			data:Selection_86	N/A	N/A
+        │   └─Selection_86	0.00	369.47	0	cop[tikv]			not(isnull(tpcds50.customer.c_current_addr_sk))	N/A	N/A
+        │     └─TableRangeScan_85	0.00	319.57	0	cop[tikv]	table:customer		range: decided by [tpcds50.store_sales.ss_customer_sk], keep order:false	N/A	N/A
+        └─TableReader_74(Probe)	0.00	26.66	0	root			data:Selection_73	N/A	N/A
+          └─Selection_73	0.00	379.28	0	cop[tikv]			eq(tpcds50.customer_address.ca_gmt_offset, -7)	N/A	N/A
+            └─TableRangeScan_72	0.00	329.38	0	cop[tikv]	table:customer_address		range: decided by [tpcds50.customer.c_current_addr_sk], keep order:false	N/A	N/A
