@@ -32,6 +32,7 @@ func parseResultFile(rf string) (caseName string, execTime time.Duration, failRe
 		}
 		if strings.Contains(l, "TIMEOUT") {
 			execTime = time.Second * 3
+			fmt.Println(">>>> TIMEOUT ", rf)
 			//failReason = "TIMEMOUT"
 		}
 		if strings.Contains(l, "tikv") {
@@ -43,7 +44,7 @@ func parseResultFile(rf string) (caseName string, execTime time.Duration, failRe
 	}
 
 	if tikv && tiflash {
-		fmt.Println("---> mix plan >> ", caseName)
+		//fmt.Println("---> mix plan >> ", caseName)
 	}
 
 	return
@@ -66,18 +67,13 @@ func planAnalyze(dir string, engines []string) {
 		}
 	}
 
-	// mix = min(tp, ap, mix)
 	for caseName := range caseNames {
-		if _, ok := result["mix"][caseName]; !ok {
-			continue
+		if result["mix"][caseName] < result["ap"][caseName] && (float64(result["mix"][caseName])/float64(result["ap"][caseName]) < 0.85) {
+			fmt.Println(">>> GOOD ", caseName, result["mix"][caseName], result["ap"][caseName])
 		}
-		minT := result["mix"][caseName]
-		for _, engine := range engines {
-			if t, ok := result[engine][caseName]; ok && t < minT {
-				minT = t
-			}
+		if result["mix"][caseName] > result["ap"][caseName] && (float64(result["ap"][caseName])/float64(result["mix"][caseName]) < 0.85) {
+			fmt.Println(">>> BAD ", caseName, result["mix"][caseName], result["ap"][caseName])
 		}
-		result["mix"][caseName] = minT
 	}
 
 	totTime := make(map[string]time.Duration)
@@ -103,6 +99,21 @@ func planAnalyze(dir string, engines []string) {
 }
 
 func GetPlans() {
+	settings := []string{
+		"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv'",
+		//"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
+		//"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
+	}
+	alias := []string{
+		"tp",
+		"ap",
+		"mix",
+	}
+	workload := "tpcds"
+	resultFileDir := fmt.Sprintf("regression/%v/plans/", workload)
+	planAnalyze(resultFileDir, alias)
+	return
+
 	opt := utils.Option{
 		Addr:     "tidb-1-peer",
 		Port:     4000,
@@ -112,21 +123,8 @@ func GetPlans() {
 	}
 	ins := utils.MustConnectTo(opt)
 	ins.SetLogThreshold(0)
-	workload := "tpcds"
 	qs := getQueries("regression/tpcds/queries")
 	ins.MustExec("use tpcds50")
-
-	resultFileDir := fmt.Sprintf("regression/%v/plans/", workload)
-	settings := []string{
-		"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv'",
-		//"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tiflash'",
-		//"set max_execution_time=180000,tidb_cost_model_version=2,tidb_isolation_read_engines='tidb,tikv,tiflash'",
-	}
-	alias := []string{
-		"tp",
-		//"ap",
-		//"mix",
-	}
 
 	//l, r := 1, 99
 	xs := []int{2, 4, 5, 11, 14, 18, 22, 23, 27, 36, 39, 59, 67, 70, 77, 80, 86}
