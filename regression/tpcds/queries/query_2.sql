@@ -1,5 +1,4 @@
 -- start query 1 in stream 0 using template query2.tpl
-explain
 with wscs as
  (select ws_sold_date_sk sold_date_sk
               ,ws_ext_sales_price sales_price
