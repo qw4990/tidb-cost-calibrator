@@ -1,0 +1,3 @@
+query_14, ENGINE=mix, TIME=932.474µs
+
+FAIL Error 8130: client has multi-statement capability disabled. Run SET GLOBAL tidb_multi_statement_mode='ON' after you understand the security risk

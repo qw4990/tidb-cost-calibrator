@@ -12,6 +12,96 @@ import (
 	"github.com/qw4990/tidb-cost-calibrator/utils"
 )
 
+func parseResultFile(rf string) (caseName string, execTime time.Duration, failReason string) {
+	data, err := os.ReadFile(rf)
+	utils.Must(err)
+	lines := strings.Split(string(data), "\n")
+
+	tikv, tiflash := false, false
+	for _, l := range lines {
+		if strings.Contains(l, "TIME=") {
+			tmp := strings.Split(l, ",")
+			caseName = strings.TrimSpace(tmp[0])
+			tmp = strings.Split(tmp[2], "=")
+			tStr := strings.TrimSpace(tmp[1])
+			execTime, err = time.ParseDuration(tStr)
+			utils.Must(err)
+		}
+		if strings.Contains(l, "FAIL") {
+			failReason = "FAIL"
+		}
+		if strings.Contains(l, "TIMEOUT") {
+			execTime = time.Second * 3
+			//failReason = "TIMEMOUT"
+		}
+		if strings.Contains(l, "tikv") {
+			tikv = true
+		}
+		if strings.Contains(l, "tiflash") {
+			tiflash = true
+		}
+	}
+
+	if tikv && tiflash {
+		fmt.Println("---> mix plan >> ", caseName)
+	}
+
+	return
+}
+
+func planAnalyze(dir string, engines []string) {
+	result := make(map[string]map[string]time.Duration) // engine:case-name:exec-time
+	caseNames := make(map[string]struct{})
+	for _, engine := range engines {
+		result[engine] = make(map[string]time.Duration)
+		resultFile := utils.ReadDirFiles(dir, fmt.Sprintf("-%v.result", engine))
+		for _, rf := range resultFile {
+			caseName, execTime, failReason := parseResultFile(rf)
+			if failReason != "" {
+				fmt.Println("FAIL CASE: ", caseName, engine, failReason)
+				continue
+			}
+			caseNames[caseName] = struct{}{}
+			result[engine][caseName] = execTime
+		}
+	}
+
+	// mix = min(tp, ap, mix)
+	for caseName := range caseNames {
+		if _, ok := result["mix"][caseName]; !ok {
+			continue
+		}
+		minT := result["mix"][caseName]
+		for _, engine := range engines {
+			if t, ok := result[engine][caseName]; ok && t < minT {
+				minT = t
+			}
+		}
+		result["mix"][caseName] = minT
+	}
+
+	totTime := make(map[string]time.Duration)
+	numValidCases := 0
+	for caseName := range caseNames {
+		valid := true
+		for _, engine := range engines {
+			if _, ok := result[engine][caseName]; !ok {
+				valid = false
+			}
+		}
+		if !valid {
+			fmt.Println("skip ", caseName)
+			continue
+		}
+		numValidCases += 1
+		for _, engine := range engines {
+			totTime[engine] += result[engine][caseName]
+		}
+	}
+
+	fmt.Println(numValidCases, totTime)
+}
+
 func GetPlans() {
 	opt := utils.Option{
 		Addr:     "tidb-1-peer",

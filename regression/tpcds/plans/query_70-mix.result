@@ -1,0 +1,3 @@
+query_70, ENGINE=mix, TIME=835.282µs
+
+FAIL Error 1305: FUNCTION tpcds50.rollup does not exist
