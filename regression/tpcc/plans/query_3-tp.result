@@ -1,0 +1,3 @@
+query_3, ENGINE=tp, TIME=45.863708ms
+
+Point_Get_1	1.00	0.00	root	table:district, clustered index:PRIMARY(d_w_id, d_id)	

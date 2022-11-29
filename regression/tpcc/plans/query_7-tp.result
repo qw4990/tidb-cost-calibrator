@@ -1,0 +1,7 @@
+query_7, ENGINE=tp, TIME=50.232916ms
+
+StreamAgg_23	1.00	701.82	root		funcs:count(Column#26)->Column#22
+└─IndexReader_24	1.00	671.82	root		index:StreamAgg_9
+  └─StreamAgg_9	1.00	10024.80	cop[tikv]		funcs:count(tpcc.customer.c_id)->Column#26
+    └─Selection_14	0.96	9996.00	cop[tikv]		eq(cast(tpcc.customer.c_last, double BINARY), 1)
+      └─IndexRangeScan_13	1.20	9960.00	cop[tikv]	table:customer, index:idx_customer(c_w_id, c_d_id, c_last, c_first)	range:[1 1,1 1], keep order:false, stats:pseudo

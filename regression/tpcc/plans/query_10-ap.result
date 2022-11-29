@@ -1,0 +1,9 @@
+query_10, ENGINE=ap, TIME=51.024917ms
+
+StreamAgg_9	1.00	3088.55	root		funcs:count(distinct tpcc.stock.s_i_id)->Column#28
+└─IndexJoin_16	0.07	3084.97	root		inner join, inner:TableReader_12, outer key:tpcc.order_line.ol_i_id, inner key:tpcc.stock.s_i_id, equal cond:eq(tpcc.order_line.ol_i_id, tpcc.stock.s_i_id)
+  ├─TableReader_21(Build)	5.74	216.78	root		data:TableRangeScan_20
+  │ └─TableRangeScan_20	5.74	1797.89	cop[tikv]	table:order_line	range:[1 1 80,1 1 100), keep order:false, stats:pseudo
+  └─TableReader_12(Probe)	0.00	29.34	root		data:Selection_11
+    └─Selection_11	0.00	440.13	cop[tikv]		eq(tpcc.stock.s_w_id, 1), lt(tpcc.stock.s_quantity, 1)
+      └─TableRangeScan_10	5.74	340.33	cop[tikv]	table:stock	range: decided by [eq(tpcc.stock.s_i_id, tpcc.order_line.ol_i_id) eq(tpcc.stock.s_w_id, 1)], keep order:false, stats:pseudo

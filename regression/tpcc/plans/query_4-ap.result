@@ -1,0 +1,3 @@
+query_4, ENGINE=ap, TIME=49.985667ms
+
+Batch_Point_Get_1	5.00	0.00	root	table:item	handle:[1 2 3 4 5], keep order:false, desc:false

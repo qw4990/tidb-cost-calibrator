@@ -1,0 +1,7 @@
+query_6, ENGINE=tp, TIME=48.997917ms
+
+Projection_6	0.96	766.06	root		tpcc.customer.c_id
+└─Sort_7	0.96	742.30	root		tpcc.customer.c_first
+  └─IndexReader_14	0.96	682.29	root		index:Selection_13
+    └─Selection_13	0.96	9996.00	cop[tikv]		eq(cast(tpcc.customer.c_last, double BINARY), 1)
+      └─IndexRangeScan_12	1.20	9960.00	cop[tikv]	table:customer, index:idx_customer(c_w_id, c_d_id, c_last, c_first)	range:[1 1,1 1], keep order:false, stats:pseudo

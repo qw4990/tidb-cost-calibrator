@@ -1,0 +1,6 @@
+query_1, ENGINE=tp, TIME=49.051959ms
+
+Projection_7	0.00	112.14	root		tpcc.customer.c_discount, tpcc.customer.c_last, tpcc.customer.c_credit, tpcc.warehouse.w_tax
+└─HashJoin_8	0.00	94.13	root		CARTESIAN inner join
+  ├─Point_Get_11(Build)	1.00	25.87	root	table:warehouse	handle:1
+  └─Point_Get_10(Probe)	1.00	13.60	root	table:customer, clustered index:PRIMARY(c_w_id, c_d_id, c_id)	

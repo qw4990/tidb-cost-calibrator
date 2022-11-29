@@ -1,0 +1,6 @@
+query_12, ENGINE=tp, TIME=47.940875ms
+
+Projection_5	1.00	375.69	root		tpcc.order_line.ol_d_id, Column#11
+└─HashAgg_8	1.00	351.69	root		group by:tpcc.order_line.ol_d_id, funcs:sum(tpcc.order_line.ol_amount)->Column#11, funcs:firstrow(tpcc.order_line.ol_d_id)->tpcc.order_line.ol_d_id
+  └─TableReader_13	0.46	315.65	root		data:TableRangeScan_12
+    └─TableRangeScan_12	0.46	4635.16	cop[tikv]	table:order_line	range:[1 1 1,1 1 1], [2 2 2,2 2 2], keep order:false, stats:pseudo

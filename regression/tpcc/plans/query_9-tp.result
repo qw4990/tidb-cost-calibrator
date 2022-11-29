@@ -1,0 +1,7 @@
+query_9, ENGINE=tp, TIME=47.427333ms
+
+Projection_7	0.02	64.21	root		tpcc.orders.o_id, tpcc.orders.o_carrier_id, tpcc.orders.o_entry_d
+└─IndexLookUp_28	0.02	46.07	root		limit embedded(offset:0, count:1)
+  ├─Limit_27(Build)	0.02	190.52	cop[tikv]		offset:0, count:1
+  │ └─IndexRangeScan_25	0.02	190.52	cop[tikv]	table:orders, index:idx_order(o_w_id, o_d_id, o_c_id, o_id)	range:[1 1 1,1 1 1], keep order:true, desc, stats:pseudo
+  └─TableRowIDScan_26(Probe)	0.02	190.52	cop[tikv]	table:orders	keep order:false, stats:pseudo

@@ -1,0 +1,7 @@
+query_11, ENGINE=ap, TIME=48.922709ms
+
+Projection_7	0.05	9.92	root		tpcc.new_order.no_o_id
+└─Limit_11	0.05	9.91	root		offset:0, count:1
+  └─TableReader_18	0.46	9.91	root		data:Limit_17
+    └─Limit_17	0.46	104.85	cop[tikv]		offset:0, count:1
+      └─TableRangeScan_16	0.46	104.85	cop[tikv]	table:new_order	range:[1 1,1 1], keep order:true, stats:pseudo
