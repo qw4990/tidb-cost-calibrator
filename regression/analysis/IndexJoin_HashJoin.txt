@@ -1,0 +1,8 @@
+INLJ Better Cases       INLJ time           HJ time             build side rows         INLJ requests           ratio
+TPCH-Q21                25s                 32s                 3675878                 929+2385                1110
+TPCH-Q12                18s                 23s                 1558954                 228                     6837
+
+HJ Better Cases         INLJ time           HJ time             build side rows         INLJ requests           ratio
+TPCDS-Q17               150s                15s                 279565                  1391+2901449            0.1
+TPCDS-Q76               114s                10s                 62000                   158+1936206             0.32
+TPCDS-Q83               16s                 3s                  62000                   26+17880                3.46
