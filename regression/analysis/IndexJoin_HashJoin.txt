@@ -6,3 +6,10 @@ HJ Better Cases         INLJ time           HJ time             build side rows 
 TPCDS-Q17               150s                15s                 279565                  1391+2901449            0.1
 TPCDS-Q76               114s                10s                 62000                   158+1936206             0.32
 TPCDS-Q83               16s                 3s                  62000                   26+17880                3.46
+
+
+IndexLookUp double read tasks
+	taskPerBatch := 32.0 // TODO: remove this magic number
+	doubleReadTasks := doubleReadRows / batchSize(20000) * taskPerBatch
+	
+doubleReadRows / 6 / 20000 * 32
